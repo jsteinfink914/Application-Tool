@@ -18,6 +18,6 @@
         "node": "22.x"
     },
     "scripts": {
-  "build": "npm install --unsafe-perm && vite build"
+  "build": "chmod +x node_modules/.bin/vite && vite build"
 }
 }
