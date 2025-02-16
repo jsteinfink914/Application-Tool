@@ -104,6 +104,3 @@ async function getNearestLocations(listings, userPrefs) {
 }
 
 userPreferences.subscribe(prefs => getNearestLocations(listings, prefs));
-
-// Export everything
-export { listings, favorites, selectedAttributes, userPreferences, toggleFavorite, getCompareData, updateUserPreferences };
