@@ -14,7 +14,7 @@ async function geocodeAddress(address) {
 
 // Load dataset from CSV file
 async function loadListings() {
-  const response = await fetch('/2016-12-20.csv');
+  const response = await fetch('/public/2016-12-20.csv');
   const csvText = await response.text();
   return new Promise((resolve) => {
     Papa.parse(csvText, {
