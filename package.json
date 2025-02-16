@@ -16,5 +16,8 @@
     },
     "engines": {
         "node": "22.x"
-    }
+    },
+    "scripts": {
+  "build": "npm install --unsafe-perm && vite build"
+}
 }
