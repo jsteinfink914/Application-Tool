@@ -8,11 +8,11 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [svelte()],
-  root: 'src',  // Adjust this if your source files are in a different folder
+  root: '.',  // Assuming the project root contains the public folder
   build: {
     rollupOptions: {
-      input: '/public/index.html' // Ensure this points to the correct location
-    }
+      input: '/public/index.html',  // Explicit path to index.html
+    },
   },
-  publicDir: 'public', // This should be the default, but just to be sure
+  publicDir: 'public',  // Ensure Vite knows to serve files from the public folder
 });
