@@ -63,6 +63,11 @@ export function getCompareData() {
   return compareData;
 }
 
+// Function to update user preferences
+export function updateUserPreferences(preferences) {
+  userPreferences.set(preferences);
+}
+
 // Function to find nearest grocery store and gym
 async function getNearestLocations(listings, userPrefs) {
   if (!userPrefs.grocery || !userPrefs.gym) return;
@@ -81,12 +86,12 @@ async function getNearestLocations(listings, userPrefs) {
   listings.update(listingArray => {
     return listingArray.map(listing => {
       const distance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371; // Radius of the Earth in km
+        const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
         const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // Distance in km
+        return R * c;
       };
       
       return {
@@ -99,3 +104,6 @@ async function getNearestLocations(listings, userPrefs) {
 }
 
 userPreferences.subscribe(prefs => getNearestLocations(listings, prefs));
+
+// Export everything
+export { listings, favorites, selectedAttributes, userPreferences, toggleFavorite, getCompareData, updateUserPreferences };
