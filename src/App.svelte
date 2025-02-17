@@ -26,7 +26,7 @@
 
   function initializeMap(listings) {
     if (!map) {
-      map = L.map('map').setView([40.7128, -74.0060], 12);
+      map = L.map(document.getElementById('map')).setView([40.7128, -74.0060], 12);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     }
     markers.forEach(marker => map.removeLayer(marker));
@@ -41,21 +41,20 @@
 
   const handleFavoriteToggle = (listing) => {
     toggleFavorite(listing);
-  };
-
- const handleCompare = () => {
-  compareListings = [...$favorites]; // Ensure favorites are stored correctly
-  console.log("Compare Listings:", compareListings);
-  if (compareListings.length > 0) {
-    initializeMap(compareListings);
-    showComparePage = true;
-  }
+    favorites.update(favs => [...favs]); // Force Svelte reactivity update
 };
 
+  const handleCompare = () => {
+    compareListings = getCompareData();
+    if (compareListings.length > 0) {
+      initializeMap(compareListings);
+      showComparePage = true;
+    }
+  };
 
   onMount(() => {
     setTimeout(() => {
-      if ($listings.length > 0) {
+      if ($listings && $listings.length > 0) {
         initializeMap($listings);
       }
     }, 500);
@@ -137,14 +136,14 @@
         </tr>
       </thead>
       <tbody>
-        {#each compareListings as listing (listing.address)}
+        {#each compareListings as listing}
           <tr>
-            <td>{listing.address || 'N/A'}</td>
-            {#if $selectedAttributesLocal.price} <td>{listing.price ?? 'N/A'}</td> {/if}
-            {#if $selectedAttributesLocal.squareFootage} <td>{listing.squareFootage ?? 'N/A'}</td> {/if}
-            {#if $selectedAttributesLocal.laundryInBuilding} <td>{listing.laundryInBuilding ?? 'N/A'}</td> {/if}
-            {#if $selectedAttributesLocal.doorman} <td>{listing.doorman ?? 'N/A'}</td> {/if}
-            {#if $selectedAttributesLocal.dishwasher} <td>{listing.dishwasher ?? 'N/A'}</td> {/if}
+            <td>{listing.address}</td>
+            {#if $selectedAttributesLocal.price} <td>{listing.price || 'N/A'}</td> {/if}
+            {#if $selectedAttributesLocal.squareFootage} <td>{listing.squareFootage || 'N/A'}</td> {/if}
+            {#if $selectedAttributesLocal.laundryInBuilding} <td>{listing.laundryInBuilding || 'N/A'}</td> {/if}
+            {#if $selectedAttributesLocal.doorman} <td>{listing.doorman || 'N/A'}</td> {/if}
+            {#if $selectedAttributesLocal.dishwasher} <td>{listing.dishwasher || 'N/A'}</td> {/if}
           </tr>
         {/each}
       </tbody>
