@@ -31,7 +31,7 @@
     }
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
-    $listings.forEach(listing => {
+    listings.subscribe(l => l.forEach(listing => {
       if (listing.lat && listing.lon) {
         const marker = L.marker([listing.lat, listing.lon]).addTo(map);
         markers.push(marker);
