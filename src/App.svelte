@@ -139,6 +139,7 @@
   <p>⚠️ No listings found. Check logs.</p> <!-- ✅ Debugging message -->
 {/if}
 
+
   {#if $favorites && $favorites.length >= 3}
     <button class="compare-button" on:click={handleCompare}>Compare</button>
   {:else}

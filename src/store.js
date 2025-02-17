@@ -83,7 +83,7 @@ async function geocodeAddress(address) {
 async function batchGeocode(listingsData) {
   const results = [];
   for (let i = 0; i < listingsData.length; i++) {
-    if (i % 5 === 0) await new Promise(r => setTimeout(r, 5000)); // ⏳ Rate limit
+    if (i % 5 === 0) await new Promise(r => setTimeout(r, 3000)); // ✅ Rate limit to avoid Google API errors
 
     const cached = JSON.parse(localStorage.getItem(`geo_${listingsData[i].address}`));
     if (cached) {
@@ -91,26 +91,22 @@ async function batchGeocode(listingsData) {
       continue;
     }
 
-    let location = await geocodeAddress(listingsData[i].address);
-    if (!location) {
-      console.warn(`🔁 Retrying ${listingsData[i].address} after 10 sec...`);
-      await new Promise(r => setTimeout(r, 10000)); // ⏳ Retry
-      location = await geocodeAddress(listingsData[i].address);
-    }
-
-    if (location) {
-      const updatedListing = { ...listingsData[i], lat: location.lat, lon: location.lon };
-      results.push(updatedListing);
-      console.log(`📍 Stored geocoded listing:`, updatedListing); // ✅ Log each stored listing
-    } else {
-      console.error(`🚨 Failed to get lat/lon for ${listingsData[i].address}`);
-      results.push(listingsData[i]); // Keep listing but without lat/lon
+    try {
+      const location = await geocodeAddress(listingsData[i].address);
+      if (location) {
+        results.push({ ...listingsData[i], lat: location.lat, lon: location.lon });
+      } else {
+        console.warn(`⚠️ Could not get lat/lon for: ${listingsData[i].address}`);
+      }
+    } catch (error) {
+      console.error(`🚨 Geocoding failed for ${listingsData[i].address}:`, error);
     }
   }
 
-  console.log(`✅ Final geocoded listings:`, results); // ✅ Double-check final data before storing
-  listings.set(results);
+  console.log("✅ Final batch geocode results:", results);
+  return results.length > 0 ? results : []; // ✅ Ensure an array is returned
 }
+
 
 /**
  * Load CSV data and geocode listings
@@ -134,7 +130,7 @@ async function loadListings() {
         const limitedListings = result.data.slice(0, 10);
         console.log(`🔹 Limited Listings Before Geocode:`, limitedListings);
 
-        const listingsWithLatLon = await batchGeocode(limitedListings);
+        const listingsWithLatLon = await batchGeocode(limitedListings) || [];
 
         console.log(`✅ Final geocoded listings before storing:`, listingsWithLatLon);
 
@@ -143,8 +139,8 @@ async function loadListings() {
           return;
         }
 
-        listings.set(listingsWithLatLon);  // ✅ Ensure valid data is stored
-        console.log(`✅ Listings Updated in Store:`, get(listings)); // ✅ Confirm it is updated
+        listings.set([...listingsWithLatLon]); // ✅ Ensure an array is stored
+        console.log(`✅ Listings Updated in Store:`, get(listings)); // ✅ Confirm it's updated
       },
       error: (error) => console.error("🚨 CSV Parsing Error:", error),
     });
