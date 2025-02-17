@@ -25,31 +25,33 @@
   };
 
   function initializeMap(listingsData) {
-  // Retry initialization until #map is available
-  const mapContainer = document.getElementById('map');
+  // Wait for Svelte to update the DOM
+  setTimeout(() => {
+    const mapContainer = document.getElementById('map');
 
-  if (!mapContainer) {
-    console.warn("Map container not found, retrying...");
-    setTimeout(() => initializeMap(listingsData), 300); // Retry every 300ms
-    return;
-  }
-
-  if (!map) {
-    console.log("Initializing map...");
-    map = L.map('map').setView([40.7128, -74.0060], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-  }
-
-  markers.forEach(marker => map.removeLayer(marker));
-  markers = [];
-  listingsData.forEach(listing => {
-    if (listing.lat && listing.lon) {
-      const marker = L.marker([listing.lat, listing.lon]).addTo(map);
-      markers.push(marker);
+    if (!mapContainer) {
+      console.warn("Map container not found, skipping initialization.");
+      return;
     }
-  });
 
-  map.invalidateSize(); // Ensure the map adjusts if it was hidden
+    if (!map) {
+      console.log("Initializing map...");
+      map = L.map('map').setView([40.7128, -74.0060], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    }
+
+    markers.forEach(marker => map.removeLayer(marker));
+    markers = [];
+
+    listingsData.forEach(listing => {
+      if (listing.lat && listing.lon) {
+        const marker = L.marker([listing.lat, listing.lon]).addTo(map);
+        markers.push(marker);
+      }
+    });
+
+    map.invalidateSize(); // Force map to resize correctly
+  }, 500); // Ensures DOM is fully updated
 }
 
 
@@ -61,11 +63,12 @@
  const handleCompare = () => {
   let data = getCompareData();
   compareListings.set(data);
+
   if (data.length > 0) {
     showComparePage.set(true);
     setTimeout(() => {
       initializeMap(data);
-    }, 500); // Ensure the DOM has updated before initializing the map
+    }, 750); // Ensures Svelte has switched the UI
   }
 };
 
