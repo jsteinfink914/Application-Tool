@@ -26,34 +26,31 @@
   };
 
   function initializeMap(listingsData) {
-  // Wait for Svelte to update the DOM
-  setTimeout(() => {
-    const mapContainer = document.getElementById('map');
+  const mapContainer = document.getElementById('map');
+  
+  if (!mapContainer) {
+    console.warn("🚨 #map container STILL missing! Aborting initialization...");
+    return;
+  }
 
-    if (!mapContainer) {
-      console.warn("Map container not found, skipping initialization.");
-      return;
+  console.log("✅ Initializing Leaflet map...");
+  
+  if (!map) {
+    map = L.map('map').setView([40.7128, -74.0060], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  }
+
+  markers.forEach(marker => map.removeLayer(marker));
+  markers = [];
+
+  listingsData.forEach(listing => {
+    if (listing.lat && listing.lon) {
+      const marker = L.marker([listing.lat, listing.lon]).addTo(map);
+      markers.push(marker);
     }
-
-    if (!map) {
-      console.log("Initializing map...");
-      map = L.map('map').setView([40.7128, -74.0060], 12);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    }
-
-    markers.forEach(marker => map.removeLayer(marker));
-    markers = [];
-
-    listingsData.forEach(listing => {
-      if (listing.lat && listing.lon) {
-        const marker = L.marker([listing.lat, listing.lon]).addTo(map);
-        markers.push(marker);
-      }
-    });
-
-    map.invalidateSize(); // Force map to resize correctly
-  }, 500); // Ensures DOM is fully updated
+  });
 }
+
 
 
   const handleFavoriteToggle = (listing) => {
@@ -61,20 +58,35 @@
     favorites.update(favs => [...favs]); // Force Svelte reactivity update
   };
 
- const handleCompare = async () => {
+const handleCompare = async () => {
   let data = getCompareData();
   compareListings.set(data);
 
   if (data.length > 0) {
     showComparePage.set(true);
     
-    // ✅ Wait for Svelte to finish rendering
+    // ✅ Ensure UI is fully rendered before initializing map
     await tick();
 
-    console.log("Compare page fully loaded, now initializing map...");
-    initializeMap(data);
+    // ✅ Debugging: Force-check if #map exists
+    let mapElement = document.getElementById('map');
+    console.log("Checking for #map element before initializing:", mapElement);
+
+    if (!mapElement) {
+      console.warn("⚠️ #map container STILL not found! Retrying in 500ms...");
+      setTimeout(() => {
+        mapElement = document.getElementById('map');
+        console.log("Retrying map initialization:", mapElement);
+        if (mapElement) initializeMap(data);
+      }, 500);
+    } else {
+      console.log("✅ #map found, initializing...");
+      initializeMap(data);
+    }
   }
 };
+
+
 
   onMount(() => {
     listings.subscribe(l => {
