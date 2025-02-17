@@ -75,6 +75,13 @@
     // ✅ Ensure lat/lon exists before initializing the map
     if (l.length > 0 && l.every(item => item.lat && item.lon)) {
       console.log("✅ All Listings Have lat/lon, Initializing Map...");
+      
+      await tick();
+
+      listings.set([]); 
+      await new Promise(r => setTimeout(r, 50));  // Short delay
+      listings.set(l);  
+
       initializeMap(l);
     } else {
       console.warn("⚠️ Listings still missing lat/lon, delaying map initialization...");
