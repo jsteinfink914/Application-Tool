@@ -38,13 +38,18 @@ export function getCompareData() {
   const attrs = get(selectedAttributes);
 
   return favs.map(listing => {
-    let selectedData = { address: listing.address };
+    let selectedData = { 
+      address: listing.address, 
+      lat: listing.lat,  // ✅ Ensure lat/lon are always stored
+      lon: listing.lon 
+    };
     attrs.forEach(attr => {
-      selectedData[attr] = listing[attr] ?? 'N/A'; // Handle missing attributes
+      selectedData[attr] = listing[attr] ?? 'N/A'; // ✅ Store only selected attributes
     });
     return selectedData;
   });
 }
+
 
 /**
  * Geocode an address using Google API

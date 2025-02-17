@@ -31,35 +31,41 @@
     const mapContainer = document.getElementById('map');
 
     if (!mapContainer) {
-      console.warn("🚨 #map container missing! Retrying in 500ms...");
-      setTimeout(() => initializeMap(listingsData), 500);
-      return;
+        console.warn("🚨 #map container missing! Retrying in 500ms...");
+        setTimeout(() => initializeMap(listingsData), 500);
+        return;
     }
 
     if (!map) {
-      console.log("✅ Initializing Leaflet map...");
-      map = L.map('map').setView([40.7128, -74.0060], 12);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        console.log("✅ Initializing Leaflet map...");
+        map = L.map('map').setView([40.7128, -74.0060], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     }
-    
+
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
 
     listingsData.forEach(listing => {
-      if (listing.lat && listing.lon) {
-        console.log(`📌 Adding marker for ${listing.address}`);
-        const marker = L.marker([listing.lat, listing.lon]).addTo(map);
-        markers.push(marker);
-      } else {
-        console.warn(`⚠️ Missing lat/lon for:`, listing);
-      }
+        if (listing.lat && listing.lon) {
+            console.log(`📌 Adding marker for ${listing.address}`);
+            const marker = L.marker([listing.lat, listing.lon]).addTo(map);
+            markers.push(marker);
+        } else {
+            console.warn(`⚠️ Missing lat/lon for:`, listing);
+        }
     });
-  }
+}
+
 
   const handleFavoriteToggle = (listing) => {
-    toggleFavorite(listing);
-    favorites.update(favs => [...favs]); // Ensures reactivity
-  };
+    toggleFavorite({
+        ...listing,  // ✅ Store the entire listing, not just selected columns
+        lat: listing.lat,
+        lon: listing.lon
+    });
+    favorites.update(favs => [...favs]); // ✅ Ensure reactivity
+};
+
 
 
   const handleCompare = async () => {
