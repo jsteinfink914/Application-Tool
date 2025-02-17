@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
   import L from 'leaflet';
   import { writable } from 'svelte/store';
+  import { tick } from 'svelte';
 
   let map;
   let markers = [];
@@ -60,18 +61,20 @@
     favorites.update(favs => [...favs]); // Force Svelte reactivity update
   };
 
- const handleCompare = () => {
+ const handleCompare = async () => {
   let data = getCompareData();
   compareListings.set(data);
 
   if (data.length > 0) {
     showComparePage.set(true);
-    setTimeout(() => {
-      initializeMap(data);
-    }, 750); // Ensures Svelte has switched the UI
+    
+    // ✅ Wait for Svelte to finish rendering
+    await tick();
+
+    console.log("Compare page fully loaded, now initializing map...");
+    initializeMap(data);
   }
 };
-
 
   onMount(() => {
     listings.subscribe(l => {
