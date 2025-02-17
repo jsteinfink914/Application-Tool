@@ -25,14 +25,17 @@
   };
 
   function initializeMap(listingsData) {
+  // Retry initialization until #map is available
   const mapContainer = document.getElementById('map');
+
   if (!mapContainer) {
-    console.warn("Map container not found, delaying initialization...");
-    setTimeout(() => initializeMap(listingsData), 500); // Retry after 500ms
+    console.warn("Map container not found, retrying...");
+    setTimeout(() => initializeMap(listingsData), 300); // Retry every 300ms
     return;
   }
 
   if (!map) {
+    console.log("Initializing map...");
     map = L.map('map').setView([40.7128, -74.0060], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
   }
@@ -45,21 +48,27 @@
       markers.push(marker);
     }
   });
+
+  map.invalidateSize(); // Ensure the map adjusts if it was hidden
 }
+
 
   const handleFavoriteToggle = (listing) => {
     toggleFavorite(listing);
     favorites.update(favs => [...favs]); // Force Svelte reactivity update
   };
 
-  const handleCompare = () => {
+ const handleCompare = () => {
   let data = getCompareData();
   compareListings.set(data);
   if (data.length > 0) {
     showComparePage.set(true);
-    setTimeout(() => initializeMap(data), 500); // Ensure map initializes after the UI updates
+    setTimeout(() => {
+      initializeMap(data);
+    }, 500); // Ensure the DOM has updated before initializing the map
   }
 };
+
 
   onMount(() => {
     listings.subscribe(l => {
