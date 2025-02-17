@@ -61,10 +61,6 @@
     favorites.update(favs => [...favs]); // Ensures reactivity
   };
 
-  function compareListings() {
-    console.log("Comparing selected listings...");
-    showMap = true; // ✅ Now correctly inside <script>
-  }
 
   const handleCompare = async () => {
     let data = getCompareData();
@@ -133,8 +129,11 @@
   {/if}
 {:else}
   <div id="container">
-    <div id="map-container">
-      <div id="map"></div>
+    {#if showMap}
+  <div id="map-container">
+    <div id="map"></div>
+  </div>
+{/if}
     </div>
     <div id="sidebar">
       <h3>Preferences</h3>
