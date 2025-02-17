@@ -44,11 +44,16 @@
   markers = [];
 
   listingsData.forEach(listing => {
-    if (listing.lat && listing.lon) {
-      const marker = L.marker([listing.lat, listing.lon]).addTo(map);
-      markers.push(marker);
-    }
-  });
+  if (listing.lat && listing.lon) {
+    console.log(`📍 Adding marker at [${listing.lat}, ${listing.lon}] for`, listing.address);
+    const marker = L.marker([listing.lat, listing.lon]).addTo(map);
+    markers.push(marker);
+  } else {
+    console.warn("⚠️ Missing lat/lon for:", listing);
+  }
+});
+  console.log("🛠️ Leaflet Map Object:", map);
+console.log("🗺️ Current Markers:", markers);
 }
 
 
