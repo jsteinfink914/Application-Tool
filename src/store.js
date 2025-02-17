@@ -59,31 +59,30 @@ async function geocodeAddress(address) {
 async function batchGeocode(listings) {
   const results = [];
   for (let i = 0; i < listings.length; i++) {
-    if (i % 5 === 0) await new Promise((r) => setTimeout(r, 10000)); // Delay every 5 requests
+    if (i % 5 === 0) await new Promise((r) => setTimeout(r, 5000)); // ✅ Increase delay to 5s
 
-    // Check cache first
     const cached = JSON.parse(localStorage.getItem(`geo_${listings[i].address}`));
     if (cached) {
       results.push({ ...listings[i], lat: cached.lat, lon: cached.lon });
       continue;
     }
 
-    // Fetch geocode
     try {
       const location = await geocodeAddress(listings[i].address);
       if (location) {
-        localStorage.setItem(`geo_${listings[i].address}`, JSON.stringify(location)); // Cache it
+        localStorage.setItem(`geo_${listings[i].address}`, JSON.stringify(location));
         results.push({ ...listings[i], lat: location.lat, lon: location.lon });
       } else {
-        results.push(listings[i]); // Keep original if failed
+        results.push({ ...listings[i], lat: null, lon: null }); // ✅ Prevents breaking UI
       }
     } catch (error) {
       console.error("Geocoding error:", error);
-      results.push(listings[i]); // Prevent app from breaking
+      results.push({ ...listings[i], lat: null, lon: null }); // ✅ Prevents breaking UI
     }
   }
   return results;
 }
+
 // Load dataset from CSV file
 async function loadListings() {
   try {
@@ -95,13 +94,14 @@ async function loadListings() {
       header: true,
       dynamicTyping: true,
       complete: async (result) => {
-        console.log("CSV Loaded:", result.data.length, "entries"); // ✅ Logs total listings
-        const limitedListings = result.data.slice(0, 10); // Limit initial listings to 30
-        console.log("Limited Listings:", limitedListings); // ✅ Logs trimmed listings
+        console.log("CSV Loaded:", result.data.length, "entries");
+        const limitedListings = result.data.slice(0, 10); // Limit to 10
+        console.log("Limited Listings:", limitedListings);
 
-        const listingsWithLatLon = await batchGeocode(limitedListings);
-        listings.set(listingsWithLatLon);
-        console.log("Listings Updated in Store:", listingsWithLatLon.length); // ✅ Logs final update
+        listings.set([]); // Ensure store is reset before updating
+        listings.update(() => limitedListings); // ✅ Ensures Svelte reactivity
+
+        console.log("Listings Updated in Store:", limitedListings.length, $listings); // Debug output
       },
       error: (error) => console.error("CSV Parsing Error:", error),
     });
