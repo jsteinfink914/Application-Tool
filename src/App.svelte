@@ -3,7 +3,7 @@
   import { toggleFavorite, getCompareData, updateUserPreferences } from './store.js';
   import { onMount, tick } from 'svelte';
   import L from 'leaflet';
-  import { writable, get } from 'svelte/store';
+  import { writable } from 'svelte/store';
 
   let map;
   let markers = [];
@@ -19,50 +19,43 @@
   let groceryStore = '';
   let gym = '';
   let showComparePage = writable(false);
-
+  
   const updatePreferences = () => {
     updateUserPreferences({ grocery: groceryStore, gym: gym });
   };
 
-  function waitForMapContainer(callback, retries = 10) {
-    const mapContainer = document.getElementById("map");
-    if (mapContainer) {
-      console.log("✅ #map found, initializing...");
-      callback();
-    } else if (retries > 0) {
-      console.warn(`🚨 #map container STILL missing! Retrying in 500ms...`);
-      setTimeout(() => waitForMapContainer(callback, retries - 1), 500);
-    } else {
-      console.error("❌ #map container never loaded, aborting.");
-    }
-  }
-
   function initializeMap(listingsData) {
+    const mapContainer = document.getElementById('map');
+
+    if (!mapContainer) {
+      console.warn("🚨 #map container missing! Retrying in 500ms...");
+      setTimeout(() => initializeMap(listingsData), 500);
+      return;
+    }
+
     if (!map) {
       console.log("✅ Initializing Leaflet map...");
       map = L.map('map').setView([40.7128, -74.0060], 12);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     }
-
+    
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
 
     listingsData.forEach(listing => {
       if (listing.lat && listing.lon) {
-        console.log(`📌 Adding marker for ${listing.address} at [${listing.lat}, ${listing.lon}]`);
+        console.log(`📌 Adding marker for ${listing.address}`);
         const marker = L.marker([listing.lat, listing.lon]).addTo(map);
         markers.push(marker);
       } else {
         console.warn(`⚠️ Missing lat/lon for:`, listing);
       }
     });
-
-    console.log("🗺️ Current Markers:", markers);
   }
 
   const handleFavoriteToggle = (listing) => {
     toggleFavorite(listing);
-    favorites.update(favs => [...favs]);
+    favorites.update(favs => [...favs]); // Ensures reactivity
   };
 
   const handleCompare = async () => {
@@ -71,17 +64,15 @@
 
     if (data.length > 0) {
       showComparePage.set(true);
-      
-      await tick(); // Ensure UI updates before initializing the map
-      
-      waitForMapContainer(() => initializeMap(data));
+      await tick(); // Ensure UI updates before initializing map
+      initializeMap(data);
     }
   };
 
   onMount(() => {
     listings.subscribe(l => {
       if (l.length > 0) {
-        waitForMapContainer(() => initializeMap(l));
+        initializeMap(l);
       }
     });
   });
@@ -89,7 +80,7 @@
 
 <style>
   @import 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
-
+  
   #container {
     display: flex;
     height: 100vh;
@@ -166,8 +157,8 @@
           <tr>
             <td>{listing.address}</td>
             {#if $selectedAttributesLocal.price} <td>{listing.price || 'N/A'}</td> {/if}
-            {#if $selectedAttributesLocal.squareFootage} <td>{listing.sq_ft || 'N/A'}</td> {/if}
-            {#if $selectedAttributesLocal.laundryInBuilding} <td>{listing["laundry in building"] || 'N/A'}</td> {/if}
+            {#if $selectedAttributesLocal.squareFootage} <td>{listing.squareFootage || 'N/A'}</td> {/if}
+            {#if $selectedAttributesLocal.laundryInBuilding} <td>{listing.laundryInBuilding || 'N/A'}</td> {/if}
             {#if $selectedAttributesLocal.doorman} <td>{listing.doorman || 'N/A'}</td> {/if}
             {#if $selectedAttributesLocal.dishwasher} <td>{listing.dishwasher || 'N/A'}</td> {/if}
           </tr>
