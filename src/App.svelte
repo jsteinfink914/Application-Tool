@@ -3,7 +3,7 @@
   import { toggleFavorite, getCompareData, updateUserPreferences } from './store.js';
   import { onMount } from 'svelte';
   import L from 'leaflet';
-  import { writable } from 'svelte/store';
+  import { writable, derived } from 'svelte/store';
 
   let map;
   let markers = [];
@@ -47,8 +47,11 @@
     compareListings.set(getCompareData());
   };
 
-  $: if (listings.length > 0) {
-    initializeMap(listings);
+  // Limit initial listings to 30
+  const limitedListings = derived(listings, ($listings) => $listings.slice(0, 30));
+
+  $: if ($limitedListings.length > 0) {
+    initializeMap($limitedListings);
   }
 </script>
 
@@ -71,7 +74,7 @@
   }
 </style>
 
-{#if listings.length === 0}
+{#if $limitedListings.length === 0}
   <p>Loading listings or no listings available...</p>
 {/if}
 
@@ -106,7 +109,7 @@
 </div>
 
 <div class="listing-container">
-  {#each listings as listing}
+  {#each $limitedListings as listing}
     <div class="listing">
       <span>{listing.address}</span>
       <button on:click={() => handleFavoriteToggle(listing)}>
