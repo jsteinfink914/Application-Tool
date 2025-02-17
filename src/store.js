@@ -5,9 +5,18 @@ export const listings = writable([]);
 export const favorites = writable([]);
 export const selectedAttributes = writable(['price', 'sq_ft', 'laundry', 'doorman', 'dishwasher']);
 export const userPreferences = writable({ grocery: '', gym: '' });
+
 // Function to update user preferences
 export function updateUserPreferences(preferences) {
   userPreferences.set(preferences);
+}
+
+// Function to toggle favorite listings
+export function toggleFavorite(listing) {
+  favorites.update(favs => {
+    const exists = favs.some(fav => fav.address === listing.address);
+    return exists ? favs.filter(fav => fav.address !== listing.address) : [...favs, listing];
+  });
 }
 
 async function geocodeAddress(address) {
