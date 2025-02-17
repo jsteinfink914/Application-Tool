@@ -41,7 +41,6 @@ export function getCompareData() {
   return compareData;
 }
 
-
 async function geocodeAddress(address) {
   const apiKey = "AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU";
   console.log(`🌍 Geocoding via Google: ${address}`);
@@ -52,8 +51,9 @@ async function geocodeAddress(address) {
     );
     const data = await response.json();
 
-    if (data.status === "OK") {
+    if (data.status === "OK" && data.results.length > 0) {
       const location = data.results[0].geometry.location;
+      console.log(`✅ Geocoded: ${address} → [${location.lat}, ${location.lng}]`);
       return { lat: location.lat, lon: location.lng };
     } else {
       console.warn(`⚠️ Google Geocode failed for: ${address}`, data);
@@ -65,11 +65,14 @@ async function geocodeAddress(address) {
   }
 }
 
+
+
 // Function to batch process geocoding (5 requests every 2 seconds)
 async function batchGeocode(listings) {
   const results = [];
+
   for (let i = 0; i < listings.length; i++) {
-    if (i % 3 === 0) await new Promise((r) => setTimeout(r, 10000)); // ✅ Increase delay to 5s
+    if (i % 3 === 0) await new Promise((r) => setTimeout(r, 3000)); // Prevent rate limits
 
     const cached = JSON.parse(localStorage.getItem(`geo_${listings[i].address}`));
     if (cached) {
@@ -83,13 +86,14 @@ async function batchGeocode(listings) {
         localStorage.setItem(`geo_${listings[i].address}`, JSON.stringify(location));
         results.push({ ...listings[i], lat: location.lat, lon: location.lon });
       } else {
-        results.push({ ...listings[i], lat: null, lon: null }); // ✅ Prevents breaking UI
+        console.warn(`⚠️ Skipping ${listings[i].address} - no lat/lon`);
       }
     } catch (error) {
-      console.error("Geocoding error:", error);
-      results.push({ ...listings[i], lat: null, lon: null }); // ✅ Prevents breaking UI
+      console.error(`🚨 Geocoding error for ${listings[i].address}:`, error);
     }
   }
+
+  console.log("✅ Geocoding complete, results:", results);
   return results;
 }
 

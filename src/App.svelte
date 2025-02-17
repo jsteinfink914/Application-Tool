@@ -1,10 +1,9 @@
 <script>
   import { listings, favorites, selectedAttributes, userPreferences } from './store.js';
   import { toggleFavorite, getCompareData, updateUserPreferences } from './store.js';
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import L from 'leaflet';
   import { writable } from 'svelte/store';
-  import { tick } from 'svelte';
 
   let map;
   let markers = [];
@@ -25,87 +24,49 @@
     updateUserPreferences({ grocery: groceryStore, gym: gym });
   };
 
- function initializeMap(listingsData) {
-  const mapContainer = document.getElementById('map');
-
-  if (!mapContainer) {
-    console.warn("🚨 #map container STILL missing! Retrying in 500ms...");
-    setTimeout(() => initializeMap(listingsData), 500);
-    return;
-  }
-
-  console.log("✅ #map found, initializing...");
-
-  if (!map) {
-    console.log("✅ Initializing Leaflet map...");
-    map = L.map('map').setView([40.7128, -74.0060], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-  }
-
-  console.log("🛠️ Leaflet Map Object:", map);
-
-  // Clear existing markers
-  markers.forEach(marker => map.removeLayer(marker));
-  markers = [];
-
-  listingsData.forEach(listing => {
-    if (listing.lat && listing.lon) {
-      console.log(`📌 Adding marker for ${listing.address}`);
-      const marker = L.marker([listing.lat, listing.lon]).addTo(map);
-      markers.push(marker);
-    } else {
-      console.warn(`⚠️ Missing lat/lon for:`, listing);
+  function initializeMap(listingsData) {
+    if (!map && document.getElementById('map')) {
+      console.log("✅ Initializing Leaflet map...");
+      map = L.map('map').setView([40.7128, -74.0060], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     }
-  });
-
-  console.log("🗺️ Current Markers:", markers);
-}
-
-
-
+    
+    if (map) {
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
+      listingsData.forEach(listing => {
+        if (listing.lat && listing.lon) {
+          console.log(`📌 Adding marker for ${listing.address}`);
+          const marker = L.marker([listing.lat, listing.lon]).addTo(map);
+          markers.push(marker);
+        } else {
+          console.warn(`⚠️ Missing lat/lon for:`, listing);
+        }
+      });
+    }
+  }
 
   const handleFavoriteToggle = (listing) => {
     toggleFavorite(listing);
-    favorites.update(favs => [...favs]); // Force Svelte reactivity update
+    favorites.update(favs => [...favs]);
   };
 
-const handleCompare = async () => {
-  let data = getCompareData();
-  compareListings.set(data);
+  const handleCompare = async () => {
+    let data = getCompareData();
+    compareListings.set(data);
 
-  if (data.length > 0) {
-    showComparePage.set(true);
-    
-    // ✅ Ensure UI is fully rendered before initializing map
-    await tick();
+    if (data.length > 0) {
+      showComparePage.set(true);
+      await tick();
 
-    // ✅ Debugging: Force-check if #map exists
-    let mapElement = document.getElementById('map');
-    console.log("Checking for #map element before initializing:", mapElement);
-
-    if (!mapElement) {
-      console.warn("⚠️ #map container STILL not found! Retrying in 500ms...");
+      // Initialize map ONLY when the compare page is shown
       setTimeout(() => {
-        mapElement = document.getElementById('map');
-        console.log("Retrying map initialization:", mapElement);
-        if (mapElement) initializeMap(data);
+        if (document.getElementById('map')) {
+          initializeMap(data);
+        }
       }, 500);
-    } else {
-      console.log("✅ #map found, initializing...");
-      initializeMap(data);
     }
-  }
-};
-
-
-
-  onMount(() => {
-    listings.subscribe(l => {
-      if (l.length > 0) {
-        initializeMap(l);
-      }
-    });
-  });
+  };
 </script>
 
 <style>
