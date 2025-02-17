@@ -75,14 +75,19 @@
 };
 
   onMount(() => {
-    listings.subscribe(l => {
-        if ($showComparePage && l.length > 0 && l.some(item => item.lat && item.lon)) { 
-            console.log("✅ Initializing Leaflet map with:", l);
-            initializeMap(l);
-        } else {
-            console.warn("⚠️ Map not initialized - missing lat/lon or compare page not active.");
-        }
-    });
+  listings.subscribe(l => {
+    if (l.length > 0) {
+      console.log("✅ Listings loaded, checking if map should initialize...");
+      if ($showComparePage && l.some(item => item.lat && item.lon)) { 
+        console.log("✅ Initializing Leaflet map with:", l);
+        initializeMap(l);
+      } else {
+        console.warn("⚠️ Map not initialized - missing lat/lon or compare page not active.");
+      }
+    } else {
+      console.warn("⚠️ Listings not yet loaded.");
+    }
+  });
 });
 
 </script>
@@ -119,23 +124,21 @@
 </style>
 
 {#if !$showComparePage}  <!-- ❌ Missing `$` -->
+  {#if $listings.length > 0}
   <div class="listing-container">
-    {#each $listings as listing}
+    {#each $listings as listing (listing.address)}
       <div class="listing">
         <span>{listing.address}</span>
-        <button on:click={() => { 
-            handleFavoriteToggle(listing); 
-            favorites.update(favs => [...favs]);  // ✅ Force UI update
-          }}>
-            {#if $favorites.some(fav => fav.address === listing.address)} 
-              ❤️  
-            {:else} 
-              ♡  
-            {/if}
-          </button>
+        <button on:click={() => handleFavoriteToggle(listing)}>
+          {#if $favorites.some(fav => fav.address === listing.address)} ❤️ {:else} ♡ {/if}
+        </button>
       </div>
     {/each}
   </div>
+{:else}
+  <p>⚠️ No listings found. Check logs.</p> <!-- ✅ Debugging message -->
+{/if}
+
   {#if $favorites && $favorites.length >= 3}
     <button class="compare-button" on:click={handleCompare}>Compare</button>
   {:else}
