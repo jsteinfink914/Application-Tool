@@ -1,20 +1,6 @@
 
     
-    function compareListings() {
-        // Example logic for retrieving and comparing selected listings
-        console.log("Comparing selected listings...");
-        showMap = true; // Ensure map is displayed
-    }
-    
-    
-
-    function handleCompare() {
-        compareListings();
-        showMap = true;
-    }
-    
-let showMap = false;
-<script>
+   <script>
   import { listings, favorites, selectedAttributes, userPreferences } from './store.js';
   import { toggleFavorite, getCompareData, updateUserPreferences } from './store.js';
   import { onMount, tick } from 'svelte';
@@ -35,7 +21,8 @@ let showMap = false;
   let groceryStore = '';
   let gym = '';
   let showComparePage = writable(false);
-  
+  let showMap = false; // ✅ Moved inside <script>
+
   const updatePreferences = () => {
     updateUserPreferences({ grocery: groceryStore, gym: gym });
   };
@@ -74,12 +61,18 @@ let showMap = false;
     favorites.update(favs => [...favs]); // Ensures reactivity
   };
 
+  function compareListings() {
+    console.log("Comparing selected listings...");
+    showMap = true; // ✅ Now correctly inside <script>
+  }
+
   const handleCompare = async () => {
     let data = getCompareData();
     compareListings.set(data);
 
     if (data.length > 0) {
       showComparePage.set(true);
+      showMap = true; // ✅ This will now correctly show the map
       await tick(); // Ensure UI updates before initializing map
       initializeMap(data);
     }
@@ -93,6 +86,7 @@ let showMap = false;
     });
   });
 </script>
+
 
 <style>
   @import 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
