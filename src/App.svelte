@@ -53,7 +53,8 @@
   $: if ($limitedListings.length > 0) {
     initializeMap($limitedListings);
   }
-</script>
+  
+   $: console.log("Rendered Listings:", $listings);
 
 <style>
    @import 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';

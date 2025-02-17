@@ -59,7 +59,7 @@ async function geocodeAddress(address) {
 async function batchGeocode(listings) {
   const results = [];
   for (let i = 0; i < listings.length; i++) {
-    if (i % 5 === 0) await new Promise((r) => setTimeout(r, 2000)); // Delay every 5 requests
+    if (i % 5 === 0) await new Promise((r) => setTimeout(r, 10000)); // Delay every 5 requests
 
     // Check cache first
     const cached = JSON.parse(localStorage.getItem(`geo_${listings[i].address}`));
