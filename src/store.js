@@ -3,7 +3,7 @@ import Papa from 'papaparse';
 
 export const listings = writable([]);
 export const favorites = writable([]);
-export const selectedAttributes = writable(['price', 'sq_ft', 'laundry', 'doorman', 'dishwasher']);
+export const selectedAttributes = writable(['price', 'sq_ft', 'laundry in building', 'doorman', 'dishwasher']);
 export const userPreferences = writable({ grocery: '', gym: '' });
 
 // Function to update user preferences
@@ -22,18 +22,24 @@ export function toggleFavorite(listing) {
 // Function to get comparison data from favorites
 export function getCompareData() {
   let compareData = [];
-  favorites.subscribe(favs => {
-    compareData = favs.map(listing => {
-      return selectedAttributes.subscribe(attrs => {
-        return attrs.reduce((acc, attr) => {
-          acc[attr] = listing[attr];
-          return acc;
-        }, {});
-      });
+
+  // Get current selected attributes
+  const attrs = get(selectedAttributes);
+
+  // Get the current favorite listings
+  const favs = get(favorites);
+
+  compareData = favs.map(listing => {
+    let formattedListing = { address: listing.address }; // Always include address
+    attrs.forEach(attr => {
+      formattedListing[attr] = listing[attr] !== undefined ? listing[attr] : 'N/A';
     });
+    return formattedListing;
   });
+
   return compareData;
 }
+
 
 async function geocodeAddress(address) {
   // Check local storage first
