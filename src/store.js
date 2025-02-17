@@ -96,7 +96,7 @@ async function loadListings() {
       dynamicTyping: true,
       complete: async (result) => {
         console.log("CSV Loaded:", result.data.length, "entries"); // ✅ Logs total listings
-        const limitedListings = result.data.slice(0, 30); // Limit initial listings to 30
+        const limitedListings = result.data.slice(0, 10); // Limit initial listings to 30
         console.log("Limited Listings:", limitedListings); // ✅ Logs trimmed listings
 
         const listingsWithLatLon = await batchGeocode(limitedListings);
