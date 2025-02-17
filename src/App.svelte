@@ -67,21 +67,23 @@
     compareListings.set(data);
 
     if (data.length > 0) {
-      showComparePage.set(true);
-      showMap = true; // ✅ This will now correctly show the map
-      await tick(); // Ensure UI updates before initializing map
-      initializeMap(data);
+        showComparePage.set(true);
+        showMap = true;
+        await tick(); // ✅ Wait for UI to update
+        initializeMap(data); // ✅ Now the #map div exists
     }
-  };
+};
 
   onMount(() => {
     listings.subscribe(l => {
-      if (l.length > 0) {
-        initializeMap(l);
-      }
+        if (l.length > 0 && $showComparePage) { // ✅ Only initialize if comparing
+            initializeMap(l);
+        }
     });
-  });
+});
+
 </script>
+
 
 
 <style>
