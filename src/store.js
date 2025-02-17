@@ -69,33 +69,31 @@ async function geocodeAddress(address) {
 
 // Function to batch process geocoding (5 requests every 2 seconds)
 async function batchGeocode(listings) {
-  const results = [];
+  const results = await Promise.all(
+    listings.map(async (listing) => {
+      if (listing.lat && listing.lon) return listing; // Skip if already geocoded
 
-  for (let i = 0; i < listings.length; i++) {
-    if (i % 3 === 0) await new Promise((r) => setTimeout(r, 3000)); // Prevent rate limits
-
-    const cached = JSON.parse(localStorage.getItem(`geo_${listings[i].address}`));
-    if (cached) {
-      results.push({ ...listings[i], lat: cached.lat, lon: cached.lon });
-      continue;
-    }
-
-    try {
-      const location = await geocodeAddress(listings[i].address);
-      if (location) {
-        localStorage.setItem(`geo_${listings[i].address}`, JSON.stringify(location));
-        results.push({ ...listings[i], lat: location.lat, lon: location.lon });
-      } else {
-        console.warn(`⚠️ Skipping ${listings[i].address} - no lat/lon`);
+      try {
+        console.log(`🌍 Geocoding via Google: ${listing.address}`);
+        const location = await geocodeAddress(listing.address);
+        
+        if (location) {
+          return { ...listing, lat: location.lat, lon: location.lon };
+        } else {
+          console.warn(`⚠️ Google Geocode failed for: ${listing.address}`);
+          return listing; // Return original if geocode fails
+        }
+      } catch (error) {
+        console.error(`🚨 Geocoding error: ${error}`);
+        return listing;
       }
-    } catch (error) {
-      console.error(`🚨 Geocoding error for ${listings[i].address}:`, error);
-    }
-  }
+    })
+  );
 
-  console.log("✅ Geocoding complete, results:", results);
-  return results;
+  console.log("✅ Geocoding Complete. Updating Store...");
+  listings.set(results);  // ✅ Ensure reactivity
 }
+
 
 // Load dataset from CSV file
 async function loadListings() {
