@@ -24,7 +24,7 @@
     updateUserPreferences({ grocery: groceryStore, gym: gym });
   };
 
-  function initializeMap($listings) {
+  function initializeMap(listings) {
     if (!map) {
       map = L.map(document.getElementById('map')).setView([40.7128, -74.0060], 12);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -54,7 +54,7 @@
 
   onMount(() => {
     setTimeout(() => {
-      if ($listings && $listings.length > 0) {
+      if (listings && listings.length > 0) {
         initializeMap($listings);
       }
     }, 500);
