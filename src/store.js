@@ -19,6 +19,22 @@ export function toggleFavorite(listing) {
   });
 }
 
+// Function to get comparison data from favorites
+export function getCompareData() {
+  let compareData = [];
+  favorites.subscribe(favs => {
+    compareData = favs.map(listing => {
+      return selectedAttributes.subscribe(attrs => {
+        return attrs.reduce((acc, attr) => {
+          acc[attr] = listing[attr];
+          return acc;
+        }, {});
+      });
+    });
+  });
+  return compareData;
+}
+
 async function geocodeAddress(address) {
   // Check local storage first
   const cached = JSON.parse(localStorage.getItem(`geo_${address}`));
