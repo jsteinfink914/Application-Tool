@@ -25,36 +25,42 @@
     updateUserPreferences({ grocery: groceryStore, gym: gym });
   };
 
-  function initializeMap(listingsData) {
+ function initializeMap(listingsData) {
   const mapContainer = document.getElementById('map');
-  
+
   if (!mapContainer) {
-    console.warn("🚨 #map container STILL missing! Aborting initialization...");
+    console.warn("🚨 #map container STILL missing! Retrying in 500ms...");
+    setTimeout(() => initializeMap(listingsData), 500);
     return;
   }
 
-  console.log("✅ Initializing Leaflet map...");
-  
+  console.log("✅ #map found, initializing...");
+
   if (!map) {
+    console.log("✅ Initializing Leaflet map...");
     map = L.map('map').setView([40.7128, -74.0060], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
   }
 
+  console.log("🛠️ Leaflet Map Object:", map);
+
+  // Clear existing markers
   markers.forEach(marker => map.removeLayer(marker));
   markers = [];
 
   listingsData.forEach(listing => {
-  if (listing.lat && listing.lon) {
-    console.log(`📍 Adding marker at [${listing.lat}, ${listing.lon}] for`, listing.address);
-    const marker = L.marker([listing.lat, listing.lon]).addTo(map);
-    markers.push(marker);
-  } else {
-    console.warn("⚠️ Missing lat/lon for:", listing);
-  }
-});
-  console.log("🛠️ Leaflet Map Object:", map);
-console.log("🗺️ Current Markers:", markers);
+    if (listing.lat && listing.lon) {
+      console.log(`📌 Adding marker for ${listing.address}`);
+      const marker = L.marker([listing.lat, listing.lon]).addTo(map);
+      markers.push(marker);
+    } else {
+      console.warn(`⚠️ Missing lat/lon for:`, listing);
+    }
+  });
+
+  console.log("🗺️ Current Markers:", markers);
 }
+
 
 
 

@@ -43,28 +43,34 @@ export function getCompareData() {
 
 
 async function geocodeAddress(address) {
-  // Check local storage first
+  console.log(`🌍 Geocoding: ${address}`);
+
+  // Check if already cached
   const cached = JSON.parse(localStorage.getItem(`geo_${address}`));
-  if (cached) return cached;
+  if (cached) {
+    console.log(`✅ Cached Geocode Found: ${address}`, cached);
+    return cached;
+  }
 
   try {
-    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+    );
     const data = await response.json();
 
     if (data.length > 0) {
-      console.log(`📍 Found Geocode: ${data[0].lat}, ${data[0].lon}`);
       const location = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
-      localStorage.setItem(`geo_${address}`, JSON.stringify(location)); // Store result
+      localStorage.setItem(`geo_${address}`, JSON.stringify(location));
+      console.log(`📍 Found Geocode:`, location);
       return location;
-    }else {
+    } else {
       console.warn(`⚠️ No geocode result for: ${address}`);
       return null;
-  } 
-}catch (error) {
-    console.warn(`⚠️ No geocode result for: ${address}`);
-    console.error("Geocoding error:", error);
+    }
+  } catch (error) {
+    console.error(`🚨 Geocoding error for ${address}:`, error);
+    return null;
   }
-  return null;
 }
 
 // Function to batch process geocoding (5 requests every 2 seconds)
@@ -106,21 +112,30 @@ async function loadListings() {
       header: true,
       dynamicTyping: true,
       complete: async (result) => {
-        console.log("CSV Loaded:", result.data.length, "entries");
-        const limitedListings = result.data.slice(0, 10); // Limit to 10
-        console.log("Limited Listings:", limitedListings);
+        console.log(`📊 CSV Loaded: ${result.data.length} entries`);
+        const limitedListings = result.data.slice(0, 10);
+        console.log(`🔹 Limited Listings:`, limitedListings);
 
-        listings.set([]); // Ensure store is reset before updating
-        listings.update(() => limitedListings); // ✅ Ensures Svelte reactivity
+        const listingsWithLatLon = await Promise.all(
+          limitedListings.map(async (listing) => {
+            if (!listing.lat || !listing.lon) {
+              const location = await geocodeAddress(listing.address);
+              return location ? { ...listing, lat: location.lat, lon: location.lon } : listing;
+            }
+            return listing;
+          })
+        );
 
-        console.log("Listings Updated in Store:", limitedListings.length, listings); // Debug output
+        listings.set(listingsWithLatLon);
+        console.log("✅ Listings Updated in Store:", listingsWithLatLon);
       },
-      error: (error) => console.error("CSV Parsing Error:", error),
+      error: (error) => console.error("❌ CSV Parsing Error:", error),
     });
   } catch (error) {
-    console.error("Error loading listings:", error);
+    console.error("🚨 Error loading listings:", error);
   }
 }
+
 
 // Load data when store initializes
 loadListings();
