@@ -147,7 +147,6 @@
       <input type="checkbox" bind:checked={$selectedAttributesLocal.doorman} /> Doorman
       <input type="checkbox" bind:checked={$selectedAttributesLocal.dishwasher} /> Dishwasher
     </div>
-  </div>
   <div class="listing-details">
     <h3>Comparison</h3>
     <table>
