@@ -68,11 +68,16 @@
 
     if (data.length > 0) {
         showComparePage.set(true);
-        showMap.set(true);
-        await tick(); // ✅ Wait for UI to update
-        initializeMap(data); // ✅ Now the #map div exists
+        showMap = true;
+        await tick(); // ✅ Wait for UI to update first
+        console.log("🔍 Final Compare Data:", $compareListings);
+        
+        setTimeout(() => { // ✅ Ensure #map exists before initializing
+            initializeMap($compareListings);
+        }, 500);
     }
 };
+
 
   onMount(() => {
   listings.subscribe(l => {
