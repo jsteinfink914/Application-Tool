@@ -145,7 +145,7 @@
     <div class="listing">
       <span>{listing.address}</span>
       <button on:click={() => handleFavoriteToggle(listing)}>
-        {#if $favorites.includes(listing)} ♥ {#else} ♡ {/if}
+        {#if $favorites && $favorites.includes(listing)} ♥ {:else} ♡ {/if}
       </button>
     </div>
   {/each}
