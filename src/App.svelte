@@ -1,6 +1,6 @@
 <script>
-  import { listings, favorites, selectedAttributes, userPreferences } from './store';
-  import { toggleFavorite, getCompareData, updateUserPreferences } from './store';
+  import { listings, favorites, selectedAttributes, userPreferences } from './store.js';
+  import { toggleFavorite, getCompareData, updateUserPreferences } from './store.js';
   import { onMount } from 'svelte';
   import L from 'leaflet';
   import { writable } from 'svelte/store';
@@ -16,6 +16,7 @@
     dishwasher: true,
   });
 
+  $: selectedAttributesLocalValue = $selectedAttributesLocal;
   // Sidebar input for grocery store and gym
   let groceryStore = '';
   let gym = '';
@@ -26,9 +27,13 @@
 
   // Initialize map with markers
   function initializeMap(listings) {
-    map = L.map('map').setView([40.7128, -74.0060], 12);  // Center map at NYC coordinates
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    if (!map) {
+      map = L.map('map').setView([40.7128, -74.0060], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    }
 
+    markers.forEach(marker => map.removeLayer(marker));
+    markers = [];
     listings.forEach(listing => {
       if (listing.lat && listing.lon) {
         const marker = L.marker([listing.lat, listing.lon]).addTo(map);
@@ -36,7 +41,6 @@
       }
     });
   }
-
   // Toggle favorite logic
   const handleFavoriteToggle = (listing) => {
     toggleFavorite(listing);
@@ -51,13 +55,19 @@
   };
 
   onMount(() => {
-    // Initialize map with all listings at the start
-    initializeMap(listings);
+    console.log("Listings:", listings);
+    console.log("Favorites:", favorites);
+    console.log("Selected Attributes:", selectedAttributes);
+    setTimeout(() => {
+      if (listings.length > 0) {
+        initializeMap(listings);
+      }
+    }, 500);
   });
-
 </script>
 
 <style>
+   @import 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
   /* Add basic styling for the sidebar, map, and compare page */
   #sidebar {
     position: fixed;
