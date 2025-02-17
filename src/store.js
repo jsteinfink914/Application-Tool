@@ -5,6 +5,10 @@ export const listings = writable([]);
 export const favorites = writable([]);
 export const selectedAttributes = writable(['price', 'sq_ft', 'laundry', 'doorman', 'dishwasher']);
 export const userPreferences = writable({ grocery: '', gym: '' });
+// Function to update user preferences
+export function updateUserPreferences(preferences) {
+  userPreferences.set(preferences);
+}
 
 async function geocodeAddress(address) {
   // Check local storage first
