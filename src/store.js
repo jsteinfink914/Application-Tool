@@ -132,12 +132,19 @@ async function loadListings() {
 
         console.log(`📊 CSV Loaded: ${result.data.length} entries`);
         const limitedListings = result.data.slice(0, 10);
-        console.log(`🔹 Limited Listings:`, limitedListings);
+        console.log(`🔹 Limited Listings Before Geocode:`, limitedListings);
 
         const listingsWithLatLon = await batchGeocode(limitedListings);
-        listings.set(listingsWithLatLon ?? []);  // ✅ Ensure `listings` is never undefined
 
-        console.log(`✅ Listings Updated in Store:`, listingsWithLatLon);
+        console.log(`✅ Final geocoded listings before storing:`, listingsWithLatLon);
+
+        if (!Array.isArray(listingsWithLatLon) || listingsWithLatLon.length === 0) {
+          console.error("🚨 No valid listings with lat/lon found!");
+          return;
+        }
+
+        listings.set(listingsWithLatLon);  // ✅ Ensure valid data is stored
+        console.log(`✅ Listings Updated in Store:`, get(listings)); // ✅ Confirm it is updated
       },
       error: (error) => console.error("🚨 CSV Parsing Error:", error),
     });
