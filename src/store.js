@@ -19,9 +19,15 @@ export function updateUserPreferences(preferences) {
 export function toggleFavorite(listing) {
   favorites.update(favs => {
     const exists = favs.some(fav => fav.address === listing.address);
-    return exists ? favs.filter(fav => fav.address !== listing.address) : [...favs, listing];
+    const updatedFavs = exists 
+      ? favs.filter(fav => fav.address !== listing.address) 
+      : [...favs, { ...listing }]; // Ensure new objects are stored
+
+    console.log("❤️ Updated Favorites:", updatedFavs); // ✅ Log updates
+    return updatedFavs;
   });
 }
+
 
 /**
  * Extract selected attributes for comparison
@@ -119,11 +125,17 @@ async function loadListings() {
       dynamicTyping: true,
       complete: async (result) => {
         console.log(`📊 CSV Loaded: ${result.data.length} entries`);
-        const limitedListings = result.data.slice(0, 10); // Limit listings for performance
+        const limitedListings = result.data.slice(0, 10);
         console.log(`🔹 Limited Listings:`, limitedListings);
 
         const listingsWithLatLon = await batchGeocode(limitedListings);
-        listings.set(listingsWithLatLon); // Store final listings with lat/lon
+
+        // Preserve favorites after updating listings
+        favorites.update(favs => 
+          favs.map(fav => listingsWithLatLon.find(l => l.address === fav.address) || fav)
+        );
+
+        listings.set(listingsWithLatLon);
         console.log(`✅ Listings Updated in Store:`, listingsWithLatLon);
       },
       error: (error) => console.error("🚨 CSV Parsing Error:", error),
@@ -132,6 +144,7 @@ async function loadListings() {
     console.error("🚨 Error loading listings:", error);
   }
 }
+
 
 // Load listings on startup
 loadListings();
