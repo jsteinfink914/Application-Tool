@@ -1,5 +1,5 @@
 <script>
-  import { $listings, favorites, selectedAttributes, userPreferences } from './store.js';
+  import { listings, favorites, selectedAttributes, userPreferences } from './store.js';
   import { toggleFavorite, getCompareData, updateUserPreferences } from './store.js';
   import { onMount } from 'svelte';
   import L from 'leaflet';
