@@ -3,11 +3,11 @@
   import { toggleFavorite, getCompareData, updateUserPreferences } from './store.js';
   import { onMount } from 'svelte';
   import L from 'leaflet';
-  import { writable, derived } from 'svelte/store';
+  import { writable } from 'svelte/store';
 
   let map;
   let markers = [];
-  let compareListings = writable([]);
+  let compareListings = [];
   let selectedAttributesLocal = writable({
     price: true,
     squareFootage: true,
@@ -16,11 +16,13 @@
     dishwasher: true,
   });
 
+  $: selectedAttributesLocalValue = $selectedAttributesLocal;
+  
   let groceryStore = '';
   let gym = '';
   
   const updatePreferences = () => {
-    updateUserPreferences(groceryStore, gym);
+    updateUserPreferences({ grocery: groceryStore, gym: gym });
   };
 
   function initializeMap(listings) {
@@ -44,21 +46,27 @@
   };
 
   const handleCompare = () => {
-    compareListings.set(getCompareData());
+    compareListings = getCompareData();
+    if (compareListings.length > 0) {
+      initializeMap(compareListings);
+    }
   };
 
-  // Limit initial listings to 30
-  const limitedListings = derived(listings, ($listings) => $listings.slice(0, 30));
-
-  $: if ($limitedListings.length > 0) {
-    initializeMap($limitedListings);
-  }
-  
-   $: console.log("Rendered Listings:", $listings);
+  onMount(() => {
+    console.log("Listings:", $listings);
+    console.log("Favorites:", $favorites);
+    console.log("Selected Attributes:", $selectedAttributes);
+    setTimeout(() => {
+      if ($listings.length > 0) {
+        initializeMap($listings);
+      }
+    }, 500);
+  });
+</script>
 
 <style>
-   @import 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
-
+  @import 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
+  
   #sidebar {
     position: fixed;
     top: 0;
@@ -73,11 +81,32 @@
     height: 100vh;
     width: 100%;
   }
-</style>
 
-{#if $limitedListings.length === 0}
-  <p>Loading listings or no listings available...</p>
-{/if}
+  .listing {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+
+  .favorites-list {
+    margin-top: 20px;
+  }
+
+  .compare-button {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .listing-details {
+    margin: 20px 0;
+  }
+</style>
 
 <div id="map"></div>
 
@@ -86,6 +115,7 @@
   <label for="grocery-store">Favorite Grocery Store:</label>
   <input type="text" id="grocery-store" bind:value={groceryStore} placeholder="Enter grocery store" />
   <br />
+
   <label for="gym">Favorite Gym:</label>
   <input type="text" id="gym" bind:value={gym} placeholder="Enter gym" />
   <br />
@@ -104,23 +134,24 @@
     <input type="checkbox" bind:checked={$selectedAttributesLocal.dishwasher} /> Dishwasher
     <br />
   </div>
+
   {#if $favorites.length > 1}
     <button class="compare-button" on:click={handleCompare}>Compare</button>
   {/if}
 </div>
 
 <div class="listing-container">
-  {#each $limitedListings as listing}
+  {#each $listings as listing}
     <div class="listing">
       <span>{listing.address}</span>
       <button on:click={() => handleFavoriteToggle(listing)}>
-        {favorites.includes(listing) ? '♥' : '♡'}
+        {#if $favorites.includes(listing)} ♥ {#else} ♡ {/if}
       </button>
     </div>
   {/each}
 </div>
 
-{#if $compareListings.length > 0}
+{#if compareListings.length > 0}
   <div class="listing-details">
     <h3>Comparison</h3>
     <table>
@@ -129,13 +160,13 @@
           <th>Address</th>
           {#if $selectedAttributesLocal.price} <th>Price</th> {/if}
           {#if $selectedAttributesLocal.squareFootage} <th>Sq Ft</th> {/if}
-          {#if $selectedAttributesLocal.laundryInBuilding} <th>Laundry</th> {/if}
+          {#if $selectedAttributesLocal.laundryInBuilding} <th>Laundry in Building</th> {/if}
           {#if $selectedAttributesLocal.doorman} <th>Doorman</th> {/if}
           {#if $selectedAttributesLocal.dishwasher} <th>Dishwasher</th> {/if}
         </tr>
       </thead>
       <tbody>
-        {#each $compareListings as listing}
+        {#each compareListings as listing}
           <tr>
             <td>{listing.address}</td>
             {#if $selectedAttributesLocal.price} <td>{listing.price}</td> {/if}
