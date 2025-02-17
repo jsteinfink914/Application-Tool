@@ -1,3 +1,18 @@
+
+    function compareListings() {
+        // Example logic for retrieving and comparing selected listings
+        console.log("Comparing selected listings...");
+        
+        // Ensure showMap updates after comparison
+        showMap = true;
+    }
+    
+
+    function handleCompare() {
+        compareListings();
+        showMap = true;
+    }
+    
 let showMap = false;
 <script>
   import { listings, favorites, selectedAttributes, userPreferences } from './store.js';
