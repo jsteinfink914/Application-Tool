@@ -53,12 +53,13 @@
   };
 
   const handleCompare = () => {
-    let data = getCompareData();
-    compareListings.set(data);
-    if (data.length > 0) {
-      showComparePage.set(true);
-    }
-  };
+  let data = getCompareData();
+  compareListings.set(data);
+  if (data.length > 0) {
+    showComparePage.set(true);
+    setTimeout(() => initializeMap(data), 500); // Ensure map initializes after the UI updates
+  }
+};
 
   onMount(() => {
     listings.subscribe(l => {
