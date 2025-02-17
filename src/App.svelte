@@ -21,7 +21,7 @@
   let groceryStore = '';
   let gym = '';
   let showComparePage = writable(false);
-  let showMap = false; // ✅ Moved inside <script>
+  let showMap = writable(false); // ✅ Moved inside <script>
 
   const updatePreferences = () => {
     updateUserPreferences({ grocery: groceryStore, gym: gym });
@@ -68,7 +68,7 @@
 
     if (data.length > 0) {
         showComparePage.set(true);
-        showMap = true;
+        showMap.set(true);
         await tick(); // ✅ Wait for UI to update
         initializeMap(data); // ✅ Now the #map div exists
     }
@@ -118,20 +118,30 @@
   }
 </style>
 
-{#if !$showComparePage}
+{#if !$showComparePage}  <!-- ❌ Missing `$` -->
   <div class="listing-container">
     {#each $listings as listing}
       <div class="listing">
         <span>{listing.address}</span>
-        <button on:click={() => handleFavoriteToggle(listing)}>
-          {#if $favorites.some(fav => fav.address === listing.address)} ♥ {:else} ♡ {/if}
-        </button>
+        <button on:click={() => { 
+            handleFavoriteToggle(listing); 
+            favorites.update(favs => [...favs]);  // ✅ Force UI update
+          }}>
+            {#if $favorites.some(fav => fav.address === listing.address)} 
+              ❤️  
+            {:else} 
+              ♡  
+            {/if}
+          </button>
       </div>
     {/each}
   </div>
-  {#if $favorites.length >= 3}
+  {#if $favorites && $favorites.length >= 3}
     <button class="compare-button" on:click={handleCompare}>Compare</button>
+  {:else}
+    <p>⚠️ Select at least 3 favorites to compare.</p> <!-- ✅ Debugging text -->
   {/if}
+
 {:else}
   <div id="container">
     {#if showMap}

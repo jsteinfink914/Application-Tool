@@ -19,14 +19,15 @@ export function updateUserPreferences(preferences) {
 export function toggleFavorite(listing) {
   favorites.update(favs => {
     const exists = favs.some(fav => fav.address === listing.address);
-    const updatedFavs = exists 
-      ? favs.filter(fav => fav.address !== listing.address) 
-      : [...favs, { ...listing }]; // Ensure new objects are stored
+    const updatedFavs = exists
+      ? favs.filter(fav => fav.address !== listing.address)
+      : [...favs, { ...listing }];
 
-    console.log("❤️ Updated Favorites:", updatedFavs); // ✅ Log updates
-    return updatedFavs;
+    console.log("❤️ Updated Favorites:", updatedFavs);
+    return [...updatedFavs];  // ✅ Forces Svelte reactivity
   });
 }
+
 
 
 /**
@@ -124,18 +125,18 @@ async function loadListings() {
       header: true,
       dynamicTyping: true,
       complete: async (result) => {
+        if (!result.data || result.data.length === 0) {
+          console.error("🚨 CSV data is empty or invalid!");
+          return;
+        }
+
         console.log(`📊 CSV Loaded: ${result.data.length} entries`);
         const limitedListings = result.data.slice(0, 10);
         console.log(`🔹 Limited Listings:`, limitedListings);
 
         const listingsWithLatLon = await batchGeocode(limitedListings);
+        listings.set(listingsWithLatLon ?? []);  // ✅ Ensure `listings` is never undefined
 
-        // Preserve favorites after updating listings
-        favorites.update(favs => 
-          favs.map(fav => listingsWithLatLon.find(l => l.address === fav.address) || fav)
-        );
-
-        listings.set(listingsWithLatLon);
         console.log(`✅ Listings Updated in Store:`, listingsWithLatLon);
       },
       error: (error) => console.error("🚨 CSV Parsing Error:", error),
