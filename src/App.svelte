@@ -69,25 +69,28 @@
   };
 
   onMount(() => {
-  listings.subscribe(l => {
-    console.log("✅ Listings Updated in Store:", l);
+  listings.subscribe(async (l) => {
+    console.log("🔄 Listings Store Updated:", l);
 
-    // ✅ Ensure lat/lon exists before initializing the map
+    // ✅ Ensure all listings have lat/lon before initializing the map
     if (l.length > 0 && l.every(item => item.lat && item.lon)) {
       console.log("✅ All Listings Have lat/lon, Initializing Map...");
-      
+
+      // ✅ Ensure Svelte processes the store update fully
       await tick();
 
-      listings.set([]); 
+      // ✅ Force reactivity by resetting and restoring the store
+      listings.set([]);
       await new Promise(r => setTimeout(r, 50));  // Short delay
-      listings.set(l);  
+      listings.set(l);
 
-      initializeMap(l);
+      initializeMap(l); // 🔥 Now the map should only run with fresh lat/lon
     } else {
       console.warn("⚠️ Listings still missing lat/lon, delaying map initialization...");
     }
   });
 });
+
 </script>
 
 <style>
