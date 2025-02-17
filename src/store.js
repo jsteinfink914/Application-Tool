@@ -1,103 +1,102 @@
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import Papa from 'papaparse';
-import { get } from 'svelte/store'; 
 
 export const listings = writable([]);
 export const favorites = writable([]);
-export const selectedAttributes = writable(['price', 'sq_ft', 'laundry in building', 'doorman', 'dishwasher']);
+export const selectedAttributes = writable(['price', 'sq_ft', 'laundry', 'doorman', 'dishwasher']);
 export const userPreferences = writable({ grocery: '', gym: '' });
 
-// Function to update user preferences
+/**
+ * Function to update user preferences
+ */
 export function updateUserPreferences(preferences) {
   userPreferences.set(preferences);
 }
 
-// Function to toggle favorite listings
+/**
+ * Toggle a listing as a favorite
+ */
 export function toggleFavorite(listing) {
   favorites.update(favs => {
     const exists = favs.some(fav => fav.address === listing.address);
-    return exists ? favs.filter(fav => fav.address !== listing.address) : [...favs, { ...listing }];
+    return exists ? favs.filter(fav => fav.address !== listing.address) : [...favs, listing];
   });
-};
+}
 
-// Function to get comparison data from favorites
+/**
+ * Extract selected attributes for comparison
+ */
 export function getCompareData() {
-  let compareData = [];
-
-  // Get current selected attributes
+  const favs = get(favorites);
   const attrs = get(selectedAttributes);
 
-  // Get the current favorite listings
-  const favs = get(favorites);
-
-  compareData = favs.map(listing => {
-    let formattedListing = { address: listing.address }; // Always include address
+  return favs.map(listing => {
+    let selectedData = { address: listing.address };
     attrs.forEach(attr => {
-      formattedListing[attr] = listing[attr] !== undefined ? listing[attr] : 'N/A';
+      selectedData[attr] = listing[attr] ?? 'N/A'; // Handle missing attributes
     });
-    return formattedListing;
+    return selectedData;
   });
-
-  return compareData;
 }
 
+/**
+ * Geocode an address using Google API
+ */
 async function geocodeAddress(address) {
-  const apiKey = "AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU";
-  console.log(`🌍 Geocoding via Google: ${address}`);
+  const cacheKey = `geo_${address}`;
+  const cached = JSON.parse(localStorage.getItem(cacheKey));
+  if (cached) return cached;
 
   try {
-    const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
-    );
+    const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU`);
     const data = await response.json();
 
-    if (data.status === "OK" && data.results.length > 0) {
-      const location = data.results[0].geometry.location;
-      console.log(`✅ Geocoded: ${address} → [${location.lat}, ${location.lng}]`);
-      return { lat: location.lat, lon: location.lng };
-    } else {
-      console.warn(`⚠️ Google Geocode failed for: ${address}`, data);
-      return null;
+    if (data.results.length > 0) {
+      const location = {
+        lat: data.results[0].geometry.location.lat,
+        lon: data.results[0].geometry.location.lng
+      };
+      localStorage.setItem(cacheKey, JSON.stringify(location)); // Cache result
+      return location;
     }
   } catch (error) {
-    console.error(`🚨 Google Geocoding error for ${address}:`, error);
-    return null;
+    console.error(`🚨 Geocoding error for ${address}:`, error);
   }
+  return null;
 }
 
+/**
+ * Batch process geocoding with rate limiting
+ */
+async function batchGeocode(listingsData) {
+  const results = [];
+  for (let i = 0; i < listingsData.length; i++) {
+    if (i % 5 === 0) await new Promise(r => setTimeout(r, 3000)); // Rate limit
 
+    const cached = JSON.parse(localStorage.getItem(`geo_${listingsData[i].address}`));
+    if (cached) {
+      results.push({ ...listingsData[i], lat: cached.lat, lon: cached.lon });
+      continue;
+    }
 
-// Function to batch process geocoding (5 requests every 2 seconds)
-async function batchGeocode(listings) {
-  const updatedListings = await Promise.all(
-    listings.map(async (listing) => {
-      if (listing.lat && listing.lon) return listing; // ✅ Skip already geocoded listings
-
-      try {
-        console.log(`🌍 Geocoding via Google: ${listing.address}`);
-        const location = await geocodeAddress(listing.address);
-
-        if (location) {
-          return { ...listing, lat: location.lat, lon: location.lon };
-        } else {
-          console.warn(`⚠️ Google Geocode failed for: ${listing.address}`);
-          return listing; // ✅ Return unchanged listing if geocode fails
-        }
-      } catch (error) {
-        console.error(`🚨 Geocoding error: ${error}`);
-        return listing;
+    try {
+      const location = await geocodeAddress(listingsData[i].address);
+      if (location) {
+        results.push({ ...listingsData[i], lat: location.lat, lon: location.lon });
+      } else {
+        results.push(listingsData[i]); // Keep original if failed
       }
-    })
-  );
-
-  console.log("✅ Geocoding Complete. Updating Store...");
-  
-  listings.set([]);  // ✅ Clear the store first to trigger reactivity
-  await new Promise(r => setTimeout(r, 100)); // Small delay to ensure reactivity kicks in
-  listings.set(updatedListings);  // ✅ Now set the updated listings
+    } catch (error) {
+      console.error(`🚨 Geocoding failed for ${listingsData[i].address}:`, error);
+      results.push(listingsData[i]);
+    }
+  }
+  return results;
 }
 
-// Load dataset from CSV file
+/**
+ * Load CSV data and geocode listings
+ */
 async function loadListings() {
   try {
     const response = await fetch('/2016-12-20.csv');
@@ -109,29 +108,19 @@ async function loadListings() {
       dynamicTyping: true,
       complete: async (result) => {
         console.log(`📊 CSV Loaded: ${result.data.length} entries`);
-        const limitedListings = result.data.slice(0, 10);
+        const limitedListings = result.data.slice(0, 30); // Limit listings for performance
         console.log(`🔹 Limited Listings:`, limitedListings);
 
-        const listingsWithLatLon = await Promise.all(
-          limitedListings.map(async (listing) => {
-            if (!listing.lat || !listing.lon) {
-              const location = await geocodeAddress(listing.address);
-              return location ? { ...listing, lat: location.lat, lon: location.lon } : listing;
-            }
-            return listing;
-          })
-        );
-
-        listings.set(listingsWithLatLon);
-        console.log("✅ Listings Updated in Store:", listingsWithLatLon);
+        const listingsWithLatLon = await batchGeocode(limitedListings);
+        listings.set(listingsWithLatLon); // Store final listings with lat/lon
+        console.log(`✅ Listings Updated in Store:`, listingsWithLatLon);
       },
-      error: (error) => console.error("❌ CSV Parsing Error:", error),
+      error: (error) => console.error("🚨 CSV Parsing Error:", error),
     });
   } catch (error) {
     console.error("🚨 Error loading listings:", error);
   }
 }
 
-
-// Load data when store initializes
+// Load listings on startup
 loadListings();

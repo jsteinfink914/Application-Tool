@@ -3,7 +3,7 @@
   import { toggleFavorite, getCompareData, updateUserPreferences } from './store.js';
   import { onMount, tick } from 'svelte';
   import L from 'leaflet';
-  import { writable } from 'svelte/store';
+  import { writable, get } from 'svelte/store';
 
   let map;
   let markers = [];
@@ -19,31 +19,45 @@
   let groceryStore = '';
   let gym = '';
   let showComparePage = writable(false);
-  
+
   const updatePreferences = () => {
     updateUserPreferences({ grocery: groceryStore, gym: gym });
   };
 
+  function waitForMapContainer(callback, retries = 10) {
+    const mapContainer = document.getElementById("map");
+    if (mapContainer) {
+      console.log("✅ #map found, initializing...");
+      callback();
+    } else if (retries > 0) {
+      console.warn(`🚨 #map container STILL missing! Retrying in 500ms...`);
+      setTimeout(() => waitForMapContainer(callback, retries - 1), 500);
+    } else {
+      console.error("❌ #map container never loaded, aborting.");
+    }
+  }
+
   function initializeMap(listingsData) {
-    if (!map && document.getElementById('map')) {
+    if (!map) {
       console.log("✅ Initializing Leaflet map...");
       map = L.map('map').setView([40.7128, -74.0060], 12);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     }
-    
-    if (map) {
-      markers.forEach(marker => map.removeLayer(marker));
-      markers = [];
-      listingsData.forEach(listing => {
-        if (listing.lat && listing.lon) {
-          console.log(`📌 Adding marker for ${listing.address}`);
-          const marker = L.marker([listing.lat, listing.lon]).addTo(map);
-          markers.push(marker);
-        } else {
-          console.warn(`⚠️ Missing lat/lon for:`, listing);
-        }
-      });
-    }
+
+    markers.forEach(marker => map.removeLayer(marker));
+    markers = [];
+
+    listingsData.forEach(listing => {
+      if (listing.lat && listing.lon) {
+        console.log(`📌 Adding marker for ${listing.address} at [${listing.lat}, ${listing.lon}]`);
+        const marker = L.marker([listing.lat, listing.lon]).addTo(map);
+        markers.push(marker);
+      } else {
+        console.warn(`⚠️ Missing lat/lon for:`, listing);
+      }
+    });
+
+    console.log("🗺️ Current Markers:", markers);
   }
 
   const handleFavoriteToggle = (listing) => {
@@ -57,45 +71,25 @@
 
     if (data.length > 0) {
       showComparePage.set(true);
-      await tick();
-
-      // Initialize map ONLY when the compare page is shown
-      setTimeout(() => {
-        if (document.getElementById('map')) {
-          initializeMap(data);
-        }
-      }, 500);
+      
+      await tick(); // Ensure UI updates before initializing the map
+      
+      waitForMapContainer(() => initializeMap(data));
     }
   };
 
   onMount(() => {
-  listings.subscribe(async (l) => {
-    console.log("🔄 Listings Store Updated:", l);
-
-    // ✅ Ensure all listings have lat/lon before initializing the map
-    if (l.length > 0 && l.every(item => item.lat && item.lon)) {
-      console.log("✅ All Listings Have lat/lon, Initializing Map...");
-
-      // ✅ Ensure Svelte processes the store update fully
-      await tick();
-
-      // ✅ Force reactivity by resetting and restoring the store
-      listings.set([]);
-      await new Promise(r => setTimeout(r, 50));  // Short delay
-      listings.set(l);
-
-      initializeMap(l); // 🔥 Now the map should only run with fresh lat/lon
-    } else {
-      console.warn("⚠️ Listings still missing lat/lon, delaying map initialization...");
-    }
+    listings.subscribe(l => {
+      if (l.length > 0) {
+        waitForMapContainer(() => initializeMap(l));
+      }
+    });
   });
-});
-
 </script>
 
 <style>
   @import 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
-  
+
   #container {
     display: flex;
     height: 100vh;
@@ -172,8 +166,8 @@
           <tr>
             <td>{listing.address}</td>
             {#if $selectedAttributesLocal.price} <td>{listing.price || 'N/A'}</td> {/if}
-            {#if $selectedAttributesLocal.squareFootage} <td>{listing.squareFootage || 'N/A'}</td> {/if}
-            {#if $selectedAttributesLocal.laundryInBuilding} <td>{listing.laundryInBuilding || 'N/A'}</td> {/if}
+            {#if $selectedAttributesLocal.squareFootage} <td>{listing.sq_ft || 'N/A'}</td> {/if}
+            {#if $selectedAttributesLocal.laundryInBuilding} <td>{listing["laundry in building"] || 'N/A'}</td> {/if}
             {#if $selectedAttributesLocal.doorman} <td>{listing.doorman || 'N/A'}</td> {/if}
             {#if $selectedAttributesLocal.dishwasher} <td>{listing.dishwasher || 'N/A'}</td> {/if}
           </tr>
