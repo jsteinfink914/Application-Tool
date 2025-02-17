@@ -48,8 +48,11 @@ async function geocodeAddress(address) {
   if (cached) return cached;
 
   try {
+    console.log(`🌍 Geocoding: ${address}`);
     const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU`);
     const data = await response.json();
+    
+    console.log(`🔍 Geocode Response for ${address}:`, data); // ✅ Log response
 
     if (data.results.length > 0) {
       const location = {
@@ -58,6 +61,8 @@ async function geocodeAddress(address) {
       };
       localStorage.setItem(cacheKey, JSON.stringify(location)); // Cache result
       return location;
+    } else {
+      console.warn(`⚠️ Google Maps could not find lat/lon for: ${address}`);
     }
   } catch (error) {
     console.error(`🚨 Geocoding error for ${address}:`, error);
