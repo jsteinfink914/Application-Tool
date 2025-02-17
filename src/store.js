@@ -3,7 +3,7 @@ import Papa from 'papaparse';
 
 export const listings = writable([]);
 export const favorites = writable([]);
-export const selectedAttributes = writable(['price', 'sq_ft', 'laundry', 'doorman', 'dishwasher']);
+export const selectedAttributes = writable(['price', 'sq_ft', 'laundry in building', 'doorman', 'dishwasher']);
 export const userPreferences = writable({ grocery: '', gym: '' });
 
 /**
@@ -108,7 +108,7 @@ async function loadListings() {
       dynamicTyping: true,
       complete: async (result) => {
         console.log(`📊 CSV Loaded: ${result.data.length} entries`);
-        const limitedListings = result.data.slice(0, 30); // Limit listings for performance
+        const limitedListings = result.data.slice(0, 10); // Limit listings for performance
         console.log(`🔹 Limited Listings:`, limitedListings);
 
         const listingsWithLatLon = await batchGeocode(limitedListings);
