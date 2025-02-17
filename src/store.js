@@ -15,9 +15,9 @@ export function updateUserPreferences(preferences) {
 export function toggleFavorite(listing) {
   favorites.update(favs => {
     const exists = favs.some(fav => fav.address === listing.address);
-    return exists ? favs.filter(fav => fav.address !== listing.address) : [...favs, listing];
+    return exists ? favs.filter(fav => fav.address !== listing.address) : [...favs, { ...listing }];
   });
-}
+};
 
 // Function to get comparison data from favorites
 export function getCompareData() {

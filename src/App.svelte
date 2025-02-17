@@ -16,10 +16,9 @@
     dishwasher: true,
   });
 
-  $: selectedAttributesLocalValue = $selectedAttributesLocal;
-  
   let groceryStore = '';
   let gym = '';
+  let showComparePage = false;
   
   const updatePreferences = () => {
     updateUserPreferences({ grocery: groceryStore, gym: gym });
@@ -30,7 +29,6 @@
       map = L.map('map').setView([40.7128, -74.0060], 12);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     }
-
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
     listings.forEach(listing => {
@@ -45,17 +43,17 @@
     toggleFavorite(listing);
   };
 
-  const handleCompare = () => {
-    compareListings = getCompareData();
-    if (compareListings.length > 0) {
-      initializeMap(compareListings);
-    }
-  };
+ const handleCompare = () => {
+  compareListings = [...$favorites]; // Ensure favorites are stored correctly
+  console.log("Compare Listings:", compareListings);
+  if (compareListings.length > 0) {
+    initializeMap(compareListings);
+    showComparePage = true;
+  }
+};
+
 
   onMount(() => {
-    console.log("Listings:", $listings);
-    console.log("Favorites:", $favorites);
-    console.log("Selected Attributes:", $selectedAttributes);
     setTimeout(() => {
       if ($listings.length > 0) {
         initializeMap($listings);
@@ -67,91 +65,64 @@
 <style>
   @import 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
   
+  #container {
+    display: flex;
+    height: 100vh;
+  }
+  #map-container {
+    flex: 1;
+    height: 100vh;
+  }
   #sidebar {
-    position: fixed;
-    top: 0;
-    right: 0;
     width: 300px;
-    background-color: #fff;
     padding: 20px;
     border-left: 2px solid #ddd;
+    background-color: #fff;
   }
-
-  #map {
-    height: 100vh;
-    width: 100%;
-  }
-
-  .listing {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    padding: 10px;
-  }
-
-  .favorites-list {
-    margin-top: 20px;
-  }
-
   .compare-button {
-    margin-top: 20px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
     padding: 10px;
     background-color: #007bff;
     color: white;
     border: none;
     cursor: pointer;
   }
-
-  .listing-details {
-    margin: 20px 0;
-  }
 </style>
 
-<div id="map"></div>
-
-<div id="sidebar">
-  <h3>Preferences</h3>
-  <label for="grocery-store">Favorite Grocery Store:</label>
-  <input type="text" id="grocery-store" bind:value={groceryStore} placeholder="Enter grocery store" />
-  <br />
-
-  <label for="gym">Favorite Gym:</label>
-  <input type="text" id="gym" bind:value={gym} placeholder="Enter gym" />
-  <br />
-  <button on:click={updatePreferences}>Save Preferences</button>
-
-  <h3>Attributes</h3>
-  <div>
-    <input type="checkbox" bind:checked={$selectedAttributesLocal.price} /> Price
-    <br />
-    <input type="checkbox" bind:checked={$selectedAttributesLocal.squareFootage} /> Square Footage
-    <br />
-    <input type="checkbox" bind:checked={$selectedAttributesLocal.laundryInBuilding} /> Laundry in Building
-    <br />
-    <input type="checkbox" bind:checked={$selectedAttributesLocal.doorman} /> Doorman
-    <br />
-    <input type="checkbox" bind:checked={$selectedAttributesLocal.dishwasher} /> Dishwasher
-    <br />
+{#if !showComparePage}
+  <div class="listing-container">
+    {#each $listings as listing}
+      <div class="listing">
+        <span>{listing.address}</span>
+        <button on:click={() => handleFavoriteToggle(listing)}>
+          {#if $favorites && $favorites.includes(listing)} ♥ {:else} ♡ {/if}
+        </button>
+      </div>
+    {/each}
   </div>
-
-  {#if $favorites.length > 1}
+  {#if $favorites.length >= 3}
     <button class="compare-button" on:click={handleCompare}>Compare</button>
   {/if}
-</div>
-
-<div class="listing-container">
-  {#each $listings as listing}
-    <div class="listing">
-      <span>{listing.address}</span>
-      <button on:click={() => handleFavoriteToggle(listing)}>
-        {#if $favorites && $favorites.includes(listing)} ♥ {:else} ♡ {/if}
-      </button>
+{:else}
+  <div id="container">
+    <div id="map-container">
+      <div id="map"></div>
     </div>
-  {/each}
-</div>
-
-{#if compareListings.length > 0}
+    <div id="sidebar">
+      <h3>Preferences</h3>
+      <input type="text" bind:value={groceryStore} placeholder="Favorite Grocery Store" />
+      <input type="text" bind:value={gym} placeholder="Favorite Gym" />
+      <button on:click={updatePreferences}>Save Preferences</button>
+      <h3>Attributes</h3>
+      <input type="checkbox" bind:checked={$selectedAttributesLocal.price} /> Price
+      <input type="checkbox" bind:checked={$selectedAttributesLocal.squareFootage} /> Square Footage
+      <input type="checkbox" bind:checked={$selectedAttributesLocal.laundryInBuilding} /> Laundry in Building
+      <input type="checkbox" bind:checked={$selectedAttributesLocal.doorman} /> Doorman
+      <input type="checkbox" bind:checked={$selectedAttributesLocal.dishwasher} /> Dishwasher
+    </div>
+  </div>
   <div class="listing-details">
     <h3>Comparison</h3>
     <table>
@@ -160,20 +131,20 @@
           <th>Address</th>
           {#if $selectedAttributesLocal.price} <th>Price</th> {/if}
           {#if $selectedAttributesLocal.squareFootage} <th>Sq Ft</th> {/if}
-          {#if $selectedAttributesLocal.laundryInBuilding} <th>Laundry in Building</th> {/if}
+          {#if $selectedAttributesLocal.laundryInBuilding} <th>Laundry</th> {/if}
           {#if $selectedAttributesLocal.doorman} <th>Doorman</th> {/if}
           {#if $selectedAttributesLocal.dishwasher} <th>Dishwasher</th> {/if}
         </tr>
       </thead>
       <tbody>
-        {#each compareListings as listing}
+        {#each compareListings as listing (listing.address)}
           <tr>
-            <td>{listing.address}</td>
-            {#if $selectedAttributesLocal.price} <td>{listing.price}</td> {/if}
-            {#if $selectedAttributesLocal.squareFootage} <td>{listing.squareFootage}</td> {/if}
-            {#if $selectedAttributesLocal.laundryInBuilding} <td>{listing.laundryInBuilding}</td> {/if}
-            {#if $selectedAttributesLocal.doorman} <td>{listing.doorman}</td> {/if}
-            {#if $selectedAttributesLocal.dishwasher} <td>{listing.dishwasher}</td> {/if}
+            <td>{listing.address || 'N/A'}</td>
+            {#if $selectedAttributesLocal.price} <td>{listing.price ?? 'N/A'}</td> {/if}
+            {#if $selectedAttributesLocal.squareFootage} <td>{listing.squareFootage ?? 'N/A'}</td> {/if}
+            {#if $selectedAttributesLocal.laundryInBuilding} <td>{listing.laundryInBuilding ?? 'N/A'}</td> {/if}
+            {#if $selectedAttributesLocal.doorman} <td>{listing.doorman ?? 'N/A'}</td> {/if}
+            {#if $selectedAttributesLocal.dishwasher} <td>{listing.dishwasher ?? 'N/A'}</td> {/if}
           </tr>
         {/each}
       </tbody>
