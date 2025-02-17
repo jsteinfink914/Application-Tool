@@ -76,7 +76,7 @@ async function geocodeAddress(address) {
 async function batchGeocode(listingsData) {
   const results = [];
   for (let i = 0; i < listingsData.length; i++) {
-    if (i % 5 === 0) await new Promise(r => setTimeout(r, 3000)); // Rate limit
+    if (i % 5 === 0) await new Promise(r => setTimeout(r, 5000)); // ⏳ Rate limit
 
     const cached = JSON.parse(localStorage.getItem(`geo_${listingsData[i].address}`));
     if (cached) {
@@ -84,19 +84,25 @@ async function batchGeocode(listingsData) {
       continue;
     }
 
-    try {
-      const location = await geocodeAddress(listingsData[i].address);
-      if (location) {
-        results.push({ ...listingsData[i], lat: location.lat, lon: location.lon });
-      } else {
-        results.push(listingsData[i]); // Keep original if failed
-      }
-    } catch (error) {
-      console.error(`🚨 Geocoding failed for ${listingsData[i].address}:`, error);
-      results.push(listingsData[i]);
+    let location = await geocodeAddress(listingsData[i].address);
+    if (!location) {
+      console.warn(`🔁 Retrying ${listingsData[i].address} after 10 sec...`);
+      await new Promise(r => setTimeout(r, 10000)); // ⏳ Retry
+      location = await geocodeAddress(listingsData[i].address);
+    }
+
+    if (location) {
+      const updatedListing = { ...listingsData[i], lat: location.lat, lon: location.lon };
+      results.push(updatedListing);
+      console.log(`📍 Stored geocoded listing:`, updatedListing); // ✅ Log each stored listing
+    } else {
+      console.error(`🚨 Failed to get lat/lon for ${listingsData[i].address}`);
+      results.push(listingsData[i]); // Keep listing but without lat/lon
     }
   }
-  return results;
+
+  console.log(`✅ Final geocoded listings:`, results); // ✅ Double-check final data before storing
+  listings.set(results);
 }
 
 /**

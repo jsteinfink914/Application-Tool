@@ -76,8 +76,11 @@
 
   onMount(() => {
     listings.subscribe(l => {
-        if (l.length > 0 && $showComparePage) { // ✅ Only initialize if comparing
+        if (l.length > 0 && l.some(item => item.lat && item.lon)) { // ✅ Only initialize if lat/lon exist
+            console.log("✅ Initializing Leaflet map with:", l);
             initializeMap(l);
+        } else {
+            console.warn("⚠️ Map not initialized - missing lat/lon.");
         }
     });
 });
