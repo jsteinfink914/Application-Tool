@@ -7,7 +7,7 @@
 
   let map;
   let markers = [];
-  let compareListings = [];
+  let compareListings = writable([]);
   let selectedAttributesLocal = writable({
     price: true,
     squareFootage: true,
@@ -18,20 +18,20 @@
 
   let groceryStore = '';
   let gym = '';
-  let showComparePage = false;
+  let showComparePage = writable(false);
   
   const updatePreferences = () => {
     updateUserPreferences({ grocery: groceryStore, gym: gym });
   };
 
-  function initializeMap(listings) {
-    if (!map) {
-      map = L.map(document.getElementById('map')).setView([40.7128, -74.0060], 12);
+  function initializeMap(listingsData) {
+    if (!map && document.getElementById('map')) {
+      map = L.map('map').setView([40.7128, -74.0060], 12);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     }
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
-    listings.subscribe(l => l.forEach(listing => {
+    listingsData.forEach(listing => {
       if (listing.lat && listing.lon) {
         const marker = L.marker([listing.lat, listing.lon]).addTo(map);
         markers.push(marker);
@@ -42,22 +42,22 @@
   const handleFavoriteToggle = (listing) => {
     toggleFavorite(listing);
     favorites.update(favs => [...favs]); // Force Svelte reactivity update
-};
+  };
 
   const handleCompare = () => {
-    compareListings = getCompareData();
-    if (compareListings.length > 0) {
-      initializeMap(compareListings);
-      showComparePage = true;
+    let data = getCompareData();
+    compareListings.set(data);
+    if (data.length > 0) {
+      showComparePage.set(true);
     }
   };
 
   onMount(() => {
-    setTimeout(() => {
-      if (listings && listings.length > 0) {
-        initializeMap($listings);
+    listings.subscribe(l => {
+      if (l.length > 0) {
+        initializeMap(l);
       }
-    }, 500);
+    });
   });
 </script>
 
@@ -90,7 +90,7 @@
   }
 </style>
 
-{#if !showComparePage}
+{#if !$showComparePage}
   <div class="listing-container">
     {#each $listings as listing}
       <div class="listing">
@@ -136,7 +136,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each compareListings as listing}
+        {#each $compareListings as listing}
           <tr>
             <td>{listing.address}</td>
             {#if $selectedAttributesLocal.price} <td>{listing.price || 'N/A'}</td> {/if}
