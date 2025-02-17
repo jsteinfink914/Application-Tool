@@ -1,14 +1,13 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [svelte()],
   build: {
-    rollupOptions: {
-      input: 'public/index.html',  // Relative path to index.html from the root
-    },
-    outDir: 'dist',  // Output directory for the build files
+    outDir: 'dist', // Where Vite outputs the final build
   },
-  publicDir: 'public',  // Ensure Vite knows to serve files from the public folder
+  publicDir: 'public', // Keep static assets in public/
+  server: {
+    open: true, // Auto-open in browser
+  }
 });
