@@ -52,11 +52,16 @@ async function geocodeAddress(address) {
     const data = await response.json();
 
     if (data.length > 0) {
+      console.log(`📍 Found Geocode: ${data[0].lat}, ${data[0].lon}`);
       const location = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
       localStorage.setItem(`geo_${address}`, JSON.stringify(location)); // Store result
       return location;
-    }
-  } catch (error) {
+    }else {
+      console.warn(`⚠️ No geocode result for: ${address}`);
+      return null;
+  } 
+}catch (error) {
+    console.warn(`⚠️ No geocode result for: ${address}`);
     console.error("Geocoding error:", error);
   }
   return null;
@@ -66,7 +71,7 @@ async function geocodeAddress(address) {
 async function batchGeocode(listings) {
   const results = [];
   for (let i = 0; i < listings.length; i++) {
-    if (i % 5 === 0) await new Promise((r) => setTimeout(r, 5000)); // ✅ Increase delay to 5s
+    if (i % 3 === 0) await new Promise((r) => setTimeout(r, 10000)); // ✅ Increase delay to 5s
 
     const cached = JSON.parse(localStorage.getItem(`geo_${listings[i].address}`));
     if (cached) {
