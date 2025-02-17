@@ -1,11 +1,11 @@
 
+    
     function compareListings() {
         // Example logic for retrieving and comparing selected listings
         console.log("Comparing selected listings...");
-        
-        // Ensure showMap updates after comparison
-        showMap = true;
+        showMap = true; // Ensure map is displayed
     }
+    
     
 
     function handleCompare() {
