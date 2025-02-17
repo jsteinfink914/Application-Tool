@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import Papa from 'papaparse';
+import { get } from 'svelte/store'; 
 
 export const listings = writable([]);
 export const favorites = writable([]);
