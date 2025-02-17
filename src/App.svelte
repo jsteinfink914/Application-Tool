@@ -54,8 +54,8 @@
 
   onMount(() => {
     setTimeout(() => {
-      if ($listings && $listings.length > 0) {
-        initializeMap($listings);
+      if (listings && listings.length > 0) {
+        initializeMap(listings);
       }
     }, 500);
   });
@@ -92,11 +92,11 @@
 
 {#if !showComparePage}
   <div class="listing-container">
-    {#each $listings as listing}
+    {#each listings as listing}
       <div class="listing">
         <span>{listing.address}</span>
         <button on:click={() => handleFavoriteToggle(listing)}>
-          {#if $favorites && $favorites.includes(listing)} ♥ {:else} ♡ {/if}
+          {#if $favorites.some(fav => fav.address === listing.address)} ♥ {:else} ♡ {/if}
         </button>
       </div>
     {/each}
