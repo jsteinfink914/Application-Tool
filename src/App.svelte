@@ -25,19 +25,27 @@
   };
 
   function initializeMap(listingsData) {
-    if (!map && document.getElementById('map')) {
-      map = L.map('map').setView([40.7128, -74.0060], 12);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    }
-    markers.forEach(marker => map.removeLayer(marker));
-    markers = [];
-    listingsData.forEach(listing => {
-      if (listing.lat && listing.lon) {
-        const marker = L.marker([listing.lat, listing.lon]).addTo(map);
-        markers.push(marker);
-      }
-    });
+  const mapContainer = document.getElementById('map');
+  if (!mapContainer) {
+    console.warn("Map container not found, delaying initialization...");
+    setTimeout(() => initializeMap(listingsData), 500); // Retry after 500ms
+    return;
   }
+
+  if (!map) {
+    map = L.map('map').setView([40.7128, -74.0060], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  }
+
+  markers.forEach(marker => map.removeLayer(marker));
+  markers = [];
+  listingsData.forEach(listing => {
+    if (listing.lat && listing.lon) {
+      const marker = L.marker([listing.lat, listing.lon]).addTo(map);
+      markers.push(marker);
+    }
+  });
+}
 
   const handleFavoriteToggle = (listing) => {
     toggleFavorite(listing);

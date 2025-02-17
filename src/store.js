@@ -108,7 +108,7 @@ async function loadListings() {
         listings.set([]); // Ensure store is reset before updating
         listings.update(() => limitedListings); // ✅ Ensures Svelte reactivity
 
-        console.log("Listings Updated in Store:", limitedListings.length, $listings); // Debug output
+        console.log("Listings Updated in Store:", limitedListings.length, listings); // Debug output
       },
       error: (error) => console.error("CSV Parsing Error:", error),
     });
