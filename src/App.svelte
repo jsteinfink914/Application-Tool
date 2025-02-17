@@ -1,5 +1,5 @@
 <script>
-  import { listings, favorites, selectedAttributes, userPreferences } from './store.js';
+  import { $listings, favorites, selectedAttributes, userPreferences } from './store.js';
   import { toggleFavorite, getCompareData, updateUserPreferences } from './store.js';
   import { onMount } from 'svelte';
   import L from 'leaflet';
@@ -24,14 +24,14 @@
     updateUserPreferences({ grocery: groceryStore, gym: gym });
   };
 
-  function initializeMap(listings) {
+  function initializeMap($listings) {
     if (!map) {
       map = L.map(document.getElementById('map')).setView([40.7128, -74.0060], 12);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     }
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
-    listings.forEach(listing => {
+    $listings.forEach(listing => {
       if (listing.lat && listing.lon) {
         const marker = L.marker([listing.lat, listing.lon]).addTo(map);
         markers.push(marker);
@@ -54,8 +54,8 @@
 
   onMount(() => {
     setTimeout(() => {
-      if (listings && listings.length > 0) {
-        initializeMap(listings);
+      if ($listings && $listings.length > 0) {
+        initializeMap($listings);
       }
     }, 500);
   });
@@ -92,7 +92,7 @@
 
 {#if !showComparePage}
   <div class="listing-container">
-    {#each listings as listing}
+    {#each $listings as listing}
       <div class="listing">
         <span>{listing.address}</span>
         <button on:click={() => handleFavoriteToggle(listing)}>
