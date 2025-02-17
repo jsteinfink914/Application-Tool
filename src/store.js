@@ -43,32 +43,24 @@ export function getCompareData() {
 
 
 async function geocodeAddress(address) {
-  console.log(`🌍 Geocoding: ${address}`);
-
-  // Check if already cached
-  const cached = JSON.parse(localStorage.getItem(`geo_${address}`));
-  if (cached) {
-    console.log(`✅ Cached Geocode Found: ${address}`, cached);
-    return cached;
-  }
+  const apiKey = "AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU";
+  console.log(`🌍 Geocoding via Google: ${address}`);
 
   try {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
     );
     const data = await response.json();
 
-    if (data.length > 0) {
-      const location = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
-      localStorage.setItem(`geo_${address}`, JSON.stringify(location));
-      console.log(`📍 Found Geocode:`, location);
-      return location;
+    if (data.status === "OK") {
+      const location = data.results[0].geometry.location;
+      return { lat: location.lat, lon: location.lng };
     } else {
-      console.warn(`⚠️ No geocode result for: ${address}`);
+      console.warn(`⚠️ Google Geocode failed for: ${address}`, data);
       return null;
     }
   } catch (error) {
-    console.error(`🚨 Geocoding error for ${address}:`, error);
+    console.error(`🚨 Google Geocoding error for ${address}:`, error);
     return null;
   }
 }
