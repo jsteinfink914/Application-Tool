@@ -69,19 +69,19 @@ async function geocodeAddress(address) {
 
 // Function to batch process geocoding (5 requests every 2 seconds)
 async function batchGeocode(listings) {
-  const results = await Promise.all(
+  const updatedListings = await Promise.all(
     listings.map(async (listing) => {
-      if (listing.lat && listing.lon) return listing; // Skip if already geocoded
+      if (listing.lat && listing.lon) return listing; // ✅ Skip already geocoded listings
 
       try {
         console.log(`🌍 Geocoding via Google: ${listing.address}`);
         const location = await geocodeAddress(listing.address);
-        
+
         if (location) {
           return { ...listing, lat: location.lat, lon: location.lon };
         } else {
           console.warn(`⚠️ Google Geocode failed for: ${listing.address}`);
-          return listing; // Return original if geocode fails
+          return listing; // ✅ Return unchanged listing if geocode fails
         }
       } catch (error) {
         console.error(`🚨 Geocoding error: ${error}`);
@@ -91,9 +91,11 @@ async function batchGeocode(listings) {
   );
 
   console.log("✅ Geocoding Complete. Updating Store...");
-  listings.set(results);  // ✅ Ensure reactivity
+  
+  listings.set([]);  // ✅ Clear the store first to trigger reactivity
+  await new Promise(r => setTimeout(r, 100)); // Small delay to ensure reactivity kicks in
+  listings.set(updatedListings);  // ✅ Now set the updated listings
 }
-
 
 // Load dataset from CSV file
 async function loadListings() {

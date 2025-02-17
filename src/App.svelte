@@ -70,9 +70,14 @@
 
   onMount(() => {
   listings.subscribe(l => {
-    console.log("✅ Listings Updated in Store:", l); // Log to confirm update
-    if (l.length > 0) {
+    console.log("✅ Listings Updated in Store:", l);
+
+    // ✅ Ensure lat/lon exists before initializing the map
+    if (l.length > 0 && l.every(item => item.lat && item.lon)) {
+      console.log("✅ All Listings Have lat/lon, Initializing Map...");
       initializeMap(l);
+    } else {
+      console.warn("⚠️ Listings still missing lat/lon, delaying map initialization...");
     }
   });
 });
