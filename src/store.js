@@ -9,9 +9,7 @@ export const userPreferences = writable({ grocery: '', gym: '' });
 /**
  * Function to update user preferences
  */
-export function updateUserPreferences(preferences) {
-  userPreferences.set(preferences);
-}
+
 
 /**
  * Toggle a listing as a favorite
