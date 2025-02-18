@@ -35,7 +35,7 @@
         setTimeout(() => initializeMap(listingsData), 500);
         return;
     }
-
+    console.log("✅ #map container FOUND, initializing map...");
     if (!map) {
         console.log("✅ Initializing Leaflet map...");
         map = L.map('map').setView([40.7128, -74.0060], 12);
@@ -70,11 +70,13 @@
 
   const handleCompare = async () => {
     let data = getCompareData();
+    console.log("🔍 Compare Data:", data); // ✅ Ensure lat/lon is present
     compareListings.set(data);
 
     if (data.length > 0) {
         showComparePage.set(true);
         showMap.set(true); // ✅ Use .set(true) since it's a writable store
+         console.log("🟢 showMap Value:", $showMap);
         await tick(); // ✅ Wait for UI update before initializing map
         console.log("🔍 Final Compare Data:", $compareListings);
         
@@ -169,8 +171,12 @@
     {#if $showMap}
   <div id="map-container">
     <div id="map"></div>
+    <p>✅ Map should be visible!</p> <!-- 🔥 Debugging text -->
   </div>
+{:else}
+  <p>❌ Map is NOT showing - $showMap is false!</p> <!-- 🔥 Debugging text -->
 {/if}
+
     </div>
     <div id="sidebar">
       <h3>Preferences</h3>
