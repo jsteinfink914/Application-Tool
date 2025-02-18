@@ -50,12 +50,57 @@
     console.log("🟢 Listings to add markers for:", listingsData);
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
+    const listingIcon = L.icon({
+        iconUrl: '/icons/house.png', 
+        iconSize: [30, 30]
+    });
+
+    const groceryIcon = L.icon({
+        iconUrl: '/icons/grocery.png',
+        iconSize: [25, 25]
+    });
+
+    const gymIcon = L.icon({
+        iconUrl: '/icons/gym.png',
+        iconSize: [25, 25]
+    });
 
     listingsData.forEach(listing => {
         if (listing.lat && listing.lon) {
             console.log(`📌 Adding marker for ${listing.address}`);
-            const marker = L.marker([listing.lat, listing.lon]).addTo(map);
+            const marker = L.marker([listing.lat, listing.lon], {icon: listingIcon}).addTo(map);
             markers.push(marker);
+            marker.bindPopup(`
+                <strong>${listing.address}</strong><br>
+                🛒 Nearest Grocery: ${listing.nearestGrocery?.name || 'N/A'} (${listing.nearestGrocery?.distance || 'N/A'})<br>
+                🏋️ Nearest Gym: ${listing.nearestGym?.name || 'N/A'} (${listing.nearestGym?.distance || 'N/A'})
+            `);
+            if (listing.nearestGrocery?.lat && listing.nearestGrocery?.lon) {
+                const groceryMarker = L.marker(
+                    [listing.nearestGrocery.lat, listing.nearestGrocery.lon], 
+                    { icon: groceryIcon }
+                ).addTo(map);
+                markers.push(groceryMarker);
+
+                groceryMarker.bindPopup(`
+                    <strong>🛒 Grocery: ${listing.nearestGrocery.name}</strong><br>
+                    📍 Distance: ${listing.nearestGrocery.distance}
+                `);
+            }
+
+            // **🔹 Plot Gym Marker**
+            if (listing.nearestGym?.lat && listing.nearestGym?.lon) {
+                const gymMarker = L.marker(
+                    [listing.nearestGym.lat, listing.nearestGym.lon], 
+                    { icon: gymIcon }
+                ).addTo(map);
+                markers.push(gymMarker);
+
+                gymMarker.bindPopup(`
+                    <strong>🏋️ Gym: ${listing.nearestGym.name}</strong><br>
+                    📍 Distance: ${listing.nearestGym.distance}
+                `);
+            }
         } else {
             console.warn(`⚠️ Missing lat/lon for:`, listing);
         }
@@ -213,6 +258,8 @@
           {#if $selectedAttributesLocal.laundryInBuilding} <th>Laundry</th> {/if}
           {#if $selectedAttributesLocal.doorman} <th>Doorman</th> {/if}
           {#if $selectedAttributesLocal.dishwasher} <th>Dishwasher</th> {/if}
+          <th>Nearest Grocery Store</th>
+          <th>Nearest Gym</th>
         </tr>
       </thead>
       <tbody>
@@ -224,6 +271,8 @@
             {#if $selectedAttributesLocal.laundryInBuilding} <td>{listing.laundryInBuilding || 'N/A'}</td> {/if}
             {#if $selectedAttributesLocal.doorman} <td>{listing.doorman || 'N/A'}</td> {/if}
             {#if $selectedAttributesLocal.dishwasher} <td>{listing.dishwasher || 'N/A'}</td> {/if}
+            <td>{listing.nearestGrocery?.name} ({listing.nearestGrocery?.distance})</td>
+            <td>{listing.nearestGym?.name} ({listing.nearestGym?.distance})</td>
           </tr>
         {/each}
       </tbody>

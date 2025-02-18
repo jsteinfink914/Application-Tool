@@ -82,6 +82,65 @@ async function geocodeAddress(address) {
   return null;
 }
 
+export async function updateUserPreferences(preferences) {
+  userPreferences.set(preferences);
+
+  // Geocode the locations and store them
+  const groceryLocation = await geocodeAddress(preferences.grocery);
+  const gymLocation = await geocodeAddress(preferences.gym);
+
+  userPreferences.set({
+      ...preferences,
+      groceryLatLon: groceryLocation,
+      gymLatLon: gymLocation
+  });
+
+  console.log(`📍 Grocery location:`, groceryLocation);
+  console.log(`📍 Gym location:`, gymLocation);
+}
+
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 3958.8; // Earth radius in miles
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+
+  const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * 
+      Math.cos(lat2 * (Math.PI / 180)) * 
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+/**
+* Find the closest grocery and gym to each listing
+*/
+export function findNearestLocations(listingsData) {
+  const preferences = get(userPreferences);
+  const grocery = preferences.groceryLatLon;
+  const gym = preferences.gymLatLon;
+
+  if (!grocery || !gym) {
+      console.warn("⚠️ No geocoded grocery/gym locations available.");
+      return listingsData;
+  }
+
+  return listingsData.map(listing => {
+      if (!listing.lat || !listing.lon) return listing;
+
+      const groceryDist = haversineDistance(listing.lat, listing.lon, grocery.lat, grocery.lon);
+      const gymDist = haversineDistance(listing.lat, listing.lon, gym.lat, gym.lon);
+
+      return {
+          ...listing,
+          nearestGrocery: { name: preferences.grocery, distance: groceryDist.toFixed(2) + " mi" },
+          nearestGym: { name: preferences.gym, distance: gymDist.toFixed(2) + " mi" }
+      };
+  });
+}
+
 /**
  * Batch process geocoding with rate limiting
  */
