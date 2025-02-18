@@ -74,15 +74,22 @@
 
     if (data.length > 0) {
         showComparePage.set(true);
-        showMap = true;
-        await tick(); // ✅ Wait for UI to update first
+        showMap.set(true); // ✅ Use .set(true) since it's a writable store
+        await tick(); // ✅ Wait for UI update before initializing map
         console.log("🔍 Final Compare Data:", $compareListings);
         
-        setTimeout(() => { // ✅ Ensure #map exists before initializing
-            initializeMap($compareListings);
-        }, 500);
+        setTimeout(() => { // ✅ Ensure #map container exists before initializing
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) {
+                console.warn("🚨 #map container still missing! Retrying in 500ms...");
+                setTimeout(() => initializeMap($compareListings), 500);
+            } else {
+                initializeMap($compareListings);
+            }
+        }, 300); // ✅ Small delay to ensure rendering
     }
 };
+
 
 
   onMount(() => {
