@@ -80,22 +80,56 @@ async function geocodeAddress(address) {
   return null;
 }
 
+/**
+ * Search for nearest place using Google Places API
+ */
+async function findNearestPlace(listing, placeType, keyword) {
+  try {
+      const response = await fetch(
+          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${listing.lat},${listing.lon}&radius=2000&type=${placeType}&keyword=${encodeURIComponent(keyword)}&key=YOUR_GOOGLE_MAPS_API_KEY`
+      );
+      const data = await response.json();
+
+      if (data.results.length > 0) {
+          const nearest = data.results[0]; // Take the first result
+          return {
+              name: nearest.name,
+              lat: nearest.geometry.location.lat,
+              lon: nearest.geometry.location.lng,
+              distance: `${Math.round(nearest.distance_meters / 1609)} mi`
+          };
+      } else {
+          console.warn(`⚠️ No results found for ${keyword} near ${listing.address}`);
+      }
+  } catch (error) {
+      console.error(`🚨 Error finding ${keyword}:`, error);
+  }
+  return null;
+}
+
+
 export async function updateUserPreferences(preferences) {
   userPreferences.set(preferences);
 
-  // Geocode the locations and store them
-  const groceryLocation = await geocodeAddress(preferences.grocery);
-  const gymLocation = await geocodeAddress(preferences.gym);
+  if (!preferences.grocery || !preferences.gym) {
+      console.warn("⚠️ Grocery store or gym preference is missing.");
+      return;
+  }
 
-  userPreferences.set({
-      ...preferences,
-      groceryLatLon: groceryLocation,
-      gymLatLon: gymLocation
+  console.log(`🌍 Finding nearest locations for grocery: ${preferences.grocery} and gym: ${preferences.gym}`);
+
+  // Go through each listing and find the nearest grocery store and gym
+  listings.update(async (allListings) => {
+      for (let listing of allListings) {
+          listing.nearestGrocery = await findNearestPlace(listing, "supermarket", preferences.grocery);
+          listing.nearestGym = await findNearestPlace(listing, "gym", preferences.gym);
+      }
+      return allListings;
   });
 
-  console.log(`📍 Grocery location:`, groceryLocation);
-  console.log(`📍 Gym location:`, gymLocation);
+  console.log(`✅ Updated listings with nearest grocery and gym`);
 }
+
 
 function haversineDistance(lat1, lon1, lat2, lon2) {
   const R = 3958.8; // Earth radius in miles
