@@ -36,12 +36,18 @@
         return;
     }
     console.log("✅ #map container FOUND, initializing map...");
+
+  if (map) {
+        console.warn("🛑 Removing existing Leaflet map instance!");
+        map.remove();
+        map = null;
+    }
     if (!map) {
         console.log("✅ Initializing Leaflet map...");
         map = L.map('map').setView([40.7128, -74.0060], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     }
-
+    console.log("🟢 Listings to add markers for:", listingsData);
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
 
@@ -54,6 +60,7 @@
             console.warn(`⚠️ Missing lat/lon for:`, listing);
         }
     });
+    console.log("✅ Map and markers successfully initialized.");
 }
 
 
@@ -122,8 +129,13 @@
     height: 100vh;
   }
   #map-container {
-    flex: 1;
-    height: 100vh;
+    width: 100%;
+    height: 500px;
+  }
+
+  #map {
+    width: 100%;
+    height: 100%;
   }
   #sidebar {
     width: 300px;
