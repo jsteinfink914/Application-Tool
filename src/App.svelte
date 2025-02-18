@@ -166,7 +166,7 @@
 
 {:else}
   <div id="container">
-    {#if showMap}
+    {#if $showMap}
   <div id="map-container">
     <div id="map"></div>
   </div>
