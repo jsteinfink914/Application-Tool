@@ -83,29 +83,24 @@ async function geocodeAddress(address) {
 /**
  * Search for nearest place using Google Places API
  */
-async function findNearestPlace(listing, placeType, keyword) {
+async function findNearestPlace(listing, type, keyword) {
   try {
-      const response = await fetch(
-          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${listing.lat},${listing.lon}&radius=2000&type=${placeType}&keyword=${encodeURIComponent(keyword)}&key=AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU`
-      );
+      const response = await fetch(`/api/places?lat=${listing.lat}&lon=${listing.lon}&type=${type}&keyword=${encodeURIComponent(keyword)}`);
       const data = await response.json();
 
       if (data.results.length > 0) {
-          const nearest = data.results[0]; // Take the first result
           return {
-              name: nearest.name,
-              lat: nearest.geometry.location.lat,
-              lon: nearest.geometry.location.lng,
-              distance: `${Math.round(nearest.distance_meters / 1609)} mi`
+              name: data.results[0].name,
+              lat: data.results[0].geometry.location.lat,
+              lon: data.results[0].geometry.location.lng,
           };
-      } else {
-          console.warn(`⚠️ No results found for ${keyword} near ${listing.address}`);
       }
   } catch (error) {
       console.error(`🚨 Error finding ${keyword}:`, error);
   }
   return null;
 }
+
 
 
 export async function updateUserPreferences(preferences) {
