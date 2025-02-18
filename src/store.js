@@ -86,7 +86,7 @@ async function geocodeAddress(address) {
 async function findNearestPlace(listing, placeType, keyword) {
   try {
       const response = await fetch(
-          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${listing.lat},${listing.lon}&radius=2000&type=${placeType}&keyword=${encodeURIComponent(keyword)}&key=YOUR_GOOGLE_MAPS_API_KEY`
+          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${listing.lat},${listing.lon}&radius=2000&type=${placeType}&keyword=${encodeURIComponent(keyword)}&key=AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU`
       );
       const data = await response.json();
 
