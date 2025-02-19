@@ -5,7 +5,7 @@
   import { toggleFavorite, getCompareData, updateUserPreferences } from './store.js';
   import { onMount, tick } from 'svelte';
   import L from 'leaflet';
-  import { writable } from 'svelte/store';
+  import { writable,get } from 'svelte/store';
 
   let map;
   let markers = [];
@@ -140,8 +140,6 @@
 
   const handleCompare = async () => {
     await tick();
-    const preferences = get(userPreferences);
-    const updatedListings = await updateUserPreferences(preferences);
     const data = getCompareData();
     console.log("🔍 Compare Data:", data); // ✅ Ensure lat/lon is present
     compareListings.set(data);
