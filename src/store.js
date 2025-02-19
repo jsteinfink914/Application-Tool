@@ -137,7 +137,7 @@ export async function updateUserPreferences(preferences) {
 
   // Update each listing with its nearest grocery and gym locations
   const updatedListings = await Promise.all(
-    currentListings.map(async (listing) => {
+    currentListings.map(async (listing,index) => {
       console.log(`Updating listing #${index} (${listing.address})`);
       const nearestGrocery = await findNearestPlace(listing, "supermarket", preferences.grocery);
       console.log(`findNearestPlace (grocery) response for ${listing.address}:`, nearestGrocery);
