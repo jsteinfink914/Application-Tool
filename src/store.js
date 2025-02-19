@@ -34,18 +34,22 @@ export function toggleFavorite(listing) {
 export function getCompareData() {
   const favs = get(favorites);
   const attrs = get(selectedAttributes);
+  const updatedListings = get(listings);
+  
 
-  return favs.map(listing => {
+  return favs.map(fav => {
+    const updatedListing = updatedListings.find(l => l.address === fav.address) || fav;
     let selectedData = { 
-      address: listing.address, 
-      lat: listing.lat,  // ✅ Ensure lat/lon are always stored
-      lon: listing.lon,
-      nearestGrocery: listing.nearestGrocery && listing.nearestGrocery.distance 
-                      ? listing.nearestGrocery.distance 
-                      : 'N/A',
-      nearestGym: listing.nearestGym && listing.nearestGym.distance 
-                  ? listing.nearestGym.distance 
-                  : 'N/A'
+      address: updatedListing.address, 
+      lat: updatedListing.lat,
+      lon: updatedListing.lon,
+      // Instead of just the distance, we now keep the whole object so we have both name and distance.
+      nearestGrocery: updatedListing.nearestGrocery && updatedListing.nearestGrocery.distance 
+                      ? updatedListing.nearestGrocery 
+                      : { name: 'N/A', distance: 'N/A' },
+      nearestGym: updatedListing.nearestGym && updatedListing.nearestGym.distance 
+                  ? updatedListing.nearestGym 
+                  : { name: 'N/A', distance: 'N/A' }
     };
     attrs.forEach(attr => {
       selectedData[attr] = listing[attr] ?? 'N/A'; // ✅ Store only selected attributes

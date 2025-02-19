@@ -145,9 +145,9 @@
             const mapContainer = document.getElementById('map');
             if (!mapContainer) {
                 console.warn("🚨 #map container still missing! Retrying in 500ms...");
-                setTimeout(() => initializeMap($compareListings), 500);
+                setTimeout(() => initializeMap($listings), 500);
             } else {
-                initializeMap($compareListings);
+                initializeMap($listings);
             }
         }, 300); // ✅ Small delay to ensure rendering
     }
