@@ -130,8 +130,20 @@ export async function updateUserPreferences(preferences) {
   // Update each listing with its nearest grocery and gym locations
   const updatedListings = await Promise.all(
     currentListings.map(async (listing) => {
-      listing.nearestGrocery = await findNearestPlace(listing, "supermarket", preferences.grocery);
-      listing.nearestGym = await findNearestPlace(listing, "gym", preferences.gym);
+      const nearestGrocery = await findNearestPlace(listing, "supermarket", preferences.grocery);
+      if (nearestGrocery) {
+        const distance = haversineDistance(listing.lat, listing.lon, nearestGrocery.lat, nearestGrocery.lon);
+        listing.nearestGrocery = { ...nearestGrocery, distance: distance.toFixed(2) + " mi" };
+      } else {
+        listing.nearestGrocery = null;
+      }
+      const nearestGym = await findNearestPlace(listing, "gym", preferences.gym);
+      if (nearestGym) {
+        const distance = haversineDistance(listing.lat, listing.lon, nearestGym.lat, nearestGym.lon);
+        listing.nearestGym = { ...nearestGym, distance: distance.toFixed(2) + " mi" };
+      } else {
+        listing.nearestGym = null;
+      }
       return listing;
     })
   );
