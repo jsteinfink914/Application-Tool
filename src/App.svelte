@@ -26,8 +26,9 @@
   const updatePreferences = async () => {
     await updateUserPreferences({ grocery: groceryStore, gym: gym });
     await tick(); // Wait for listings to update
+    compareListings.set(getCompareData());
     if ($showComparePage) {
-      initializeMap($compareListings);
+      initializeMap(get(compareListings));
     }
   };
 
