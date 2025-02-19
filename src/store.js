@@ -98,10 +98,13 @@ async function geocodeAddress(address) {
  */
 async function findNearestPlace(listing, type, keyword) {
   try {
-      const response = await fetch(`/api/places?lat=${listing.lat}&lon=${listing.lon}&type=${type}&keyword=${encodeURIComponent(keyword)}`);
+      const url = `/api/places?lat=${listing.lat}&lon=${listing.lon}&type=${type}&keyword=${encodeURIComponent(keyword)}&t=${Date.now()}`;
+      console.log("Fetching from:", url);
+      const response = await fetch(url, { cache: 'no-store' });
       const data = await response.json();
-
-      if (data.results.length > 0) {
+      console.log(`Response for ${type} (${keyword}) at ${listing.address}:`, data);
+      
+      if (data.results && data.results.length > 0) {
           return {
               name: data.results[0].name,
               lat: data.results[0].geometry.location.lat,
