@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
     const { lat, lon, type, keyword } = req.query;
     const API_KEY = process.env.GOOGLE_MAPS_API_KEY; // Ensure this is set in your Vercel environment variables
-
+    console.log(API_KEY)
     if (!lat || !lon || !type || !keyword) {
         return res.status(400).json({ error: "Missing required parameters" });
     }

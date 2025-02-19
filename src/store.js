@@ -35,31 +35,38 @@ export function getCompareData() {
   const favs = get(favorites);
   const attrs = get(selectedAttributes);
   const updatedListings = get(listings);
+
   console.log("Favorites:", favs);
   console.log("Selected Attributes:", attrs);
   console.log("Updated Listings:", updatedListings);
 
   return favs.map(fav => {
-    const updatedListing = updatedListings.find(l => l.address === fav.address) || fav;
+    // Find the latest listing in `updatedListings`, or fallback to `fav`
+    const updatedListing = updatedListings.find(l => l.address === fav.address);
+
+    if (!updatedListing) {
+      console.warn(`⚠️ Favorite listing not found in updatedListings: ${fav.address}`);
+    }
+
     let selectedData = { 
-      address: updatedListing.address, 
-      lat: updatedListing.lat,
-      lon: updatedListing.lon,
-      // Instead of just the distance, we now keep the whole object so we have both name and distance.
-      nearestGrocery: updatedListing.nearestGrocery && updatedListing.nearestGrocery.distance 
-                      ? updatedListing.nearestGrocery 
-                      : { name: 'N/A', distance: 'N/A' },
-      nearestGym: updatedListing.nearestGym && updatedListing.nearestGym.distance 
-                  ? updatedListing.nearestGym 
-                  : { name: 'N/A', distance: 'N/A' }
+      address: fav.address, 
+      lat: updatedListing?.lat ?? fav.lat,
+      lon: updatedListing?.lon ?? fav.lon,
+      // Ensure nearest location data is included
+      nearestGrocery: updatedListing?.nearestGrocery ?? { name: 'N/A', distance: 'N/A' },
+      nearestGym: updatedListing?.nearestGym ?? { name: 'N/A', distance: 'N/A' }
     };
+
+    // Ensure selected attributes are copied
     attrs.forEach(attr => {
-      selectedData[attr] = updatedListing[attr] ?? 'N/A'; // ✅ Store only selected attributes
+      selectedData[attr] = updatedListing?.[attr] ?? 'N/A';
     });
-    console.log(`Get Compare Data`, selectedData)
+
+    console.log(`🔍 Compare Data for ${fav.address}:`, selectedData);
     return selectedData;
   });
 }
+
 
 
 /**
@@ -165,7 +172,7 @@ export async function updateUserPreferences(preferences) {
   );
 
   listings.set(updatedListings);
-  console.log(`✅ Updated listings with nearest grocery and gym`);
+  console.log(`✅ Updated listings with nearest grocery and gym`, updatedListings);
 }
 
 
