@@ -52,7 +52,7 @@ export function getCompareData() {
                   : { name: 'N/A', distance: 'N/A' }
     };
     attrs.forEach(attr => {
-      selectedData[attr] = listing[attr] ?? 'N/A'; // ✅ Store only selected attributes
+      selectedData[attr] = updatedListing[attr] ?? 'N/A'; // ✅ Store only selected attributes
     });
     return selectedData;
   });
