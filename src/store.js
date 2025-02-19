@@ -107,23 +107,33 @@ export async function updateUserPreferences(preferences) {
   userPreferences.set(preferences);
 
   if (!preferences.grocery || !preferences.gym) {
-      console.warn("⚠️ Grocery store or gym preference is missing.");
-      return;
+    console.warn("⚠️ Grocery store or gym preference is missing.");
+    return;
   }
 
   console.log(`🌍 Finding nearest locations for grocery: ${preferences.grocery} and gym: ${preferences.gym}`);
 
-  // Go through each listing and find the nearest grocery store and gym
-  listings.update(async (allListings) => {
-      for (let listing of allListings) {
-          listing.nearestGrocery = await findNearestPlace(listing, "supermarket", preferences.grocery);
-          listing.nearestGym = await findNearestPlace(listing, "gym", preferences.gym);
-      }
-      return allListings;
-  });
+  // Check if listings are loaded
+  let currentListings = get(listings);
+  if (currentListings.length === 0) {
+    console.warn("⚠️ Listings not yet loaded. Retrying in 1 second...");
+    setTimeout(() => updateUserPreferences(preferences), 1000);
+    return;
+  }
 
+  // Update each listing with its nearest grocery and gym locations
+  const updatedListings = await Promise.all(
+    currentListings.map(async (listing) => {
+      listing.nearestGrocery = await findNearestPlace(listing, "supermarket", preferences.grocery);
+      listing.nearestGym = await findNearestPlace(listing, "gym", preferences.gym);
+      return listing;
+    })
+  );
+
+  listings.set(updatedListings);
   console.log(`✅ Updated listings with nearest grocery and gym`);
 }
+
 
 
 function haversineDistance(lat1, lon1, lat2, lon2) {
