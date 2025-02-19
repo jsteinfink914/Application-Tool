@@ -112,11 +112,23 @@ async function findNearestPlace(listing, type, keyword) {
       console.log(`Response for ${type} (${keyword}) at ${listing.address}:`, data);
       
       if (data.results && data.results.length > 0) {
-          return {
-              name: data.results[0].name,
-              lat: data.results[0].geometry.location.lat,
-              lon: data.results[0].geometry.location.lng,
-          };
+        const sortedResults = data.results.sort((a, b) => {
+          const distA = haversineDistance(listing.lat, listing.lon, a.geometry.location.lat, a.geometry.location.lng);
+          const distB = haversineDistance(listing.lat, listing.lon, b.geometry.location.lat, b.geometry.location.lng);
+          return distA - distB; // Smallest distance first
+      });
+      const nearest = sortedResults[0]; // Pick closest
+      const distance = haversineDistance(listing.lat, listing.lon, nearest.geometry.location.lat, nearest.geometry.location.lng);
+
+      console.log(`✅ Closest ${type} for ${listing.address}: ${nearest.name} (${distance.toFixed(2)} mi)`);
+      return {
+        name: nearest.name,
+        lat: nearest.geometry.location.lat,
+        lon: nearest.geometry.location.lng,
+        distance: `${distance.toFixed(2)} mi`
+    };
+  }else {
+      console.warn(`⚠️ No ${type} found near ${listing.address}`);
       }
   } catch (error) {
       console.error(`🚨 Error finding ${keyword}:`, error);
