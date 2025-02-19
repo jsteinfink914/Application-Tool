@@ -75,38 +75,47 @@
                 🛒 Nearest Grocery: ${listing.nearestGrocery?.name || 'N/A'} (${listing.nearestGrocery?.distance || 'N/A'})<br>
                 🏋️ Nearest Gym: ${listing.nearestGym?.name || 'N/A'} (${listing.nearestGym?.distance || 'N/A'})
             `);
-            if (listing.nearestGrocery?.lat && listing.nearestGrocery?.lon) {
-                const groceryMarker = L.marker(
-                    [listing.nearestGrocery.lat, listing.nearestGrocery.lon], 
-                    { icon: groceryIcon }
-                ).addTo(map);
-                markers.push(groceryMarker);
-
-                groceryMarker.bindPopup(`
-                    <strong>🛒 Grocery: ${listing.nearestGrocery.name}</strong><br>
-                    📍 Distance: ${listing.nearestGrocery.distance}
-                `);
-            }
-
-            // **🔹 Plot Gym Marker**
-            if (listing.nearestGym?.lat && listing.nearestGym?.lon) {
-                const gymMarker = L.marker(
-                    [listing.nearestGym.lat, listing.nearestGym.lon], 
-                    { icon: gymIcon }
-                ).addTo(map);
-                markers.push(gymMarker);
-
-                gymMarker.bindPopup(`
+             // On click, dynamically add gym and grocery markers using their custom icons.
+        marker.on('click', () => {
+          // Clear any existing secondary markers for this listing
+          if (listing.gymMarker) {
+            map.removeLayer(listing.gymMarker);
+            listing.gymMarker = null;
+          }
+          if (listing.groceryMarker) {
+            map.removeLayer(listing.groceryMarker);
+            listing.groceryMarker = null;
+          }
+          // Add gym marker if valid data exists using gymIcon
+          if (listing.nearestGym?.lat && listing.nearestGym?.lon) {
+            listing.gymMarker = L.marker(
+              [listing.nearestGym.lat, listing.nearestGym.lon],
+              { icon: gymIcon }
+            ).addTo(map);
+            listing.gymMarker.bindPopup(`
                     <strong>🏋️ Gym: ${listing.nearestGym.name}</strong><br>
                     📍 Distance: ${listing.nearestGym.distance}
                 `);
-            }
-        } else {
-            console.warn(`⚠️ Missing lat/lon for:`, listing);
-        }
+          }
+          // Add grocery marker if valid data exists using groceryIcon
+          if (listing.nearestGrocery?.lat && listing.nearestGrocery?.lon) {
+            listing.groceryMarker = L.marker(
+              [listing.nearestGrocery.lat, listing.nearestGrocery.lon],
+              { icon: groceryIcon }
+            ).addTo(map);
+            listing.groceryMarker.bindPopup(`
+                    <strong>🛒 Grocery: ${listing.nearestGrocery.name}</strong><br>
+                    📍 Distance: ${listing.nearestGrocery.distance}
+                `);
+          }
+        });
+      } else {
+        console.warn(`⚠️ Missing lat/lon for:`, listing);
+      }
     });
     console.log("✅ Map and markers successfully initialized.");
-}
+  }
+            
 
 
   const handleFavoriteToggle = (listing) => {

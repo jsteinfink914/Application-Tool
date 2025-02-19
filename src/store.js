@@ -39,7 +39,13 @@ export function getCompareData() {
     let selectedData = { 
       address: listing.address, 
       lat: listing.lat,  // ✅ Ensure lat/lon are always stored
-      lon: listing.lon 
+      lon: listing.lon,
+      nearestGrocery: listing.nearestGrocery && listing.nearestGrocery.distance 
+                      ? listing.nearestGrocery.distance 
+                      : 'N/A',
+      nearestGym: listing.nearestGym && listing.nearestGym.distance 
+                  ? listing.nearestGym.distance 
+                  : 'N/A'
     };
     attrs.forEach(attr => {
       selectedData[attr] = listing[attr] ?? 'N/A'; // ✅ Store only selected attributes
