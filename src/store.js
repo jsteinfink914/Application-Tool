@@ -35,7 +35,9 @@ export function getCompareData() {
   const favs = get(favorites);
   const attrs = get(selectedAttributes);
   const updatedListings = get(listings);
-  
+  console.log("Favorites:", favs);
+  console.log("Selected Attributes:", attrs);
+  console.log("Updated Listings:", updatedListings);
 
   return favs.map(fav => {
     const updatedListing = updatedListings.find(l => l.address === fav.address) || fav;
@@ -54,6 +56,7 @@ export function getCompareData() {
     attrs.forEach(attr => {
       selectedData[attr] = updatedListing[attr] ?? 'N/A'; // ✅ Store only selected attributes
     });
+    console.log(`Get Compare Data`, selectedData)
     return selectedData;
   });
 }
@@ -114,6 +117,7 @@ async function findNearestPlace(listing, type, keyword) {
 
 
 export async function updateUserPreferences(preferences) {
+  console.log("updateUserPreferences called with:", preferences);
   userPreferences.set(preferences);
 
   if (!preferences.grocery || !preferences.gym) {
@@ -134,7 +138,9 @@ export async function updateUserPreferences(preferences) {
   // Update each listing with its nearest grocery and gym locations
   const updatedListings = await Promise.all(
     currentListings.map(async (listing) => {
+      console.log(`Updating listing #${index} (${listing.address})`);
       const nearestGrocery = await findNearestPlace(listing, "supermarket", preferences.grocery);
+      console.log(`findNearestPlace (grocery) response for ${listing.address}:`, nearestGrocery);
       if (nearestGrocery) {
         const distance = haversineDistance(listing.lat, listing.lon, nearestGrocery.lat, nearestGrocery.lon);
         listing.nearestGrocery = { ...nearestGrocery, distance: distance.toFixed(2) + " mi" };
@@ -149,6 +155,7 @@ export async function updateUserPreferences(preferences) {
         console.log(`Nearest Gym for ${listing.address}: ${nearestGym.lat}, ${nearestGym.lon}`);
       } else {
         listing.nearestGym = null;
+        console.warn(`No nearest gym found for ${listing.address}`);
       }
       return listing;
     })
