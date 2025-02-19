@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     }
 
     const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lon}&radius=2000&type=${type}&keyword=${encodeURIComponent(keyword)}&key=${API_KEY}`;
-
+    console.log("Calling Google Places API with URL:", url);
     try {
         const response = await fetch(url);
         const data = await response.json();
