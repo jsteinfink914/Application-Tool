@@ -33,6 +33,11 @@
 
   function initializeMap(listingsData) {
     const mapContainer = document.getElementById('map');
+     listingsData.forEach(listing => {
+        console.log(`🔍 Checking listing: ${listing.address}`);
+        console.log(`   🛒 Nearest Grocery:`, listing.nearestGrocery);
+        console.log(`   🏋️ Nearest Gym:`, listing.nearestGym);
+    });
 
     if (!mapContainer) {
         console.warn("🚨 #map container missing! Retrying in 500ms...");
@@ -134,6 +139,9 @@
 
 
   const handleCompare = async () => {
+    await tick();
+    const preferences = get(userPreferences);
+    const updatedListings = await updateUserPreferences(preferences);
     const data = getCompareData();
     console.log("🔍 Compare Data:", data); // ✅ Ensure lat/lon is present
     compareListings.set(data);

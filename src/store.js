@@ -172,7 +172,9 @@ export async function updateUserPreferences(preferences) {
   );
 
   listings.set(updatedListings);
+  await tick();
   console.log(`✅ Updated listings with nearest grocery and gym`, updatedListings);
+  return updatedListings
 }
 
 
