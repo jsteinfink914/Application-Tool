@@ -23,8 +23,12 @@
   let showComparePage = writable(false);
   let showMap = writable(false); // ✅ Moved inside <script>
 
-  const updatePreferences = () => {
-    updateUserPreferences({ grocery: groceryStore, gym: gym });
+  const updatePreferences = async () => {
+    await updateUserPreferences({ grocery: groceryStore, gym: gym });
+    await tick(); // Wait for listings to update
+    if ($showComparePage) {
+      initializeMap($compareListings);
+    }
   };
 
   function initializeMap(listingsData) {
@@ -130,7 +134,7 @@
 
 
   const handleCompare = async () => {
-    let data = getCompareData();
+    const data = getCompareData();
     console.log("🔍 Compare Data:", data); // ✅ Ensure lat/lon is present
     compareListings.set(data);
 
@@ -145,9 +149,9 @@
             const mapContainer = document.getElementById('map');
             if (!mapContainer) {
                 console.warn("🚨 #map container still missing! Retrying in 500ms...");
-                setTimeout(() => initializeMap($listings), 500);
+                setTimeout(() => initializeMap(data), 500);
             } else {
-                initializeMap($listings);
+                initializeMap(data);
             }
         }, 300); // ✅ Small delay to ensure rendering
     }

@@ -124,7 +124,7 @@ export async function updateUserPreferences(preferences) {
   console.log(`🌍 Finding nearest locations for grocery: ${preferences.grocery} and gym: ${preferences.gym}`);
 
   // Check if listings are loaded
-  let currentListings = get(listings);
+  const currentListings = get(listings);
   if (currentListings.length === 0) {
     console.warn("⚠️ Listings not yet loaded. Retrying in 1 second...");
     setTimeout(() => updateUserPreferences(preferences), 1000);
@@ -138,6 +138,7 @@ export async function updateUserPreferences(preferences) {
       if (nearestGrocery) {
         const distance = haversineDistance(listing.lat, listing.lon, nearestGrocery.lat, nearestGrocery.lon);
         listing.nearestGrocery = { ...nearestGrocery, distance: distance.toFixed(2) + " mi" };
+        console.log(`Nearest Grocery for ${listing.address}: ${nearestGrocery.lat}, ${nearestGrocery.lon}`);
       } else {
         listing.nearestGrocery = null;
       }
@@ -145,6 +146,7 @@ export async function updateUserPreferences(preferences) {
       if (nearestGym) {
         const distance = haversineDistance(listing.lat, listing.lon, nearestGym.lat, nearestGym.lon);
         listing.nearestGym = { ...nearestGym, distance: distance.toFixed(2) + " mi" };
+        console.log(`Nearest Gym for ${listing.address}: ${nearestGym.lat}, ${nearestGym.lon}`);
       } else {
         listing.nearestGym = null;
       }
