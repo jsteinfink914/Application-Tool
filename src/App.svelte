@@ -197,6 +197,32 @@
     width: 100%;
     height: 500px;
   }
+  .table-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+  }
+  .listing-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .listing {
+    background: white;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 30%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
 
   #map {
     width: 100%;
@@ -222,17 +248,20 @@
 
 {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   {#if $listings.length > 0}
-  <div class="listing-container">
-    {#each $listings as listing (listing.address)}
-      <div class="listing">
-        <span>{listing.address}</span>
-        <button on:click={() => handleFavoriteToggle(listing)}>
-          {#if $favorites.some(fav => fav.address === listing.address)} ❤️ {:else} ♡ {/if}
-        </button>
-      </div>
-    {/each}
-  </div>
-{:else}
+  <div class="table-container">
+  <h3>Available Listings</h3>
+  {#if $listings.length > 0}
+    <div class="listing-container">
+      {#each $listings as listing (listing.address)}
+        <div class="listing">
+          <span>{listing.address}</span>
+          <button class="favorite-button" on:click={() => toggleFavorite(listing)}>
+            {#if $favorites.some(fav => fav.address === listing.address)} ❤️ {:else} ♡ {/if}
+          </button>
+        </div>
+      {/each}
+    </div>
+  {:else}
   <p>⚠️ No listings found. Check logs.</p> <!-- ✅ Debugging message -->
 {/if}
 
