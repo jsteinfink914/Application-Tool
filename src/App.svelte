@@ -289,6 +289,7 @@ function addGymAndGroceryMarkers(listing,color) {
     else {
     console.warn("⚠️ No grocery coordinates found for:", listing.address);
   }
+}
 
 
   const handleCompare = async () => {
