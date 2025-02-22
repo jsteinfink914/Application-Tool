@@ -243,7 +243,7 @@
     border-left: 2px solid #ddd;
     background-color: #fff;
     position: fixed;
-    right: 0;
+    right: -300px;
     top: 0;
     height: 100vh;
     transition: transform 0.3s ease-in-out;
