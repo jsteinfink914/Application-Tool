@@ -21,6 +21,10 @@
     dishwasher: true,
   });
 
+  let directionsService;
+  let directionsRenderers = [];
+  let cachedRoutes = new Map(); // ✅ Stores already-fetched routes
+
   let groceryStore = '';
   let gym = '';
   let showComparePage = writable(false);
@@ -120,6 +124,7 @@
                     // ✅ Only show gym/grocery on click if mode is "onClick"
                       if (mode === "onClick") {
                         clearGymAndGroceryMarkers(); // ✅ Remove previous ones
+                        clearRoutes();
                         addGymAndGroceryMarkers(listing, color);
                       }
                   });
@@ -154,6 +159,53 @@
     favorites.update(favs => [...favs]); // ✅ Ensure reactivity
 };
 
+function drawRoute(listing, destination, infoWindow) {
+  const routeKey = `${listing.lat},${listing.lon}-${destination.lat},${destination.lon}`;
+  if (cachedRoutes.has(routeKey)) {
+    console.log(`✅ Using cached route for ${routeKey}`);
+    displayCachedRoute(cachedRoutes.get(routeKey), infoWindow);
+    return;
+  }
+  const request = {
+    origin: { lat: listing.lat, lng: listing.lon },
+    destination: { lat: destination.lat, lng: destination.lon },
+    travelMode: google.maps.TravelMode.WALKING,
+  };
+
+ directionsService.route(request, (result, status) => {
+    if (status === google.maps.DirectionsStatus.OK) {
+      cachedRoutes.set(routeKey, result); // ✅ Store in cache
+      displayCachedRoute(result, infoWindow);
+    } else {
+      console.warn("⚠️ Directions API request failed:", status);
+    }
+  });
+}
+
+function displayCachedRoute(result, infoWindow) {
+  const directionsRenderer = new google.maps.DirectionsRenderer({
+    map,
+    directions: result,
+    suppressMarkers: true,
+    polylineOptions: {
+      strokeColor: "#0000FF",
+      strokeOpacity: 0.7,
+      strokeWeight: 5,
+    },
+  });
+
+  directionsRenderers.push(directionsRenderer);
+
+  const route = result.routes[0].legs[0];
+  infoWindow.setContent(`<strong>${route.end_address}</strong><br>🚶 Walk: ${route.duration.text}`);
+}
+
+function clearRoutes() {
+  directionsRenderers.forEach(renderer => renderer.setMap(null));
+  directionsRenderers = [];
+}
+
+
 function addGymAndGroceryMarkers(listing,color) {
     // Remove existing gym and grocery markers if they exist
   if (listing.gymMarker) {
@@ -163,6 +215,11 @@ function addGymAndGroceryMarkers(listing,color) {
   if (listing.groceryMarker) {
     listing.groceryMarker.setMap(null);
     listing.groceryMarker = null;
+  }
+  // Clear previous routes
+  clearRoutes();
+  if (!directionsService) {
+    directionsService = new google.maps.DirectionsService();
   }
 
   // ✅ Custom icon sizes
@@ -196,6 +253,9 @@ function addGymAndGroceryMarkers(listing,color) {
       gymInfoWindow.open(map, listing.gymMarker);
     });
     markers.push(listing.gymMarker);
+     // ✅ Draw route to Gym
+    drawRoute(listing, listing.nearestGym, gymInfoWindow);
+  }
 
   } else {
     console.warn("⚠️ No gym coordinates found for:", listing.address);
@@ -223,11 +283,14 @@ function addGymAndGroceryMarkers(listing,color) {
     });
     
     markers.push(listing.groceryMarker);
+     // ✅ Draw route to Grocery
+    drawRoute(listing, listing.nearestGrocery, groceryInfoWindow);
+  }
 
-  } else {
+    else {
     console.warn("⚠️ No grocery coordinates found for:", listing.address);
   }
-}
+
 
   const handleCompare = async () => {
     await tick();
