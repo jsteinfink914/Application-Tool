@@ -362,7 +362,7 @@
     <button class="sidebar-toggle {sidebarOpen ? 'open' : ''}" on:click={toggleSidebar}>
       {sidebarOpen ? "❌ Close" : "⚙ Preferences"}
     </button>
-    <div id="sidebar" class:open={sidebarOpen}>
+    <div id="sidebar" class="{sidebarOpen ? 'open' : ''}">
       <h3>Preferences</h3>
       <input type="text" bind:value={groceryStore} placeholder="Favorite Grocery Store" />
       <input type="text" bind:value={gym} placeholder="Favorite Gym" />
