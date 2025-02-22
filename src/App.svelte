@@ -73,6 +73,7 @@
     await tick(); // Wait for listings to update
     compareListings.set(getCompareData());
     if ($showComparePage) {
+      clearRoutes(); // ✅ Ensures old routes disappear
       initializeMap(get(compareListings));
     }
   };
@@ -127,7 +128,9 @@
                         clearGymAndGroceryMarkers(); // ✅ Remove previous ones
                         clearRoutes();
                         addGymAndGroceryMarkers(listing, color);
-                      }
+                      }else {
+                          clearRoutes(); // ✅ Prevents routes from appearing in "Show All"
+                        }
                   });
 
               markers.push(listingMarker);
