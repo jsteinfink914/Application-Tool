@@ -8,6 +8,7 @@
   import { writable,get } from 'svelte/store';
 
   let map;
+  const GOOGLE_MAPS_API_KEY = 'AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU'
   let markers = [];
   let compareListings = writable([]);
   let selectedAttributesLocal = writable({
@@ -261,6 +262,7 @@
         </div>
       {/each}
     </div>
+  </div>
   {:else}
   <p>⚠️ No listings found. Check logs.</p> <!-- ✅ Debugging message -->
 {/if}
