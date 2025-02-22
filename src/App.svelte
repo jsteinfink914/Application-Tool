@@ -303,6 +303,32 @@
   th {
     background-color: #f4f4f4;
   }
+  .save-button {
+    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    width: 100%;
+  }
+
+  .attributes-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  .attributes-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+
+  .attributes-table input {
+    margin-right: 10px;
+  }
 </style>
 
 {#if !$showComparePage}  <!-- ❌ Missing `$` -->
@@ -340,13 +366,30 @@
       <h3>Preferences</h3>
       <input type="text" bind:value={groceryStore} placeholder="Favorite Grocery Store" />
       <input type="text" bind:value={gym} placeholder="Favorite Gym" />
-      <button on:click={updatePreferences}>Save Preferences</button>
-      <h3>Attributes</h3>
-      <input type="checkbox" bind:checked={$selectedAttributesLocal.price} /> Price
-      <input type="checkbox" bind:checked={$selectedAttributesLocal.squareFootage} /> Square Footage
-      <input type="checkbox" bind:checked={$selectedAttributesLocal.laundryInBuilding} /> Laundry in Building
-      <input type="checkbox" bind:checked={$selectedAttributesLocal.doorman} /> Doorman
-      <input type="checkbox" bind:checked={$selectedAttributesLocal.dishwasher} /> Dishwasher
+      <button class="save-button" on:click={updatePreferences}>Save Preferences</button> <!-- ✅ Now below inputs -->
+
+<h3>Attributes</h3>
+
+      <table class="attributes-table">
+  <tbody>
+    <tr>
+      <td><input type="checkbox" bind:checked={$selectedAttributesLocal.price} /> Price</td>
+    </tr>
+    <tr>
+      <td><input type="checkbox" bind:checked={$selectedAttributesLocal.squareFootage} /> Square Footage</td>
+    </tr>
+    <tr>
+      <td><input type="checkbox" bind:checked={$selectedAttributesLocal.laundryInBuilding} /> Laundry in Building</td>
+    </tr>
+    <tr>
+      <td><input type="checkbox" bind:checked={$selectedAttributesLocal.doorman} /> Doorman</td>
+    </tr>
+    <tr>
+      <td><input type="checkbox" bind:checked={$selectedAttributesLocal.dishwasher} /> Dishwasher</td>
+    </tr>
+  </tbody>
+</table>
+
     </div>
 
     <div class="listing-details">
