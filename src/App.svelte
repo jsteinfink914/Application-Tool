@@ -34,6 +34,7 @@
 
   function toggleShowMode() {
     showMode.update(mode => (mode === "onClick" ? "showAll" : "onClick"));
+    clearGymAndGroceryMarkers(); 
     initializeMap(get(compareListings)); // ✅ Re-render map with new mode
   }
 
@@ -116,7 +117,11 @@
 
               listingMarker.addListener("click", () => {
                     infoWindow.open(map, listingMarker);
-                    if (mode === "onClick") addGymAndGroceryMarkers(listing, color);
+                    // ✅ Only show gym/grocery on click if mode is "onClick"
+                      if (mode === "onClick") {
+                        clearGymAndGroceryMarkers(); // ✅ Remove previous ones
+                        addGymAndGroceryMarkers(listing, color);
+                      }
                   });
 
               markers.push(listingMarker);
@@ -127,7 +132,17 @@
                 }
               });
   }
-    
+  
+  function clearGymAndGroceryMarkers() {
+  markers = markers.filter(marker => {
+    if (marker.isGym || marker.isGrocery) {
+      marker.setMap(null); // ✅ Remove from map
+      return false; // ✅ Filter out removed markers
+    }
+    return true;
+  });
+}
+
 
 
   const handleFavoriteToggle = (listing) => {
@@ -139,7 +154,7 @@
     favorites.update(favs => [...favs]); // ✅ Ensure reactivity
 };
 
-function addGymAndGroceryMarkers(listing) {
+function addGymAndGroceryMarkers(listing,color) {
     // Remove existing gym and grocery markers if they exist
   if (listing.gymMarker) {
     listing.gymMarker.setMap(null);
@@ -172,6 +187,7 @@ function addGymAndGroceryMarkers(listing) {
       title: `Gym: ${listing.nearestGym.name}`,
     });
 
+    listing.gymMarker.isGym = true; // ✅ Identify as gym marker
     const gymInfoWindow = new google.maps.InfoWindow({
       content: `<strong>🏋️ Gym: ${listing.nearestGym.name}</strong><br>📍 Distance: ${listing.nearestGym.distance}`,
     });
@@ -195,6 +211,8 @@ function addGymAndGroceryMarkers(listing) {
       icon: groceryIcon,
       title: `Grocery: ${listing.nearestGrocery.name}`,
     });
+
+    listing.groceryMarker.isGrocery = true; // ✅ Identify as grocery marker
 
     const groceryInfoWindow = new google.maps.InfoWindow({
       content: `<strong>🛒 Grocery: ${listing.nearestGrocery.name}</strong><br>📍 Distance: ${listing.nearestGrocery.distance}`,
