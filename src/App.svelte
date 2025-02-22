@@ -243,7 +243,7 @@
     border-left: 2px solid #ddd;
     background-color: #fff;
     position: fixed;
-    right: -300px;
+    right: 0;
     top: 0;
     height: 100vh;
     transition: transform 0.3s ease-in-out;
@@ -252,10 +252,11 @@
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
   }
   #sidebar.open {
-     right: 0; /* Slide into view */
+     transform: translateX(0); 
   }
   .sidebar-toggle {
     position: fixed;
+    transition: right 0.3s ease-in-out;
     top: 50%;
     right: 0;
     transform: translateY(-50%);
