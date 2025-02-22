@@ -256,8 +256,7 @@ function addGymAndGroceryMarkers(listing,color) {
      // ✅ Draw route to Gym
     drawRoute(listing, listing.nearestGym, gymInfoWindow);
   }
-
-  } else {
+   else {
     console.warn("⚠️ No gym coordinates found for:", listing.address);
   }
 
