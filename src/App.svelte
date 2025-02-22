@@ -39,6 +39,7 @@
   function toggleShowMode() {
     showMode.update(mode => (mode === "onClick" ? "showAll" : "onClick"));
     clearGymAndGroceryMarkers(); 
+    clearRoutes();
     initializeMap(get(compareListings)); // ✅ Re-render map with new mode
   }
 
