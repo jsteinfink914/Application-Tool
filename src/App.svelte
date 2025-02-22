@@ -10,6 +10,8 @@
   let map;
   const GOOGLE_MAPS_API_KEY = 'AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU'
   let markers = [];
+  let listingMarkers = new Map();
+  let showMode = writable("OnClick");
   let compareListings = writable([]);
   let selectedAttributesLocal = writable({
     price: true,
@@ -28,6 +30,20 @@
   function toggleSidebar() {
     sidebarOpen = !sidebarOpen;
     console.log("Sidebar state:", sidebarOpen); // Debugging
+  }
+
+  function toggleShowMode() {
+    showMode.update(mode => (mode === "onClick" ? "showAll" : "onClick"));
+    initializeMap(get(compareListings)); // ✅ Re-render map with new mode
+  }
+
+  // **Predefined Colors for Unique Listings**
+  const colors = [
+    "red", "blue", "green", "purple", "orange", "pink", "yellow", "cyan"
+  ];
+
+  function getRandomColor(index) {
+    return colors[index % colors.length];
   }
 
    // **Load Google Maps API dynamically**
@@ -56,6 +72,7 @@
   };
 
   function initializeMap(listingsData) {
+    const mode = get(showMode);
     const mapContainer = document.getElementById('map');
      listingsData.forEach(listing => {
         console.log(`🔍 Checking listing: ${listing.address}`);
@@ -79,33 +96,39 @@
     console.log("🟢 Listings to add markers for:", listingsData);
     markers.forEach(marker => marker.setMap(null));
     markers = [];
+    listingMakers.clear();
+    const listingIcon = {
+              url: "/icons/house.png", 
+              scaledSize: new google.maps.Size(30, 30) // ✅ Adjusted to smaller size
+            };
 
     listingsData.forEach(listing => {
         if (listing.lat && listing.lon) {
+            const color = getRandomColor(index);
             console.log(`📌 Adding marker for ${listing.address}`);
-             const marker = new google.maps.Marker({
-                          position: { lat: listing.lat, lng: listing.lon },
-                          map,
-                          title: listing.address,
-                          icon: "/icons/house.png",
-                        });
-              const infoWindow = new google.maps.InfoWindow({
-                        content: `
-                          <strong>${listing.address}</strong><br>
-                          🛒 Nearest Grocery: ${listing.nearestGrocery?.name || 'N/A'} (${listing.nearestGrocery?.distance || 'N/A'})<br>
-                          🏋️ Nearest Gym: ${listing.nearestGym?.name || 'N/A'} (${listing.nearestGym?.distance || 'N/A'})
-                        `,
-                      });
-              marker.addListener("click", () => {
-                    infoWindow.open(map, marker);
-                    addGymAndGroceryMarkers(listing);
+             const listingMarker = new google.maps.Marker({
+                    position: { lat: listing.lat, lng: listing.lon },
+                    map,
+                    title: listing.address,
+                    icon: `http://maps.google.com/mapfiles/ms/icons/${color}-dot.png`,
                   });
-            markers.push(marker);
-        }else{
-           console.warn(`⚠️ Missing lat/lon for:`, listing);
-        }
-    });
-      console.log("✅ Google Map and markers successfully initialized.");
+
+              const infoWindow = new google.maps.InfoWindow({
+                    content: `<strong>${listing.address}</strong>`,
+                  });
+
+              listingMarker.addListener("click", () => {
+                    infoWindow.open(map, listingMarker);
+                    if (mode === "onClick") addGymAndGroceryMarkers(listing, color);
+                  });
+
+              markers.push(listingMarker);
+              listingMarkers.set(listing.address, { listingMarker, color });
+
+                  // ✅ Add gym & grocery markers immediately if "Show All"
+                  if (mode === "showAll") addGymAndGroceryMarkers(listing, color);
+                }
+              });
   }
     
 
@@ -130,6 +153,17 @@ function addGymAndGroceryMarkers(listing) {
     listing.groceryMarker = null;
   }
 
+  // ✅ Custom icon sizes
+  const gymIcon = {
+      url: `http://maps.google.com/mapfiles/ms/icons/${color}-dot.png`,
+      scaledSize: new google.maps.Size(30, 30),
+    };
+
+    const groceryIcon = {
+      url: `http://maps.google.com/mapfiles/ms/icons/${color}-dot.png`,
+      scaledSize: new google.maps.Size(30, 30),
+    };
+
     // Add gym marker
     if (listing.nearestGym?.lat && listing.nearestGym?.lon) {
     console.log(`🏋️ Adding gym marker at ${listing.nearestGym.lat}, ${listing.nearestGym.lon}`);
@@ -137,7 +171,7 @@ function addGymAndGroceryMarkers(listing) {
     listing.gymMarker = new google.maps.Marker({
       position: { lat: listing.nearestGym.lat, lng: listing.nearestGym.lon },
       map, // ✅ Make sure the marker is added to the map
-      icon: "/icons/gym.png",
+      icon: gymIcon,
       title: `Gym: ${listing.nearestGym.name}`,
     });
 
@@ -148,6 +182,8 @@ function addGymAndGroceryMarkers(listing) {
     listing.gymMarker.addListener("click", () => {
       gymInfoWindow.open(map, listing.gymMarker);
     });
+    markers.push(listing.gymMarker);
+
   } else {
     console.warn("⚠️ No gym coordinates found for:", listing.address);
   }
@@ -159,7 +195,7 @@ function addGymAndGroceryMarkers(listing) {
     listing.groceryMarker = new google.maps.Marker({
       position: { lat: listing.nearestGrocery.lat, lng: listing.nearestGrocery.lon },
       map, // ✅ Ensure it's added to the map
-      icon: "/icons/grocery.png",
+      icon: groceryIcon,
       title: `Grocery: ${listing.nearestGrocery.name}`,
     });
 
@@ -170,6 +206,9 @@ function addGymAndGroceryMarkers(listing) {
     listing.groceryMarker.addListener("click", () => {
       groceryInfoWindow.open(map, listing.groceryMarker);
     });
+    
+    markers.push(listing.groceryMarker);
+
   } else {
     console.warn("⚠️ No grocery coordinates found for:", listing.address);
   }
@@ -458,6 +497,12 @@ function addGymAndGroceryMarkers(listing) {
     </div>
 
     {#if $showMap}
+    <div>
+    <!-- Toggle Button for Show All / On Click Mode -->
+    <button on:click={toggleShowMode} style="margin-bottom: 10px;">
+      { $showMode === "onClick" ? "Show All" : "On Click" }
+    </button>
+  </div>
       <div id="map-container">
         <div id="map"></div>
       </div>
