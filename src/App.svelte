@@ -97,12 +97,9 @@
     markers.forEach(marker => marker.setMap(null));
     markers = [];
     listingMarkers.clear();
-    const listingIcon = {
-              url: "/icons/house.png", 
-              scaledSize: new google.maps.Size(30, 30) // ✅ Adjusted to smaller size
-            };
+   
 
-    listingsData.forEach(listing => {
+    listingsData.forEach((listing,index) => {
         if (listing.lat && listing.lon) {
             const color = getRandomColor(index);
             console.log(`📌 Adding marker for ${listing.address}`);
