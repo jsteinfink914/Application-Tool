@@ -96,7 +96,7 @@
     console.log("🟢 Listings to add markers for:", listingsData);
     markers.forEach(marker => marker.setMap(null));
     markers = [];
-    listingMakers.clear();
+    listingMarkers.clear();
     const listingIcon = {
               url: "/icons/house.png", 
               scaledSize: new google.maps.Size(30, 30) // ✅ Adjusted to smaller size
