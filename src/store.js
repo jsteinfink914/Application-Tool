@@ -3,7 +3,7 @@ import Papa from 'papaparse';
 
 export const listings = writable([]);
 export const favorites = writable([]);
-export const selectedAttributes = writable(['price', 'sq_ft', 'laundry in building', 'doorman', 'dishwasher']);
+export const selectedAttributes = writable(['price', 'sq_ft', 'laundryinbuilding', 'doorman', 'dishwasher']);
 export const userPreferences = writable({ grocery: '', gym: '' });
 
 /**

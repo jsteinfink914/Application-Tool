@@ -249,19 +249,26 @@
     transition: transform 0.3s ease-in-out;
     transform: translateX(100%);
     z-index: 1000;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
   }
   #sidebar.open {
-    transform: translateX(0);
+     right: 0; /* Slide into view */
   }
   .sidebar-toggle {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 10px;
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    padding: 10px 15px;
     background-color: #007bff;
     color: white;
     border: none;
     cursor: pointer;
+    z-index: 1100;
+    border-radius: 8px 0 0 8px;
+  }
+  .sidebar-toggle.open {
+    right: 300px; /* Moves button next to sidebar */
   }
   .listing-details {
     width: 100%;
@@ -326,8 +333,9 @@
 
 {:else}
   <div id="container">
-    <button class="sidebar-toggle" on:click={toggleSidebar}>⚙ Preferences</button>
-
+    <button class="sidebar-toggle {sidebarOpen ? 'open' : ''}" on:click={toggleSidebar}>
+      {sidebarOpen ? "❌ Close" : "⚙ Preferences"}
+    </button>
     <div id="sidebar" class:open={sidebarOpen}>
       <h3>Preferences</h3>
       <input type="text" bind:value={groceryStore} placeholder="Favorite Grocery Store" />
