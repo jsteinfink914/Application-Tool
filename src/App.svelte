@@ -27,6 +27,7 @@
   let sidebarOpen = false;
   function toggleSidebar() {
     sidebarOpen = !sidebarOpen;
+    console.log("Sidebar state:", sidebarOpen); // Debugging
   }
 
   const updatePreferences = async () => {
@@ -360,7 +361,7 @@
 
 {:else}
   <div id="container">
-    <button class="sidebar-toggle {sidebarOpen ? 'open' : ''}" on:click={toggleSidebar}>
+    <button class="sidebar-toggle" class:open={sidebarOpen} on:click={toggleSidebar}>
       {sidebarOpen ? "❌ Close" : "⚙ Preferences"}
     </button>
     <div id="sidebar" class="{sidebarOpen ? 'open' : ''}">
