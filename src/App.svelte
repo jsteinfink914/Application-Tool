@@ -79,20 +79,6 @@
     console.log("🟢 Listings to add markers for:", listingsData);
     markers.forEach(marker => marker.setMap(null));
     markers = [];
-    const listingIcon = L.icon({
-        iconUrl: '/icons/house.png', 
-        iconSize: [30, 30]
-    });
-
-    const groceryIcon = L.icon({
-        iconUrl: '/icons/grocery.png',
-        iconSize: [25, 25]
-    });
-
-    const gymIcon = L.icon({
-        iconUrl: '/icons/gym.png',
-        iconSize: [25, 25]
-    });
 
     listingsData.forEach(listing => {
         if (listing.lat && listing.lon) {
@@ -101,7 +87,7 @@
                           position: { lat: listing.lat, lng: listing.lon },
                           map,
                           title: listing.address,
-                          icon: listingIcon,
+                          icon: "/icons/house.png",
                         });
               const infoWindow = new google.maps.InfoWindow({
                         content: `
@@ -134,44 +120,60 @@
 };
 
 function addGymAndGroceryMarkers(listing) {
-    // Remove existing markers
-    if (listing.gymMarker) listing.gymMarker.setMap(null);
-    if (listing.groceryMarker) listing.groceryMarker.setMap(null);
+    // Remove existing gym and grocery markers if they exist
+  if (listing.gymMarker) {
+    listing.gymMarker.setMap(null);
+    listing.gymMarker = null;
+  }
+  if (listing.groceryMarker) {
+    listing.groceryMarker.setMap(null);
+    listing.groceryMarker = null;
+  }
 
     // Add gym marker
     if (listing.nearestGym?.lat && listing.nearestGym?.lon) {
-      listing.gymMarker = new google.maps.Marker({
-        position: { lat: listing.nearestGym.lat, lng: listing.nearestGym.lon },
-        map,
-        icon: gymIcon,
-      });
+    console.log(`🏋️ Adding gym marker at ${listing.nearestGym.lat}, ${listing.nearestGym.lon}`);
 
-      const gymInfoWindow = new google.maps.InfoWindow({
-        content: `<strong>🏋️ Gym: ${listing.nearestGym.name}</strong><br>📍 Distance: ${listing.nearestGym.distance}`,
-      });
+    listing.gymMarker = new google.maps.Marker({
+      position: { lat: listing.nearestGym.lat, lng: listing.nearestGym.lon },
+      map, // ✅ Make sure the marker is added to the map
+      icon: "/icons/gym.png",
+      title: `Gym: ${listing.nearestGym.name}`,
+    });
 
-      listing.gymMarker.addListener("click", () => {
-        gymInfoWindow.open(map, listing.gymMarker);
-      });
-    }
+    const gymInfoWindow = new google.maps.InfoWindow({
+      content: `<strong>🏋️ Gym: ${listing.nearestGym.name}</strong><br>📍 Distance: ${listing.nearestGym.distance}`,
+    });
 
-    // Add grocery marker
-    if (listing.nearestGrocery?.lat && listing.nearestGrocery?.lon) {
-      listing.groceryMarker = new google.maps.Marker({
-        position: { lat: listing.nearestGrocery.lat, lng: listing.nearestGrocery.lon },
-        map,
-        icon: groceryIcon,
-      });
-
-      const groceryInfoWindow = new google.maps.InfoWindow({
-        content: `<strong>🛒 Grocery: ${listing.nearestGrocery.name}</strong><br>📍 Distance: ${listing.nearestGrocery.distance}`,
-      });
-
-      listing.groceryMarker.addListener("click", () => {
-        groceryInfoWindow.open(map, listing.groceryMarker);
-      });
-    }
+    listing.gymMarker.addListener("click", () => {
+      gymInfoWindow.open(map, listing.gymMarker);
+    });
+  } else {
+    console.warn("⚠️ No gym coordinates found for:", listing.address);
   }
+
+  // ✅ Add Grocery Marker
+  if (listing.nearestGrocery?.lat && listing.nearestGrocery?.lon) {
+    console.log(`🛒 Adding grocery marker at ${listing.nearestGrocery.lat}, ${listing.nearestGrocery.lon}`);
+
+    listing.groceryMarker = new google.maps.Marker({
+      position: { lat: listing.nearestGrocery.lat, lng: listing.nearestGrocery.lon },
+      map, // ✅ Ensure it's added to the map
+      icon: "/icons/grocery.png",
+      title: `Grocery: ${listing.nearestGrocery.name}`,
+    });
+
+    const groceryInfoWindow = new google.maps.InfoWindow({
+      content: `<strong>🛒 Grocery: ${listing.nearestGrocery.name}</strong><br>📍 Distance: ${listing.nearestGrocery.distance}`,
+    });
+
+    listing.groceryMarker.addListener("click", () => {
+      groceryInfoWindow.open(map, listing.groceryMarker);
+    });
+  } else {
+    console.warn("⚠️ No grocery coordinates found for:", listing.address);
+  }
+}
 
   const handleCompare = async () => {
     await tick();
