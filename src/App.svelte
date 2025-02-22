@@ -251,7 +251,6 @@
   {#if $listings.length > 0}
   <div class="table-container">
   <h3>Available Listings</h3>
-  {#if $listings.length > 0}
     <div class="listing-container">
       {#each $listings as listing (listing.address)}
         <div class="listing">
