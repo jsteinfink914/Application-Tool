@@ -24,6 +24,11 @@
   let showComparePage = writable(false);
   let showMap = writable(false); // ✅ Moved inside <script>
 
+  let sidebarOpen = false;
+  function toggleSidebar() {
+    sidebarOpen = !sidebarOpen;
+  }
+
   const updatePreferences = async () => {
     await updateUserPreferences({ grocery: groceryStore, gym: gym });
     await tick(); // Wait for listings to update
@@ -193,6 +198,9 @@
   #container {
     display: flex;
     height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
   #map-container {
     width: 100%;
@@ -234,6 +242,35 @@
     padding: 20px;
     border-left: 2px solid #ddd;
     background-color: #fff;
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+    z-index: 1000;
+  }
+  #sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  .listing-details {
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px;
   }
   .compare-button {
     position: absolute;
@@ -244,6 +281,20 @@
     color: white;
     border: none;
     cursor: pointer;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f4f4f4;
   }
 </style>
 
@@ -263,7 +314,7 @@
     </div>
   </div>
   {:else}
-  <p>⚠️ No listings found. Check logs.</p> <!-- ✅ Debugging message -->
+  <p>Listings Loading.</p> <!-- ✅ Debugging message -->
 {/if}
 
 
@@ -275,17 +326,9 @@
 
 {:else}
   <div id="container">
-    {#if $showMap}
-  <div id="map-container">
-    <div id="map"></div>
-    <p>✅ Map should be visible!</p> <!-- 🔥 Debugging text -->
-  </div>
-{:else}
-  <p>❌ Map is NOT showing - $showMap is false!</p> <!-- 🔥 Debugging text -->
-{/if}
+    <button class="sidebar-toggle" on:click={toggleSidebar}>⚙ Preferences</button>
 
-    </div>
-    <div id="sidebar">
+    <div id="sidebar" class:open={sidebarOpen}>
       <h3>Preferences</h3>
       <input type="text" bind:value={groceryStore} placeholder="Favorite Grocery Store" />
       <input type="text" bind:value={gym} placeholder="Favorite Gym" />
@@ -297,35 +340,43 @@
       <input type="checkbox" bind:checked={$selectedAttributesLocal.doorman} /> Doorman
       <input type="checkbox" bind:checked={$selectedAttributesLocal.dishwasher} /> Dishwasher
     </div>
-  <div class="listing-details">
-    <h3>Comparison</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Address</th>
-          {#if $selectedAttributesLocal.price} <th>Price</th> {/if}
-          {#if $selectedAttributesLocal.squareFootage} <th>Sq Ft</th> {/if}
-          {#if $selectedAttributesLocal.laundryInBuilding} <th>Laundry</th> {/if}
-          {#if $selectedAttributesLocal.doorman} <th>Doorman</th> {/if}
-          {#if $selectedAttributesLocal.dishwasher} <th>Dishwasher</th> {/if}
-          <th>Nearest Grocery Store</th>
-          <th>Nearest Gym</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each $compareListings as listing}
+
+    <div class="listing-details">
+      <h3>Comparison</h3>
+      <table>
+        <thead>
           <tr>
-            <td>{listing.address}</td>
-            {#if $selectedAttributesLocal.price} <td>{listing.price || 'N/A'}</td> {/if}
-            {#if $selectedAttributesLocal.squareFootage} <td>{listing.squareFootage || 'N/A'}</td> {/if}
-            {#if $selectedAttributesLocal.laundryInBuilding} <td>{listing.laundryInBuilding || 'N/A'}</td> {/if}
-            {#if $selectedAttributesLocal.doorman} <td>{listing.doorman || 'N/A'}</td> {/if}
-            {#if $selectedAttributesLocal.dishwasher} <td>{listing.dishwasher || 'N/A'}</td> {/if}
-            <td>{listing.nearestGrocery?.name} ({listing.nearestGrocery?.distance})</td>
-            <td>{listing.nearestGym?.name} ({listing.nearestGym?.distance})</td>
+            <th>Address</th>
+            {#if $selectedAttributesLocal.price} <th>Price</th> {/if}
+            {#if $selectedAttributesLocal.squareFootage} <th>Sq Ft</th> {/if}
+            {#if $selectedAttributesLocal.laundryInBuilding} <th>Laundry</th> {/if}
+            {#if $selectedAttributesLocal.doorman} <th>Doorman</th> {/if}
+            {#if $selectedAttributesLocal.dishwasher} <th>Dishwasher</th> {/if}
+            <th>Nearest Grocery Store</th>
+            <th>Nearest Gym</th>
           </tr>
-        {/each}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {#each $compareListings as listing}
+            <tr>
+              <td>{listing.address}</td>
+              {#if $selectedAttributesLocal.price} <td>{listing.price || 'N/A'}</td> {/if}
+              {#if $selectedAttributesLocal.squareFootage} <td>{listing.squareFootage || 'N/A'}</td> {/if}
+              {#if $selectedAttributesLocal.laundryInBuilding} <td>{listing.laundryInBuilding || 'N/A'}</td> {/if}
+              {#if $selectedAttributesLocal.doorman} <td>{listing.doorman || 'N/A'}</td> {/if}
+              {#if $selectedAttributesLocal.dishwasher} <td>{listing.dishwasher || 'N/A'}</td> {/if}
+              <td>{listing.nearestGrocery?.name} ({listing.nearestGrocery?.distance})</td>
+              <td>{listing.nearestGym?.name} ({listing.nearestGym?.distance})</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+
+    {#if $showMap}
+      <div id="map-container">
+        <div id="map"></div>
+      </div>
+    {/if}
   </div>
 {/if}
