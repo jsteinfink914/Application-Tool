@@ -265,7 +265,6 @@
   {:else}
   <p>⚠️ No listings found. Check logs.</p> <!-- ✅ Debugging message -->
 {/if}
-{/if}
 
 
   {#if $favorites && $favorites.length >= 3}
