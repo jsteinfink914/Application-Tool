@@ -127,7 +127,7 @@
                       if (mode === "onClick") {
                         clearGymAndGroceryMarkers(); // ✅ Remove previous ones
                         clearRoutes();
-                        addGymAndGroceryMarkers(listing, color);
+                        addGymAndGroceryMarkers(listing, color, true);
                       }else {
                           clearRoutes(); // ✅ Prevents routes from appearing in "Show All"
                         }
@@ -137,7 +137,7 @@
               listingMarkers.set(listing.address, { listingMarker, color });
 
                   // ✅ Add gym & grocery markers immediately if "Show All"
-                  if (mode === "showAll") addGymAndGroceryMarkers(listing, color);
+                  if (mode === "showAll") addGymAndGroceryMarkers(listing, color, false);
                 }
               });
   }
@@ -210,7 +210,7 @@ function clearRoutes() {
 }
 
 
-function addGymAndGroceryMarkers(listing,color) {
+function addGymAndGroceryMarkers(listing,color,drawRoutes) {
     // Remove existing gym and grocery markers if they exist
   if (listing.gymMarker) {
     listing.gymMarker.setMap(null);
@@ -257,8 +257,7 @@ function addGymAndGroceryMarkers(listing,color) {
       gymInfoWindow.open(map, listing.gymMarker);
     });
     markers.push(listing.gymMarker);
-     // ✅ Draw route to Gym
-    drawRoute(listing, listing.nearestGym, gymInfoWindow);
+    if (drawRoutes) drawRoute(listing, listing.nearestGym, gymInfoWindow);
   }
    else {
     console.warn("⚠️ No gym coordinates found for:", listing.address);
@@ -287,7 +286,7 @@ function addGymAndGroceryMarkers(listing,color) {
     
     markers.push(listing.groceryMarker);
      // ✅ Draw route to Grocery
-    drawRoute(listing, listing.nearestGrocery, groceryInfoWindow);
+    if (drawRoutes) drawRoute(listing, listing.nearestGrocery, groceryInfoWindow);
   }
 
     else {
