@@ -20,7 +20,6 @@
 
 
   let map;
-  const GOOGLE_MAPS_API_KEY = 'AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU'
   let markers = [];
   let listingMarkers = new Map();
   let showMode = writable("OnClick");
@@ -70,12 +69,17 @@
       callback();
       return;
     }
+    fetch('/api/maps-key')
+        .then(response => response.json())
+        .then({ key }) => {
+            if (!key) throw new Error("Missing API key from backend.");
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU&libraries=places`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`;
     script.async = true;
     script.defer = true;
     script.onload = callback;
     document.head.appendChild(script);
+  }
   }
 
   function getRouteMidPoint(route) {
