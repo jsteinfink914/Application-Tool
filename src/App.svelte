@@ -1,11 +1,23 @@
 
     
    <script>
-  import { listings, favorites, selectedAttributes, userPreferences } from './store.js';
-  import { toggleFavorite, getCompareData, updateUserPreferences } from './store.js';
+
+    // ✅ 1. External Libraries First
   import { onMount, tick } from 'svelte';
-  import L from 'leaflet';
-  import { writable,get } from 'svelte/store';
+  import { writable, get } from 'svelte/store'; 
+
+  // ✅ 2. Store Imports Next (No Duplicates)
+  import { 
+  listings, 
+  favorites, 
+  selectedAttributes, 
+  userPreferences, 
+  toggleFavorite, 
+  getCompareData, 
+  updateUserPreferences 
+} from './store.js';
+
+
 
   let map;
   const GOOGLE_MAPS_API_KEY = 'AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU'
@@ -65,6 +77,27 @@
     script.onload = callback;
     document.head.appendChild(script);
   }
+
+  function getRouteMidPoint(route) {
+  let totalDistance = 0;
+  let coveredDistance = 0;
+  let midPoint = null;
+
+  // ✅ Calculate total route distance
+  route.steps.forEach(step => totalDistance += step.distance.value);
+
+  // ✅ Find the midpoint step
+  for (const step of route.steps) {
+    coveredDistance += step.distance.value;
+    if (coveredDistance >= totalDistance / 2) { 
+      midPoint = step.end_location;
+      break;
+    }
+  }
+
+  return midPoint || route.steps[Math.floor(route.steps.length / 2)].end_location;
+}
+
 
 
 
@@ -163,11 +196,11 @@
     favorites.update(favs => [...favs]); // ✅ Ensure reactivity
 };
 
-function drawRoute(listing, destination, infoWindow) {
+function drawRoute(listing, destination) {
   const routeKey = `${listing.lat},${listing.lon}-${destination.lat},${destination.lon}`;
   if (cachedRoutes.has(routeKey)) {
     console.log(`✅ Using cached route for ${routeKey}`);
-    displayCachedRoute(cachedRoutes.get(routeKey), infoWindow);
+    displayCachedRoute(cachedRoutes.get(routeKey));
     return;
   }
   const request = {
@@ -179,14 +212,14 @@ function drawRoute(listing, destination, infoWindow) {
  directionsService.route(request, (result, status) => {
     if (status === google.maps.DirectionsStatus.OK) {
       cachedRoutes.set(routeKey, result); // ✅ Store in cache
-      displayCachedRoute(result, infoWindow);
+      displayCachedRoute(result);
     } else {
       console.warn("⚠️ Directions API request failed:", status);
     }
   });
 }
 
-function displayCachedRoute(result, infoWindow) {
+function displayCachedRoute(result) {
   const directionsRenderer = new google.maps.DirectionsRenderer({
     map,
     directions: result,
@@ -201,7 +234,14 @@ function displayCachedRoute(result, infoWindow) {
   directionsRenderers.push(directionsRenderer);
 
   const route = result.routes[0].legs[0];
-  infoWindow.setContent(`<strong>${route.end_address}</strong><br>🚶 Walk: ${route.duration.text}`);
+  const travelTime = route.duration.text; // ✅ Extract travel time
+  const midPoint = getRouteMidPoint(route); /
+  const infoWindow = new google.maps.InfoWindow({
+    content: `<strong>🚶 ${travelTime}</strong>`, // ✅ Show travel time above route
+    position: midPoint, // ✅ Position at route midpoint
+  });
+
+  infoWindow.open(map); // ✅ Show travel time on map
 }
 
 function clearRoutes() {
@@ -257,7 +297,7 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
       gymInfoWindow.open(map, listing.gymMarker);
     });
     markers.push(listing.gymMarker);
-    if (drawRoutes) drawRoute(listing, listing.nearestGym, gymInfoWindow);
+    if (drawRoutes) drawRoute(listing, listing.nearestGym);
   }
    else {
     console.warn("⚠️ No gym coordinates found for:", listing.address);
@@ -286,7 +326,7 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
     
     markers.push(listing.groceryMarker);
      // ✅ Draw route to Grocery
-    if (drawRoutes) drawRoute(listing, listing.nearestGrocery, groceryInfoWindow);
+    if (drawRoutes) drawRoute(listing, listing.nearestGrocery);
   }
 
     else {
