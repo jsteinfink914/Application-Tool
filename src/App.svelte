@@ -71,7 +71,7 @@
     }
     fetch('/api/maps-key')
         .then(response => response.json())
-        .then({ key }) => {
+        .then(({ key }) => {
             if (!key) throw new Error("Missing API key from backend.");
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`;
@@ -79,7 +79,7 @@
     script.defer = true;
     script.onload = callback;
     document.head.appendChild(script);
-  }
+  })
   }
 
   function getRouteMidPoint(route) {
