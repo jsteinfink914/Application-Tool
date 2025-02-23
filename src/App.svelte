@@ -235,7 +235,7 @@ function displayCachedRoute(result) {
 
   const route = result.routes[0].legs[0];
   const travelTime = route.duration.text; // ✅ Extract travel time
-  const midPoint = getRouteMidPoint(route); /
+  const midPoint = getRouteMidPoint(route); 
   const infoWindow = new google.maps.InfoWindow({
     content: `<strong>🚶 ${travelTime}</strong>`, // ✅ Show travel time above route
     position: midPoint, // ✅ Position at route midpoint
