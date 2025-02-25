@@ -26,10 +26,19 @@ async function fetchListingsFromCSV() {
 * Parse CSV data into an array of objects
 */
 function parseCSV(csvText) {
-  return Papa.parse(csvText, {
-    header: true,
-    skipEmptyLines: true
-  }).data;
+  const rows = csvText.split("\n").map(row => row.split(","));
+  console.log("🛠️ Parsed CSV Data:", rows);
+  return rows.map(row => ({
+      id: row[0],
+      address: row[1],
+      price: parseFloat(row[2]) || 0,
+      beds: parseInt(row[3]) || 0,
+      baths: parseFloat(row[4]) || 0,
+      sqft: parseInt(row[5]) || 0,
+      lat: parseFloat(row[6]) || null,
+      lon: parseFloat(row[7]) || null,
+      photo: row[8] || ""
+  }));
 }
 
 
