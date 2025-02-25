@@ -2,12 +2,12 @@ import { writable, get } from 'svelte/store';
 
 export const listings = writable([]);
 export const favorites = writable([]);
-export const selectedAttributes = writable(['price', 'sq_ft', 'laundry in building', 'doorman', 'dishwasher']);
+export const selectedAttributes = writable(['price', 'sqft', 'beds', 'baths']);
 export const userPreferences = writable({ grocery: '', gym: '' });
 
 async function fetchListings(filters = {}) {
-  let query = new URLSearchParams(filters).toString();
-  let url = `http://127.0.0.1:8000/listings${query ? "?" + query : ""}`;
+  // let query = new URLSearchParams(filters).toString();
+  let url = "http://127.0.0.1:8000/listings";
 
   try {
       const res = await fetch(url);
@@ -53,8 +53,8 @@ export function getCompareData() {
       const updatedListing = updatedListings.find(l => l.id === fav.id) || fav;
       return {
           address: fav.address,
-          lat: updatedListing.lat,
-          lon: updatedListing.lon,
+          lat: updatedListing.latitude,
+          lon: updatedListing.longitude,
           nearestGrocery: updatedListing.nearestGrocery || { name: 'N/A', distance: 'N/A' },
           nearestGym: updatedListing.nearestGym || { name: 'N/A', distance: 'N/A' },
           ...attrs.reduce((acc, attr) => {
