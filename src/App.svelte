@@ -31,6 +31,8 @@
     baths: true
   });
 
+  let openInfoWindows = []
+
   let directionsService;
   let directionsRenderers = [];
   let cachedRoutes = new Map(); // ✅ Stores already-fetched routes
@@ -93,12 +95,11 @@
   for (const step of route.steps) {
     coveredDistance += step.distance.value;
     if (coveredDistance >= totalDistance / 2) { 
-      midPoint = step.end_location;
-      break;
+      return step.end_location;
     }
   }
 
-  return midPoint || route.steps[Math.floor(route.steps.length / 2)].end_location;
+  return route.steps[Math.floor(route.steps.length / 2)].end_location;
 }
 
 
@@ -135,6 +136,11 @@
         center: { lat: 40.7128, lng: -74.0060 }, // Default to NYC
         zoom: 12,
       });
+      // ✅ Close all InfoWindows when clicking on the map (but not markers)
+        map.addListener("click", () => {
+            closeAllInfoWindows();
+        });
+
     }
     console.log("🟢 Listings to add markers for:", listingsData);
     markers.forEach(marker => marker.setMap(null));
@@ -158,7 +164,9 @@
                   });
 
               listingMarker.addListener("click", () => {
+                    closeAllInfoWindows();
                     infoWindow.open(map, listingMarker);
+                    openInfoWindows.push(infoWindow); //Tracked opened window
                     // ✅ Only show gym/grocery on click if mode is "onClick"
                       if (mode === "onClick") {
                         clearGymAndGroceryMarkers(); // ✅ Remove previous ones
@@ -186,6 +194,12 @@
     }
     return true;
   });
+}
+
+// ✅ Close all currently open InfoWindows
+function closeAllInfoWindows() {
+    openInfoWindows.forEach(infoWindow => infoWindow.close());
+    openInfoWindows = []; // ✅ Reset open InfoWindows
 }
 
 
@@ -228,9 +242,9 @@ function displayCachedRoute(result) {
     directions: result,
     suppressMarkers: true,
     polylineOptions: {
-      strokeColor: "#0000FF",
-      strokeOpacity: 0.7,
-      strokeWeight: 5,
+      strokeColor: "#007bff",
+      strokeOpacity: 0.9,
+      strokeWeight: 7,
     },
   });
 
@@ -572,16 +586,13 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
       <td><input type="checkbox" bind:checked={$selectedAttributesLocal.price} /> Price</td>
     </tr>
     <tr>
-      <td><input type="checkbox" bind:checked={$selectedAttributesLocal.squareFootage} /> Square Footage</td>
+      <td><input type="checkbox" bind:checked={$selectedAttributesLocal.sqft} /> Square Footage</td>
     </tr>
     <tr>
-      <td><input type="checkbox" bind:checked={$selectedAttributesLocal.laundryInBuilding} /> Laundry in Building</td>
+      <td><input type="checkbox" bind:checked={$selectedAttributesLocal.beds} /> Beds</td>
     </tr>
     <tr>
-      <td><input type="checkbox" bind:checked={$selectedAttributesLocal.doorman} /> Doorman</td>
-    </tr>
-    <tr>
-      <td><input type="checkbox" bind:checked={$selectedAttributesLocal.dishwasher} /> Dishwasher</td>
+      <td><input type="checkbox" bind:checked={$selectedAttributesLocal.baths} /> Baths</td>
     </tr>
   </tbody>
 </table>
