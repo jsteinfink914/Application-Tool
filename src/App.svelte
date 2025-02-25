@@ -391,9 +391,14 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
     }
 };
 
-
+function handleScroll() {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+    fetchListings({}, true); // Load more listings when near bottom
+  }
+}
 
   onMount(() => {
+    window.addEventListener("scroll", handleScroll);
   loadGoogleMapsScript(() =>{
     listings.subscribe(l => {
       if (l.length > 0) {
@@ -455,10 +460,13 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
     align-items: center;
   }
   .listings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  padding: 20px;
+   display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center align the listings */
+  gap: 15px; /* Spacing between listings */
+  width: 100%;
+  max-width: 600px; /* Keeps layout clean */
+  margin: auto;
 }
 .quick-apply-button {
   background-color: #007bff; /* Blue button */
@@ -482,12 +490,12 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
 .listing-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 15px;
+  width: 100%;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  padding: 15px;
+  text-align: left; /* Align text properly */
 }
 
 .listing-card:hover {
@@ -495,9 +503,9 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
 }
 
 .listing-image {
-  position: relative;
-  width: 100%;
-  height: 200px;
+ width: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 
 .listing-image img {
@@ -510,16 +518,14 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: rgba(255, 255, 255, 0.8);
+  background: none;
   border: none;
-  cursor: pointer;
   font-size: 20px;
-  padding: 5px;
-  border-radius: 50%;
+  cursor: pointer;
 }
 
 .listing-info {
-  padding: 15px;
+  padding: 10px 0;
 }
 
 .listing-price {
@@ -644,10 +650,78 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
   .attributes-table input {
     margin-right: 10px;
   }
+
+  .filter-sidebar {
+  position: fixed;
+  left: -300px;
+  top: 0;
+  width: 250px;
+  height: 100%;
+  background: white;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  transition: left 0.3s ease-in-out;
+}
+
+.filter-sidebar.open {
+  left: 0;
+}
+
+.filter-toggle {
+  position: fixed;
+  left: 10px;
+  top: 20px;
+  background: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.apply-filters {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 5px;
+}
+
 </style>
 
 {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   {#if $listings.length > 0}
+  <button class="filter-toggle" on:click={() => sidebarOpen = !sidebarOpen}>
+  {sidebarOpen ? "❌ Close Filters" : "🔍 Show Filters"}
+</button>
+
+<div class="filter-sidebar {sidebarOpen ? 'open' : ''}">
+  <h3>Filters</h3>
+
+  <label>Min Price:</label>
+  <input type="number" bind:value={filters.min_price} placeholder="Min Price" />
+
+  <label>Max Price:</label>
+  <input type="number" bind:value={filters.max_price} placeholder="Max Price" />
+
+  <label>Min Beds:</label>
+  <input type="number" bind:value={filters.min_beds} placeholder="Min Beds" />
+
+  <label>Max Beds:</label>
+  <input type="number" bind:value={filters.max_beds} placeholder="Max Beds" />
+
+  <label>Min Sq Ft:</label>
+  <input type="number" bind:value={filters.min_sqft} placeholder="Min Sq Ft" />
+
+  <label>Max Sq Ft:</label>
+  <input type="number" bind:value={filters.max_sqft} placeholder="Max Sq Ft" />
+
+  <button class="apply-filters" on:click={() => applyFilters()}>Apply Filters</button>
+</div>
+
   <div class="listings-grid">
       {#each $listings as listing (listing.address)}
         <div class="listing-card">
