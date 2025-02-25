@@ -20,6 +20,14 @@
 
 
   let map;
+   let filters = {
+    min_price: "",
+    max_price: "",
+    min_beds: "",
+    max_beds: "",
+    min_sqft: "",
+    max_sqft: ""
+  };
   let markers = [];
   let listingMarkers = new Map();
   let showMode = writable("OnClick");
