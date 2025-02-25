@@ -76,18 +76,12 @@ export function getCompareData() {
   return favs.map(fav => {
       const updatedListing = updatedListings.find(l => l.id === fav.id) || fav;
       return {
-          address: fav.address,
-          lat: updatedListing.lat,
-          lon: updatedListing.lon,
-          nearestGrocery: updatedListing.nearestGrocery || { name: 'N/A', distance: 'N/A' },
-          nearestGym: updatedListing.nearestGym || { name: 'N/A', distance: 'N/A' },
-          ...attrs.reduce((acc, attr) => {
-              acc[attr] = updatedListing[attr] || 'N/A';
-              return acc;
-          }, {})
-      };
-  });
-}
+        ...updatedListing,  // Copies all attributes from the listing
+        nearestGrocery: updatedListing.nearestGrocery || { name: 'N/A', distance: 'N/A' },
+        nearestGym: updatedListing.nearestGym || { name: 'N/A', distance: 'N/A' }
+          };
+      });
+  }
 
 
 
@@ -153,7 +147,7 @@ export async function updateUserPreferences(preferences) {
   const updatedListings = await Promise.all(
       currentListings.map(async (listing, index) => {
           console.log(`Updating listing #${index} (${listing.address})`);
-          const nearestGrocery = await findNearestPlace(listing.lat, listing.lon, "supermarket", preferences.grocery);
+          const nearestGrocery = await findNearestPlace(listing, "supermarket", preferences.grocery);
           if (nearestGrocery) {
               const distance = haversineDistance(listing.lat, listing.lon, nearestGrocery.lat, nearestGrocery.lon);
               listing.nearestGrocery = { ...nearestGrocery, distance: distance.toFixed(2) + " mi" };
@@ -161,7 +155,7 @@ export async function updateUserPreferences(preferences) {
               listing.nearestGrocery = null;
           }
 
-          const nearestGym = await findNearestPlace(listing.lat, listing.lon, "gym", preferences.gym);
+          const nearestGym = await findNearestPlace(listing, "gym", preferences.gym);
           if (nearestGym) {
               const distance = haversineDistance(listing.lat, listing.lon, nearestGym.lat, nearestGym.lon);
               listing.nearestGym = { ...nearestGym, distance: distance.toFixed(2) + " mi" };

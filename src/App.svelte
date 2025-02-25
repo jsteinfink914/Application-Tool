@@ -26,10 +26,9 @@
   let compareListings = writable([]);
   let selectedAttributesLocal = writable({
     price: true,
-    squareFootage: true,
-    laundryInBuilding: true,
-    doorman: true,
-    dishwasher: true,
+    sqft: true,
+    beds: true,
+    baths: true
   });
 
   let directionsService;
@@ -609,10 +608,9 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
             <tr>
               <td>{listing.address}</td>
               {#if $selectedAttributesLocal.price} <td>{listing.price || 'N/A'}</td> {/if}
-              {#if $selectedAttributesLocal.squareFootage} <td>{listing.squareFootage || 'N/A'}</td> {/if}
-              {#if $selectedAttributesLocal.laundryInBuilding} <td>{listing.laundryInBuilding || 'N/A'}</td> {/if}
-              {#if $selectedAttributesLocal.doorman} <td>{listing.doorman || 'N/A'}</td> {/if}
-              {#if $selectedAttributesLocal.dishwasher} <td>{listing.dishwasher || 'N/A'}</td> {/if}
+              {#if $selectedAttributesLocal.sqft} <td>{listing.sqft || 'N/A'}</td> {/if}
+              {#if $selectedAttributesLocal.beds} <td>{listing.beds || 'N/A'}</td> {/if}
+              {#if $selectedAttributesLocal.baths} <td>{listing.baths || 'N/A'}</td> {/if}
               <td>{listing.nearestGrocery?.name} ({listing.nearestGrocery?.distance})</td>
               <td>{listing.nearestGym?.name} ({listing.nearestGym?.distance})</td>
             </tr>
