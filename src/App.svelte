@@ -517,7 +517,7 @@ function handleScroll() {
 }
 
 .listing-card:hover {
-  transform: scale(1.03);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow instead of scaling */
 }
 
 .listing-image {
@@ -615,9 +615,13 @@ function handleScroll() {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     padding: 15px;
   }
+  .compare-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1001; /* Ensure it stays above everything */
+}
   .compare-button {
-  display: block;
-  margin: 20px auto;
   padding: 12px 20px;
   background-color: #007bff;
   color: white;
@@ -626,6 +630,7 @@ function handleScroll() {
   cursor: pointer;
   border-radius: 8px;
   transition: background 0.2s;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .compare-button:hover {
@@ -672,8 +677,8 @@ function handleScroll() {
     margin-right: 10px;
   }
 
-  .filter-sidebar {
- position: fixed;
+ .filter-sidebar {
+    position: fixed;
     right: 0;
     top: 0;
     width: 300px;
@@ -681,11 +686,14 @@ function handleScroll() {
     background: white;
     padding: 20px;
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
-    transform: translateX(100%);
+    transform: translateX(100%); /* Start hidden */
     transition: transform 0.3s ease-in-out;
     z-index: 1000;
+    overflow-y: auto; /* Allows scrolling if content overflows */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between inputs */
 }
-
 .filter-sidebar.open {
   transform: translateX(0);
 }
@@ -704,6 +712,25 @@ function handleScroll() {
     z-index: 1101;
 }
 
+/* Filter Labels & Inputs */
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Small spacing between label and input */
+}
+
+.filter-group label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333; /* Dark gray for readability */
+}
+
+.filter-group input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
 .apply-filters {
   background: #007bff;
   color: white;
@@ -714,6 +741,9 @@ function handleScroll() {
   width: 100%;
   border-radius: 5px;
 }
+.apply-filters:hover {
+    background: #0056b3;
+}
 
 </style>
 
@@ -723,26 +753,38 @@ function handleScroll() {
   {filterSidebarOpen ? "❌ Close Filters" : "🔍 Show Filters"}
 </button>
 
-<div id="filter-sidebar" class:open={filterSidebarOpen}>
+<div class="filter-sidebar {filterSidebarOpen ? 'open' : ''}">
   <h3>Filters</h3>
 
-  <label>Min Price:</label>
-  <input type="number" bind:value={filters.min_price} placeholder="Min Price" />
+  <div class="filter-group">
+    <label>Min Price:</label>
+    <input type="number" bind:value={filters.min_price} placeholder="Min Price" />
+  </div>
 
-  <label>Max Price:</label>
-  <input type="number" bind:value={filters.max_price} placeholder="Max Price" />
+  <div class="filter-group">
+    <label>Max Price:</label>
+    <input type="number" bind:value={filters.max_price} placeholder="Max Price" />
+  </div>
 
-  <label>Min Beds:</label>
-  <input type="number" bind:value={filters.min_beds} placeholder="Min Beds" />
+  <div class="filter-group">
+    <label>Min Beds:</label>
+    <input type="number" bind:value={filters.min_beds} placeholder="Min Beds" />
+  </div>
 
-  <label>Max Beds:</label>
-  <input type="number" bind:value={filters.max_beds} placeholder="Max Beds" />
+  <div class="filter-group">
+    <label>Max Beds:</label>
+    <input type="number" bind:value={filters.max_beds} placeholder="Max Beds" />
+  </div>
 
-  <label>Min Sq Ft:</label>
-  <input type="number" bind:value={filters.min_sqft} placeholder="Min Sq Ft" />
+  <div class="filter-group">
+    <label>Min Sq Ft:</label>
+    <input type="number" bind:value={filters.min_sqft} placeholder="Min Sq Ft" />
+  </div>
 
-  <label>Max Sq Ft:</label>
-  <input type="number" bind:value={filters.max_sqft} placeholder="Max Sq Ft" />
+  <div class="filter-group">
+    <label>Max Sq Ft:</label>
+    <input type="number" bind:value={filters.max_sqft} placeholder="Max Sq Ft" />
+  </div>
 
   <button class="apply-filters" on:click={() => applyFilters()}>Apply Filters</button>
 </div>
@@ -772,11 +814,11 @@ function handleScroll() {
   {/if}
 
 
-  {#if $favorites && $favorites.length >= 3}
-    <button class="compare-button" on:click={handleCompare}>Compare</button>
-  {:else}
-    <p>⚠️ Select at least 3 favorites to compare.</p> <!-- ✅ Debugging text -->
-  {/if}
+  <div class="compare-container">
+    {#if $favorites && $favorites.length >= 3}
+        <button class="compare-button" on:click={handleCompare}>Compare</button>
+    {/if}
+</div>
 
 {:else}
   <div id="container">
