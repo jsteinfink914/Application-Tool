@@ -460,13 +460,34 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
   gap: 20px;
   padding: 20px;
 }
+.quick-apply-button {
+  background-color: #007bff; /* Blue button */
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%; /* Make it full width */
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
 
+.quick-apply-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Ensure proper alignment */
 .listing-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 15px;
   background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
 .listing-card:hover {
@@ -641,6 +662,9 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
             <p class="listing-details">{listing.beds} Beds • {listing.baths} Baths • {listing.sqft} sqft</p>
             <p class="listing-address">{listing.address}</p>
           </div>
+          <button class="quick-apply-button" on:click={() => handleQuickApply(listing)}>
+        Quick Apply
+        </button>
         </div>
       {/each}
     </div>
@@ -695,8 +719,8 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
             <th>Address</th>
             {#if $selectedAttributesLocal.price} <th>Price</th> {/if}
             {#if $selectedAttributesLocal.sqft} <th>Sq Ft</th> {/if}
-            {#if $selectedAttributesLocal.beds} <th>Laundry</th> {/if}
-            {#if $selectedAttributesLocal.baths} <th>Doorman</th> {/if}
+            {#if $selectedAttributesLocal.beds} <th>Beds</th> {/if}
+            {#if $selectedAttributesLocal.baths} <th>Baths</th> {/if}
             <th>Nearest Grocery Store</th>
             <th>Nearest Gym</th>
           </tr>
