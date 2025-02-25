@@ -18,6 +18,16 @@
 } from './store.js';
 
 
+let filters = writable({
+    min_price: "",
+    max_price: "",
+    min_beds: "",
+    max_beds: "",
+    min_baths: "",
+    max_baths: "",
+    min_sqft: "",
+    max_sqft: ""
+});
 
   let map;
   let markers = [];
