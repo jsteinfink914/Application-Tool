@@ -20,14 +20,6 @@
 
 
   let map;
-   let filters = {
-    min_price: "",
-    max_price: "",
-    min_beds: "",
-    max_beds: "",
-    min_sqft: "",
-    max_sqft: ""
-  };
   let markers = [];
   let listingMarkers = new Map();
   let showMode = writable("OnClick");
@@ -50,6 +42,14 @@
   let gym = '';
   let showComparePage = writable(false);
   let showMap = writable(false); // ✅ Moved inside <script>
+
+
+  let filterSidebarOpen = false;
+
+function toggleFilterSidebar() {
+    filterSidebarOpen = !filterSidebarOpen;
+}
+
 
   let sidebarOpen = false;
   function toggleSidebar() {
@@ -523,13 +523,16 @@ function handleScroll() {
 }
 
 .favorite-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
+   position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    z-index: 10;
 }
 
 .listing-info {
@@ -660,31 +663,35 @@ function handleScroll() {
   }
 
   .filter-sidebar {
-  position: fixed;
-  left: -300px;
-  top: 0;
-  width: 250px;
-  height: 100%;
-  background: white;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-  padding: 20px;
-  transition: left 0.3s ease-in-out;
+ position: fixed;
+    right: 0;
+    top: 0;
+    width: 300px;
+    height: 100vh;
+    background: white;
+    padding: 20px;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
 }
 
 .filter-sidebar.open {
-  left: 0;
+  transform: translateX(0);
 }
 
 .filter-toggle {
-  position: fixed;
-  left: 10px;
-  top: 20px;
-  background: #007bff;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
+   position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    padding: 10px;
+    background-color: blue;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px 0 0 8px;
+    z-index: 1101;
 }
 
 .apply-filters {
@@ -702,11 +709,11 @@ function handleScroll() {
 
 {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   {#if $listings.length > 0}
-  <button class="filter-toggle" on:click={() => sidebarOpen = !sidebarOpen}>
-  {sidebarOpen ? "❌ Close Filters" : "🔍 Show Filters"}
+  <button class="filter-toggle" on:click={toggleFilterSidebar}>
+  {filterSidebarOpen ? "❌ Close Filters" : "🔍 Show Filters"}
 </button>
 
-<div class="filter-sidebar {sidebarOpen ? 'open' : ''}">
+<div id="filter-sidebar" class:open={filterSidebarOpen}>
   <h3>Filters</h3>
 
   <label>Min Price:</label>
