@@ -32,6 +32,7 @@
   });
 
   let openInfoWindows = []
+  let routeInfoWindows = []; 
 
   let directionsService;
   let directionsRenderers = [];
@@ -139,6 +140,7 @@
       // ✅ Close all InfoWindows when clicking on the map (but not markers)
         map.addListener("click", () => {
             closeAllInfoWindows();
+            closeAllRouteInfoWindows();
         });
 
     }
@@ -165,6 +167,7 @@
 
               listingMarker.addListener("click", () => {
                     closeAllInfoWindows();
+                    closeAllRouteInfoWindows();
                     infoWindow.open(map, listingMarker);
                     openInfoWindows.push(infoWindow); //Tracked opened window
                     // ✅ Only show gym/grocery on click if mode is "onClick"
@@ -181,8 +184,12 @@
               listingMarkers.set(listing.address, { listingMarker, color });
 
                   // ✅ Add gym & grocery markers immediately if "Show All"
-                  if (mode === "showAll") addGymAndGroceryMarkers(listing, color, false);
+                  if (mode === "showAll"){
+                    closeAllInfoWindows();
+                    closeAllRouteInfoWindows();
+                    addGymAndGroceryMarkers(listing, color, false);
                 }
+        }
               });
   }
   
@@ -200,6 +207,12 @@
 function closeAllInfoWindows() {
     openInfoWindows.forEach(infoWindow => infoWindow.close());
     openInfoWindows = []; // ✅ Reset open InfoWindows
+}
+
+ ✅ Close all InfoWindows that show travel time on routes
+function closeAllRouteInfoWindows() {
+    routeInfoWindows.forEach(infoWindow => infoWindow.close());
+    routeInfoWindows = []; // ✅ Reset route InfoWindows
 }
 
 
@@ -259,6 +272,7 @@ function displayCachedRoute(result) {
   });
 
   infoWindow.open(map); // ✅ Show travel time on map
+  routeInfoWindows.push(infoWindow);
 }
 
 function clearRoutes() {
@@ -440,6 +454,70 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
     justify-content: space-between;
     align-items: center;
   }
+  .listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.listing-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.listing-card:hover {
+  transform: scale(1.03);
+}
+
+.listing-image {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+
+.listing-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.favorite-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 5px;
+  border-radius: 50%;
+}
+
+.listing-info {
+  padding: 15px;
+}
+
+.listing-price {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0;
+}
+
+.listing-details {
+  font-size: 0.9em;
+  color: gray;
+}
+
+.listing-address {
+  font-size: 0.9em;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
 
 
   #map {
@@ -543,22 +621,26 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
 
 {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   {#if $listings.length > 0}
-  <div class="table-container">
-  <h3>Available Listings</h3>
-    <div class="listing-container">
+  <div class="listings-grid">
       {#each $listings as listing (listing.address)}
-        <div class="listing">
-          <span>{listing.address}</span>
-          <button class="favorite-button" on:click={() => toggleFavorite(listing)}>
-            {#if $favorites.some(fav => fav.address === listing.address)} ❤️ {:else} ♡ {/if}
-          </button>
+        <div class="listing-card">
+          <div class="listing-image">
+            <img src={listing.photo || "https://via.placeholder.com/300"} alt="Listing Image" />
+            <button class="favorite-button" on:click={() => toggleFavorite(listing)}>
+              {#if $favorites.some(fav => fav.address === listing.address)} ❤️ {:else} ♡ {/if}
+            </button>
+          </div>
+          <div class="listing-info">
+            <h3 class="listing-price">${listing.price.toLocaleString()}</h3>
+            <p class="listing-details">{listing.beds} Beds • {listing.baths} Baths • {listing.sqft} sqft</p>
+            <p class="listing-address">{listing.address}</p>
+          </div>
         </div>
       {/each}
     </div>
-  </div>
   {:else}
-  <p>Listings Loading.</p> <!-- ✅ Debugging message -->
-{/if}
+    <p>Listings Loading...</p>
+  {/if}
 
 
   {#if $favorites && $favorites.length >= 3}
@@ -606,10 +688,9 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
           <tr>
             <th>Address</th>
             {#if $selectedAttributesLocal.price} <th>Price</th> {/if}
-            {#if $selectedAttributesLocal.squareFootage} <th>Sq Ft</th> {/if}
-            {#if $selectedAttributesLocal.laundryInBuilding} <th>Laundry</th> {/if}
-            {#if $selectedAttributesLocal.doorman} <th>Doorman</th> {/if}
-            {#if $selectedAttributesLocal.dishwasher} <th>Dishwasher</th> {/if}
+            {#if $selectedAttributesLocal.sqft} <th>Sq Ft</th> {/if}
+            {#if $selectedAttributesLocal.beds} <th>Laundry</th> {/if}
+            {#if $selectedAttributesLocal.baths} <th>Doorman</th> {/if}
             <th>Nearest Grocery Store</th>
             <th>Nearest Gym</th>
           </tr>
