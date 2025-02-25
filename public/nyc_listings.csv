@@ -1,6 +1,6 @@
 id,address,price,beds,baths,sqft,latitude,longitude,photo
-NYC001,"123 Broadway",3200,2,1,850,40.7128,-74.006,https://via.placeholder.com/150
-NYC002,"456 5th Ave",4500,3,2,1200,40.7532,-73.9822,https://via.placeholder.com/150
-NYC003,"789 Park Ave",5500,4,3,2000,40.7711,-73.9644,https://via.placeholder.com/150
-NYC004,"101 Wall St",3800,2,1,900,40.7074,-74.0113,https://via.placeholder.com/150
-NYC005,"202 West End Ave",6000,3,2.5,1800,40.7776,-73.9904,https://via.placeholder.com/150
+NYC001,"123 Broadway",3200,2,1,850,40.7128,-74.006,https://photos.zillowstatic.com/fp/fe9077ca9128a59d096dd1b4ccd19b8e-se_extra_large_1500_800.webp
+NYC002,"456 5th Ave",4500,3,2,1200,40.7532,-73.9822,https://photos.zillowstatic.com/fp/7b0de2b62c70d551ea735525e8016be7-se_extra_large_1500_800.webp
+NYC003,"789 Park Ave",5500,4,3,2000,40.7711,-73.9644,https://photos.zillowstatic.com/fp/db550ee89a24eeafcea63dbcd86ffc65-se_large_800_400.webp
+NYC004,"101 Wall St",3800,2,1,900,40.7074,-74.0113,https://photos.zillowstatic.com/fp/ef9d84397cb3347ca65ca7941dfc7f93-se_large_800_400.webp
+NYC005,"202 West End Ave",6000,3,2.5,1800,40.7776,-73.9904,https://photos.zillowstatic.com/fp/4b2e871d5e0b0e7ef07965e3c6a54840-se_large_800_400.webp

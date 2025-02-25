@@ -568,15 +568,21 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
     padding: 15px;
   }
   .compare-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
+  display: block;
+  margin: 20px auto;
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: white;
+  font-size: 1em;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.compare-button:hover {
+  background-color: #0056b3;
+}
   table {
     width: 100%;
     border-collapse: collapse;
