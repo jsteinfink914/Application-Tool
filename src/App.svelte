@@ -532,7 +532,7 @@ function handleScroll() {
   object-fit: cover;
 }
 
-..favorite-button {
+.favorite-button {
     position: absolute;
     top: 10px;
     right: 10px;
