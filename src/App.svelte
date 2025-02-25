@@ -532,8 +532,8 @@ function handleScroll() {
   object-fit: cover;
 }
 
-.favorite-button {
-   position: absolute;
+..favorite-button {
+    position: absolute;
     top: 10px;
     right: 10px;
     background: rgba(255, 255, 255, 0.8);
@@ -542,9 +542,13 @@ function handleScroll() {
     cursor: pointer;
     padding: 5px;
     border-radius: 50%;
-    z-index: 10;
+    z-index: 10; /* Ensures it's always above other elements */
+    transition: background 0.2s;
 }
 
+.favorite-button:hover {
+    background: rgba(255, 255, 255, 1);
+}
 .listing-info {
   padding: 10px 0;
 }
