@@ -521,9 +521,10 @@ function handleScroll() {
 }
 
 .listing-image {
- width: 100%;
-  height: auto;
-  border-radius: 8px;
+    position: relative; /* Ensures the favorite button positions correctly */
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
 }
 
 .listing-image img {
