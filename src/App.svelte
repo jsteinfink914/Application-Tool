@@ -478,26 +478,26 @@ function handleScroll() {
     align-items: center;
   }
   .listings-grid {
-   display: flex;
-  flex-direction: column; /* Stack items vertically */
-  align-items: center; /* Center align the listings */
-  gap: 15px; /* Spacing between listings */
-  width: 100%;
-  max-width: 600px; /* Keeps layout clean */
-  margin: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 wide */
+    gap: 15px; /* Space between tiles */
+    width: 100%;
+    max-width: 900px; /* Keeps layout clean */
+    margin: auto;
+    padding: 10px;
 }
 .quick-apply-button {
-  background-color: #007bff; /* Blue button */
-  color: white;
-  border: none;
-  padding: 10px;
-  font-size: 14px;
-  font-weight: bold;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 100%; /* Make it full width */
-  margin-top: 10px;
-  transition: background-color 0.2s;
+   background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 5px;
+    transition: background-color 0.2s;
 }
 
 .quick-apply-button:hover {
@@ -506,14 +506,17 @@ function handleScroll() {
 
 /* Ensure proper alignment */
 .listing-card {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  text-align: left; /* Align text properly */
+   display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    text-align: left;
+    position: relative;
+    transition: transform 0.2s;
+    width: 100%; /* Adjust to grid */
+    max-width: 400px; /* Prevents them from being too large */
 }
 
 .listing-card:hover {
@@ -521,10 +524,11 @@ function handleScroll() {
 }
 
 .listing-image {
-    position: relative; /* Ensures the favorite button positions correctly */
     width: 100%;
-    height: auto;
+    height: 140px; /* Adjust height to be smaller */
     border-radius: 8px;
+    overflow: hidden;
+    position: relative;
 }
 
 .listing-image img {
@@ -539,7 +543,7 @@ function handleScroll() {
     right: 10px;
     background: rgba(255, 255, 255, 0.8);
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     cursor: pointer;
     padding: 5px;
     border-radius: 50%;
@@ -555,18 +559,18 @@ function handleScroll() {
 }
 
 .listing-price {
-  font-size: 1.5em;
+  font-size: 1.2em;
   font-weight: bold;
   margin: 0;
 }
 
 .listing-details {
-  font-size: 0.9em;
+  font-size: 0.8em;
   color: gray;
 }
 
 .listing-address {
-  font-size: 0.9em;
+  font-size: 0.8em;
   font-weight: bold;
   margin-top: 5px;
 }
@@ -780,6 +784,15 @@ function handleScroll() {
     font-size: 1.8rem;
     font-weight: bold;
     color: #333;
+}
+@media (max-width: 600px) {
+    .listings-grid {
+        grid-template-columns: repeat(1, 1fr); /* 1 column on small screens */
+    }
+
+    .listing-card {
+        max-width: 100%; /* Adjust width for mobile */
+    }
 }
 
 
