@@ -5,40 +5,52 @@ export const favorites = writable([]);
 export const selectedAttributes = writable(['price', 'sqft', 'beds', 'baths']);
 export const userPreferences = writable({ grocery: '', gym: '' });
 
-async function fetchListings(filters = {}) {
-  // let query = new URLSearchParams(filters).toString();
-  let url = "http://127.0.0.1:8000/listings";
+async function fetchListingsFromCSV() {
+  const url = '/data/nyc_listings.csv'; // Ensure this path is correct
 
   try {
-      const res = await fetch(url);
-      const data = await res.json();
-      listings.set(data.listings);
+      const response = await fetch(url);
+      const text = await response.text();
+      const data = parseCSV(text);
+      listings.set(data);
+      console.log("✅ Listings loaded from CSV:", data);
   } catch (error) {
-      console.error("Error fetching listings:", error);
+      console.error("🚨 Error fetching listings from CSV:", error);
   }
 }
 
-fetchListings(); // Load listings on startup
+/**
+* Parse CSV data into an array of objects
+*/
+function parseCSV(csvText) {
+  const lines = csvText.trim().split("\n");
+  const headers = lines.shift().split(",");
+
+  return lines.map(line => {
+      const values = line.split(",");
+      return headers.reduce((obj, header, index) => {
+          obj[header.trim()] = values[index] ? values[index].trim() : "";
+          return obj;
+      }, {});
+  });
+}
+
+fetchListingsFromCSV(); // Load listings on startup
 
 /**
  * Toggle a listing as a favorite
  */
-export async function toggleFavorite(listingId) {
-  try {
-      const res = await fetch("http://127.0.0.1:8000/favorites", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ listing_id: listingId })
-      });
+export function toggleFavorite(listing) {
+  favorites.update(favs => {
+    const exists = favs.some(fav => fav.address === listing.address);
+    const updatedFavs = exists
+      ? favs.filter(fav => fav.address !== listing.address)
+      : [...favs, { ...listing }];
 
-      const data = await res.json();
-      console.log("Favorite updated:", data);
-  } catch (error) {
-      console.error("Error toggling favorite:", error);
-  }
+    console.log("❤️ Updated Favorites:", updatedFavs);
+    return [...updatedFavs];  // ✅ Forces Svelte reactivity
+  });
 }
-
-
 
 
 /**
@@ -72,31 +84,35 @@ export function getCompareData() {
 /**
  * Search for nearest place using Google Places API
  */
-export async function findNearestPlace(lat, lon, type, keyword) {
+async function findNearestPlace(listing, type, keyword) {
   try {
-      const url = `http://127.0.0.1:8000/places?lat=${lat}&lon=${lon}&type=${type}&keyword=${encodeURIComponent(keyword)}`;
+      const url = `/api/places?lat=${listing.lat}&lon=${listing.lon}&type=${type}&keyword=${encodeURIComponent(keyword)}&t=${Date.now()}`;
+      console.log("Fetching from:", url);
       const response = await fetch(url, { cache: 'no-store' });
       const data = await response.json();
+      console.log(`Response for ${type} (${keyword}) at ${listing.address}:`, data);
       
       if (data.results && data.results.length > 0) {
-          // Sort results by distance from the given location
-          const sortedResults = data.results.map(place => {
-              return {
-                  ...place,
-                  distance: haversineDistance(lat, lon, place.geometry.location.lat, place.geometry.location.lng)
-              };
-          }).sort((a, b) => a.distance - b.distance);
-          
-          const nearest = sortedResults[0];
-          return {
-              name: nearest.name,
-              lat: nearest.geometry.location.lat,
-              lon: nearest.geometry.location.lng,
-              distance: `${nearest.distance.toFixed(2)} mi`
-          };
+        const sortedResults = data.results.sort((a, b) => {
+          const distA = haversineDistance(listing.lat, listing.lon, a.geometry.location.lat, a.geometry.location.lng);
+          const distB = haversineDistance(listing.lat, listing.lon, b.geometry.location.lat, b.geometry.location.lng);
+          return distA - distB; // Smallest distance first
+      });
+      const nearest = sortedResults[0]; // Pick closest
+      const distance = haversineDistance(listing.lat, listing.lon, nearest.geometry.location.lat, nearest.geometry.location.lng);
+
+      console.log(`✅ Closest ${type} for ${listing.address}: ${nearest.name} (${distance.toFixed(2)} mi)`);
+      return {
+        name: nearest.name,
+        lat: nearest.geometry.location.lat,
+        lon: nearest.geometry.location.lng,
+        distance: `${distance.toFixed(2)} mi`
+    };
+  }else {
+      console.warn(`⚠️ No ${type} found near ${listing.address}`);
       }
   } catch (error) {
-      console.error(`Error finding ${keyword}:`, error);
+      console.error(`🚨 Error finding ${keyword}:`, error);
   }
   return null;
 }
