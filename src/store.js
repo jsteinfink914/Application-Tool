@@ -1,4 +1,7 @@
 import { writable, get } from 'svelte/store';
+import Papa from 'papaparse';
+
+
 
 export const listings = writable([]);
 export const favorites = writable([]);
@@ -6,7 +9,7 @@ export const selectedAttributes = writable(['price', 'sqft', 'beds', 'baths']);
 export const userPreferences = writable({ grocery: '', gym: '' });
 
 async function fetchListingsFromCSV() {
-  const url = '/data/nyc_listings.csv'; // Ensure this path is correct
+  const url = '/nyc_listings.csv'; // Ensure this path is correct
 
   try {
       const response = await fetch(url);
@@ -23,17 +26,12 @@ async function fetchListingsFromCSV() {
 * Parse CSV data into an array of objects
 */
 function parseCSV(csvText) {
-  const lines = csvText.trim().split("\n");
-  const headers = lines.shift().split(",");
-
-  return lines.map(line => {
-      const values = line.split(",");
-      return headers.reduce((obj, header, index) => {
-          obj[header.trim()] = values[index] ? values[index].trim() : "";
-          return obj;
-      }, {});
-  });
+  return Papa.parse(csvText, {
+    header: true,
+    skipEmptyLines: true
+  }).data;
 }
+
 
 fetchListingsFromCSV(); // Load listings on startup
 

@@ -1,0 +1,6 @@
+id,address,price,beds,baths,sqft,latitude,longitude,photo
+NYC001,"123 Broadway, New York, NY 10001",3200,2,1,850,40.7128,-74.006,https://via.placeholder.com/150
+NYC002,"456 5th Ave, New York, NY 10018",4500,3,2,1200,40.7532,-73.9822,https://via.placeholder.com/150
+NYC003,"789 Park Ave, New York, NY 10021",5500,4,3,2000,40.7711,-73.9644,https://via.placeholder.com/150
+NYC004,"101 Wall St, New York, NY 10005",3800,2,1,900,40.7074,-74.0113,https://via.placeholder.com/150
+NYC005,"202 West End Ave, New York, NY 10023",6000,3,2.5,1800,40.7776,-73.9904,https://via.placeholder.com/150

@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 import csv
 
-DATA_FOLDER = "data"
+DATA_FOLDER = "public"
 CSV_FILE = os.path.join(DATA_FOLDER, "nyc_listings.csv")
 
 
