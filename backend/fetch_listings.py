@@ -12,11 +12,11 @@ def store_listings_in_csv():
     """Store rental listings in a CSV file instead of SQLite."""
 
     fake_listings = [
-        ("NYC001", "123 Broadway, New York, NY 10001", 3200, 2, 1, 850, 40.7128, -74.0060, "https://via.placeholder.com/150"),
-        ("NYC002", "456 5th Ave, New York, NY 10018", 4500, 3, 2, 1200, 40.7532, -73.9822, "https://via.placeholder.com/150"),
-        ("NYC003", "789 Park Ave, New York, NY 10021", 5500, 4, 3, 2000, 40.7711, -73.9644, "https://via.placeholder.com/150"),
-        ("NYC004", "101 Wall St, New York, NY 10005", 3800, 2, 1, 900, 40.7074, -74.0113, "https://via.placeholder.com/150"),
-        ("NYC005", "202 West End Ave, New York, NY 10023", 6000, 3, 2.5, 1800, 40.7776, -73.9904, "https://via.placeholder.com/150"),
+        ("NYC001", "123 Broadway", 3200, 2, 1, 850, 40.7128, -74.0060, "https://via.placeholder.com/150"),
+        ("NYC002", "456 5th Ave", 4500, 3, 2, 1200, 40.7532, -73.9822, "https://via.placeholder.com/150"),
+        ("NYC003", "789 Park Ave", 5500, 4, 3, 2000, 40.7711, -73.9644, "https://via.placeholder.com/150"),
+        ("NYC004", "101 Wall S", 3800, 2, 1, 900, 40.7074, -74.0113, "https://via.placeholder.com/150"),
+        ("NYC005", "202 West End Ave", 6000, 3, 2.5, 1800, 40.7776, -73.9904, "https://via.placeholder.com/150"),
     ]
     os.makedirs(DATA_FOLDER, exist_ok=True)
     # Define the CSV headers
