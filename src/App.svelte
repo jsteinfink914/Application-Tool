@@ -749,8 +749,47 @@ function handleScroll() {
 .apply-filters:hover {
     background: #0056b3;
 }
+/* Green Banner Styling */
+.glide-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #28a745; /* Green */
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1002; /* Ensures it's always above other elements */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Smooth Hover Effect */
+.glide-banner:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Page Title Styling */
+.page-title {
+    margin-top: 80px; /* Adds space below the banner */
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+}
+
 
 </style>
+<div class="glide-banner">
+    <h1>Glide</h1>
+</div>
+
+<!-- Page Title -->
+<h2 class="page-title">Recommendation Feed</h2>
 
 {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   {#if $listings.length > 0}
