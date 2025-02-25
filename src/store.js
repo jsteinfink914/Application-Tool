@@ -1,30 +1,43 @@
 import { writable, get } from 'svelte/store';
-import Papa from 'papaparse';
 
 export const listings = writable([]);
 export const favorites = writable([]);
-export const selectedAttributes = writable(['price', 'sq_ft', 'laundryinbuilding', 'doorman', 'dishwasher']);
+export const selectedAttributes = writable(['price', 'sq_ft', 'laundry in building', 'doorman', 'dishwasher']);
 export const userPreferences = writable({ grocery: '', gym: '' });
 
-/**
- * Function to update user preferences
- */
+async function fetchListings(filters = {}) {
+  let query = new URLSearchParams(filters).toString();
+  let url = `http://127.0.0.1:8000/listings${query ? "?" + query : ""}`;
 
+  try {
+      const res = await fetch(url);
+      const data = await res.json();
+      listings.set(data.listings);
+  } catch (error) {
+      console.error("Error fetching listings:", error);
+  }
+}
+
+fetchListings(); // Load listings on startup
 
 /**
  * Toggle a listing as a favorite
  */
-export function toggleFavorite(listing) {
-  favorites.update(favs => {
-    const exists = favs.some(fav => fav.address === listing.address);
-    const updatedFavs = exists
-      ? favs.filter(fav => fav.address !== listing.address)
-      : [...favs, { ...listing }];
+export async function toggleFavorite(listingId) {
+  try {
+      const res = await fetch("http://127.0.0.1:8000/favorites", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ listing_id: listingId })
+      });
 
-    console.log("❤️ Updated Favorites:", updatedFavs);
-    return [...updatedFavs];  // ✅ Forces Svelte reactivity
-  });
+      const data = await res.json();
+      console.log("Favorite updated:", data);
+  } catch (error) {
+      console.error("Error toggling favorite:", error);
+  }
 }
+
 
 
 
@@ -36,106 +49,57 @@ export function getCompareData() {
   const attrs = get(selectedAttributes);
   const updatedListings = get(listings);
 
-  console.log("Favorites:", favs);
-  console.log("Selected Attributes:", attrs);
-  console.log("Updated Listings:", updatedListings);
-
   return favs.map(fav => {
-    // Find the latest listing in `updatedListings`, or fallback to `fav`
-    const updatedListing = updatedListings.find(l => l.address === fav.address);
-
-    if (!updatedListing) {
-      console.warn(`⚠️ Favorite listing not found in updatedListings: ${fav.address}`);
-    }
-
-    let selectedData = { 
-      address: fav.address, 
-      lat: updatedListing?.lat ?? fav.lat,
-      lon: updatedListing?.lon ?? fav.lon,
-      // Ensure nearest location data is included
-      nearestGrocery: updatedListing?.nearestGrocery ?? { name: 'N/A', distance: 'N/A' },
-      nearestGym: updatedListing?.nearestGym ?? { name: 'N/A', distance: 'N/A' }
-    };
-
-    // Ensure selected attributes are copied
-    attrs.forEach(attr => {
-      selectedData[attr] = updatedListing?.[attr] ?? 'N/A';
-    });
-
-    console.log(`🔍 Compare Data for ${fav.address}:`, selectedData);
-    return selectedData;
+      const updatedListing = updatedListings.find(l => l.id === fav.id) || fav;
+      return {
+          address: fav.address,
+          lat: updatedListing.lat,
+          lon: updatedListing.lon,
+          nearestGrocery: updatedListing.nearestGrocery || { name: 'N/A', distance: 'N/A' },
+          nearestGym: updatedListing.nearestGym || { name: 'N/A', distance: 'N/A' },
+          ...attrs.reduce((acc, attr) => {
+              acc[attr] = updatedListing[attr] || 'N/A';
+              return acc;
+          }, {})
+      };
   });
 }
 
 
 
-/**
- * Geocode an address using Google API
- */
-async function geocodeAddress(address) {
-  const cacheKey = `geo_${address}`;
-  const cached = JSON.parse(localStorage.getItem(cacheKey));
-  if (cached) return cached;
 
-  try {
-    console.log(`🌍 Geocoding: ${address}`);
-    const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=AIzaSyB5TEd6BSGVllv5x3-oXF1m7AN_Yjg0-NU`);
-    const data = await response.json();
-    
-    console.log(`🔍 Geocode Response for ${address}:`, data); // ✅ Log response
-
-    if (data.results.length > 0) {
-      const location = {
-        lat: data.results[0].geometry.location.lat,
-        lon: data.results[0].geometry.location.lng
-      };
-      localStorage.setItem(cacheKey, JSON.stringify(location)); // Cache result
-      return location;
-    } else {
-      console.warn(`⚠️ Google Maps could not find lat/lon for: ${address}`);
-    }
-  } catch (error) {
-    console.error(`🚨 Geocoding error for ${address}:`, error);
-  }
-  return null;
-}
 
 /**
  * Search for nearest place using Google Places API
  */
-async function findNearestPlace(listing, type, keyword) {
+export async function findNearestPlace(lat, lon, type, keyword) {
   try {
-      const url = `/api/places?lat=${listing.lat}&lon=${listing.lon}&type=${type}&keyword=${encodeURIComponent(keyword)}&t=${Date.now()}`;
-      console.log("Fetching from:", url);
+      const url = `http://127.0.0.1:8000/places?lat=${lat}&lon=${lon}&type=${type}&keyword=${encodeURIComponent(keyword)}`;
       const response = await fetch(url, { cache: 'no-store' });
       const data = await response.json();
-      console.log(`Response for ${type} (${keyword}) at ${listing.address}:`, data);
       
       if (data.results && data.results.length > 0) {
-        const sortedResults = data.results.sort((a, b) => {
-          const distA = haversineDistance(listing.lat, listing.lon, a.geometry.location.lat, a.geometry.location.lng);
-          const distB = haversineDistance(listing.lat, listing.lon, b.geometry.location.lat, b.geometry.location.lng);
-          return distA - distB; // Smallest distance first
-      });
-      const nearest = sortedResults[0]; // Pick closest
-      const distance = haversineDistance(listing.lat, listing.lon, nearest.geometry.location.lat, nearest.geometry.location.lng);
-
-      console.log(`✅ Closest ${type} for ${listing.address}: ${nearest.name} (${distance.toFixed(2)} mi)`);
-      return {
-        name: nearest.name,
-        lat: nearest.geometry.location.lat,
-        lon: nearest.geometry.location.lng,
-        distance: `${distance.toFixed(2)} mi`
-    };
-  }else {
-      console.warn(`⚠️ No ${type} found near ${listing.address}`);
+          // Sort results by distance from the given location
+          const sortedResults = data.results.map(place => {
+              return {
+                  ...place,
+                  distance: haversineDistance(lat, lon, place.geometry.location.lat, place.geometry.location.lng)
+              };
+          }).sort((a, b) => a.distance - b.distance);
+          
+          const nearest = sortedResults[0];
+          return {
+              name: nearest.name,
+              lat: nearest.geometry.location.lat,
+              lon: nearest.geometry.location.lng,
+              distance: `${nearest.distance.toFixed(2)} mi`
+          };
       }
   } catch (error) {
-      console.error(`🚨 Error finding ${keyword}:`, error);
+      console.error(`Error finding ${keyword}:`, error);
   }
   return null;
 }
-
 
 
 export async function updateUserPreferences(preferences) {
@@ -143,8 +107,8 @@ export async function updateUserPreferences(preferences) {
   userPreferences.set(preferences);
 
   if (!preferences.grocery || !preferences.gym) {
-    console.warn("⚠️ Grocery store or gym preference is missing.");
-    return;
+      console.warn("⚠️ Grocery store or gym preference is missing.");
+      return;
   }
 
   console.log(`🌍 Finding nearest locations for grocery: ${preferences.grocery} and gym: ${preferences.gym}`);
@@ -152,41 +116,40 @@ export async function updateUserPreferences(preferences) {
   // Check if listings are loaded
   const currentListings = get(listings);
   if (currentListings.length === 0) {
-    console.warn("⚠️ Listings not yet loaded. Retrying in 1 second...");
-    setTimeout(() => updateUserPreferences(preferences), 1000);
-    return;
+      console.warn("⚠️ Listings not yet loaded. Retrying in 1 second...");
+      setTimeout(() => updateUserPreferences(preferences), 1000);
+      return;
   }
 
   // Update each listing with its nearest grocery and gym locations
   const updatedListings = await Promise.all(
-    currentListings.map(async (listing,index) => {
-      console.log(`Updating listing #${index} (${listing.address})`);
-      const nearestGrocery = await findNearestPlace(listing, "supermarket", preferences.grocery);
-      console.log(`findNearestPlace (grocery) response for ${listing.address}:`, nearestGrocery);
-      if (nearestGrocery) {
-        const distance = haversineDistance(listing.lat, listing.lon, nearestGrocery.lat, nearestGrocery.lon);
-        listing.nearestGrocery = { ...nearestGrocery, distance: distance.toFixed(2) + " mi" };
-        console.log(`Nearest Grocery for ${listing.address}: ${nearestGrocery.lat}, ${nearestGrocery.lon}`);
-      } else {
-        listing.nearestGrocery = null;
-      }
-      const nearestGym = await findNearestPlace(listing, "gym", preferences.gym);
-      if (nearestGym) {
-        const distance = haversineDistance(listing.lat, listing.lon, nearestGym.lat, nearestGym.lon);
-        listing.nearestGym = { ...nearestGym, distance: distance.toFixed(2) + " mi" };
-        console.log(`Nearest Gym for ${listing.address}: ${nearestGym.lat}, ${nearestGym.lon}`);
-      } else {
-        listing.nearestGym = null;
-        console.warn(`No nearest gym found for ${listing.address}`);
-      }
-      return listing;
-    })
+      currentListings.map(async (listing, index) => {
+          console.log(`Updating listing #${index} (${listing.address})`);
+          const nearestGrocery = await findNearestPlace(listing.lat, listing.lon, "supermarket", preferences.grocery);
+          if (nearestGrocery) {
+              const distance = haversineDistance(listing.lat, listing.lon, nearestGrocery.lat, nearestGrocery.lon);
+              listing.nearestGrocery = { ...nearestGrocery, distance: distance.toFixed(2) + " mi" };
+          } else {
+              listing.nearestGrocery = null;
+          }
+
+          const nearestGym = await findNearestPlace(listing.lat, listing.lon, "gym", preferences.gym);
+          if (nearestGym) {
+              const distance = haversineDistance(listing.lat, listing.lon, nearestGym.lat, nearestGym.lon);
+              listing.nearestGym = { ...nearestGym, distance: distance.toFixed(2) + " mi" };
+          } else {
+              listing.nearestGym = null;
+              console.warn(`No nearest gym found for ${listing.address}`);
+          }
+          return listing;
+      })
   );
 
   listings.set(updatedListings);
   console.log(`✅ Updated listings with nearest grocery and gym`, updatedListings);
-  return updatedListings
+  return updatedListings;
 }
+
 
 
 
@@ -204,106 +167,3 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
-
-/**
-* Find the closest grocery and gym to each listing
-*/
-export function findNearestLocations(listingsData) {
-  const preferences = get(userPreferences);
-  const grocery = preferences.groceryLatLon;
-  const gym = preferences.gymLatLon;
-
-  if (!grocery || !gym) {
-      console.warn("⚠️ No geocoded grocery/gym locations available.");
-      return listingsData;
-  }
-
-  return listingsData.map(listing => {
-      if (!listing.lat || !listing.lon) return listing;
-
-      const groceryDist = haversineDistance(listing.lat, listing.lon, grocery.lat, grocery.lon);
-      const gymDist = haversineDistance(listing.lat, listing.lon, gym.lat, gym.lon);
-
-      return {
-          ...listing,
-          nearestGrocery: { name: preferences.grocery, distance: groceryDist.toFixed(2) + " mi" },
-          nearestGym: { name: preferences.gym, distance: gymDist.toFixed(2) + " mi" }
-      };
-  });
-}
-
-/**
- * Batch process geocoding with rate limiting
- */
-async function batchGeocode(listingsData) {
-  const results = [];
-  for (let i = 0; i < listingsData.length; i++) {
-    if (i % 5 === 0) await new Promise(r => setTimeout(r, 3000)); // ✅ Rate limit to avoid Google API errors
-
-    const cached = JSON.parse(localStorage.getItem(`geo_${listingsData[i].address}`));
-    if (cached) {
-      results.push({ ...listingsData[i], lat: cached.lat, lon: cached.lon });
-      continue;
-    }
-
-    try {
-      const location = await geocodeAddress(listingsData[i].address);
-      if (location) {
-        results.push({ ...listingsData[i], lat: location.lat, lon: location.lon });
-      } else {
-        console.warn(`⚠️ Could not get lat/lon for: ${listingsData[i].address}`);
-      }
-    } catch (error) {
-      console.error(`🚨 Geocoding failed for ${listingsData[i].address}:`, error);
-    }
-  }
-
-  console.log("✅ Final batch geocode results:", results);
-  return results.length > 0 ? results : []; // ✅ Ensure an array is returned
-}
-
-
-/**
- * Load CSV data and geocode listings
- */
-async function loadListings() {
-  try {
-    const response = await fetch('/2016-12-20.csv');
-    if (!response.ok) throw new Error(`Failed to load CSV: ${response.statusText}`);
-    const csvText = await response.text();
-
-    Papa.parse(csvText, {
-      header: true,
-      dynamicTyping: true,
-      complete: async (result) => {
-        if (!result.data || result.data.length === 0) {
-          console.error("🚨 CSV data is empty or invalid!");
-          return;
-        }
-
-        console.log(`📊 CSV Loaded: ${result.data.length} entries`);
-        const limitedListings = result.data.slice(0, 10);
-        console.log(`🔹 Limited Listings Before Geocode:`, limitedListings);
-
-        const listingsWithLatLon = await batchGeocode(limitedListings) || [];
-
-        console.log(`✅ Final geocoded listings before storing:`, listingsWithLatLon);
-
-        if (!Array.isArray(listingsWithLatLon) || listingsWithLatLon.length === 0) {
-          console.error("🚨 No valid listings with lat/lon found!");
-          return;
-        }
-
-        listings.set([...listingsWithLatLon]); // ✅ Ensure an array is stored
-        console.log(`✅ Listings Updated in Store:`, get(listings)); // ✅ Confirm it's updated
-      },
-      error: (error) => console.error("🚨 CSV Parsing Error:", error),
-    });
-  } catch (error) {
-    console.error("🚨 Error loading listings:", error);
-  }
-}
-
-
-// Load listings on startup
-loadListings();
