@@ -1,7 +1,15 @@
 from fastapi import FastAPI
 import sqlite3
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 🔥 Allows all origins (for development). Restrict in production.
+    allow_credentials=True,
+    allow_methods=["*"],  # ✅ Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # ✅ Allow all headers
+)
 
 DB_NAME = "rental_listings.db"
 
