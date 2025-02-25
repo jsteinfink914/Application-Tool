@@ -5,7 +5,7 @@ import Papa from 'papaparse';
 
 export const listings = writable([]);
 export const favorites = writable([]);
-export const selectedAttributes = writable(['price', 'sqft', 'beds', 'baths']);
+export const selectedAttributes = writable(['price', 'sqft', 'beds', 'baths', 'photo']);
 export const userPreferences = writable({ grocery: '', gym: '' });
 
 async function fetchListingsFromCSV() {
@@ -77,8 +77,8 @@ export function getCompareData() {
       const updatedListing = updatedListings.find(l => l.id === fav.id) || fav;
       return {
           address: fav.address,
-          lat: updatedListing.latitude,
-          lon: updatedListing.longitude,
+          lat: updatedListing.lat,
+          lon: updatedListing.lon,
           nearestGrocery: updatedListing.nearestGrocery || { name: 'N/A', distance: 'N/A' },
           nearestGym: updatedListing.nearestGym || { name: 'N/A', distance: 'N/A' },
           ...attrs.reduce((acc, attr) => {
