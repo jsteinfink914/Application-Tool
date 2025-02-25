@@ -209,7 +209,7 @@ function closeAllInfoWindows() {
     openInfoWindows = []; // ✅ Reset open InfoWindows
 }
 
- ✅ Close all InfoWindows that show travel time on routes
+ //✅ Close all InfoWindows that show travel time on routes
 function closeAllRouteInfoWindows() {
     routeInfoWindows.forEach(infoWindow => infoWindow.close());
     routeInfoWindows = []; // ✅ Reset route InfoWindows
