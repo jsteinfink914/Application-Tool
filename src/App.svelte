@@ -174,6 +174,7 @@ function toggleViewMode() {
         setTimeout(() => initializeMap(listingsData, false), 500);
         return;
     }
+    console.log(mapContainer);
     console.log("✅ #map container FOUND, initializing map...");
 
     if (!map) {
