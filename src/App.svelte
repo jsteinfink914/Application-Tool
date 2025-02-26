@@ -823,7 +823,7 @@ function handleScroll() {
 
 /* Page Title Styling */
 .page-title {
-    margin-top: 80px; /* Adds space below the banner */
+    margin-top: 20px; /* Adds space below the banner */
     text-align: center;
     font-size: 1.8rem;
     font-weight: bold;
@@ -831,7 +831,7 @@ function handleScroll() {
 }
 
 .content-container {
-    padding-top: 80px; /* Pushes content below the banner */
+    padding-top: 40px; /* Pushes content below the banner */
 }
 
 .view-toggle-container {
