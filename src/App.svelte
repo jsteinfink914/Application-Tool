@@ -626,9 +626,9 @@ function handleScroll() {
   }
   .compare-container {
   position: fixed;
-  top: 20px;
+  top: 100px;
   right: 20px;
-  z-index: 1001; /* Ensure it stays above everything */
+  z-index: 1003; /* Ensure it stays above everything */
 }
   .compare-button {
   padding: 12px 20px;
@@ -785,6 +785,10 @@ function handleScroll() {
     font-weight: bold;
     color: #333;
 }
+
+.content-container {
+    padding-top: 80px; /* Pushes content below the banner */
+}
 @media (max-width: 600px) {
     .listings-grid {
         grid-template-columns: repeat(1, 1fr); /* 1 column on small screens */
@@ -800,7 +804,7 @@ function handleScroll() {
 <div class="glide-banner">
     <h1>Glide</h1>
 </div>
-
+<div class="content-container">
 <!-- Page Title -->
 <h2 class="page-title">Recommendation Feed</h2>
 
