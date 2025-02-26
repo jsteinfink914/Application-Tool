@@ -860,18 +860,18 @@ function handleScroll() {
     <h1>Glide</h1>
 </div>
 
-  <!-- View Toggle -->
-  <div class="view-toggle-container">
-      <button class="view-toggle-button" on:click={toggleViewMode}>
-          {$showMapView ? "📜 Listings Only" : "🗺 Listings + Map"}
-      </button>
-  </div>
 
 
   {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   <div class="content-container">
   <!-- Page Title -->
   <h2 class="page-title">Recommendation Feed</h2>
+  <!-- View Toggle -->
+  <div class="view-toggle-container">
+      <button class="view-toggle-button" on:click={toggleViewMode}>
+          {$showMapView ? "📜 Listings Only" : "🗺 Listings + Map"}
+      </button>
+  </div>
     {#if $listings.length > 0}
       <button class="filter-toggle" on:click={toggleFilterSidebar}>
         {filterSidebarOpen ? "❌ Close Filters" : "🔍 Show Filters"}
