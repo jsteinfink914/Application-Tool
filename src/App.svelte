@@ -53,11 +53,20 @@ let filters = writable({
   let showComparePage = writable(false);
   let showMap = writable(false); // ✅ Moved inside <script>
 
+  let showMapView = writable(false);
+
 
   let filterSidebarOpen = false;
 
 function toggleFilterSidebar() {
     filterSidebarOpen = !filterSidebarOpen;
+}
+function toggleViewMode() {
+    showMapView.update(value => !value);
+    // Ensure the map initializes only when it's first shown
+  if (showMapView && !map) {
+    setTimeout(() => initializeMap($listings), 500); // Small delay to let UI update
+  }
 }
 
 
@@ -479,7 +488,7 @@ function handleScroll() {
   }
   .listings-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 wide */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 2 wide */
     gap: 15px; /* Space between tiles */
     width: 100%;
     max-width: 900px; /* Keeps layout clean */
@@ -760,14 +769,14 @@ function handleScroll() {
     left: 0;
     width: 100%;
     height: 60px;
-    background-color: #28a745; /* Green */
+    background: linear-gradient(90deg, #28a745, #32cd32); /* Smooth green gradient */
     color: white;
     display: flex;
-    justify-content: center;
-    align-items: center;
     font-size: 2rem;
     font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left; /* ✅ Left align the text */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
     z-index: 1002; /* Ensures it's always above other elements */
     transition: all 0.3s ease-in-out;
 }
@@ -789,6 +798,51 @@ function handleScroll() {
 .content-container {
     padding-top: 80px; /* Pushes content below the banner */
 }
+
+.view-toggle-container {
+    text-align: right;
+    padding: 10px 20px;
+}
+
+.view-toggle-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.view-toggle-button:hover {
+    background-color: #0056b3;
+}
+
+/* Default: Listings take full width */
+.view-layout {
+    display: flex;
+    flex-direction: column;
+}
+/* Split View: Listings on the left, Map on the right */
+.view-layout.split-view {
+    flex-direction: row;
+    gap: 15px;
+}
+
+/* When in split view, make listings smaller */
+.view-layout.split-view .listings-grid {
+    flex: 1;
+    max-width: 50%; /* Listings take up half the space */
+    overflow-y: auto;
+}
+#map-container-listings {
+    flex: 1;
+    max-width: 50%;
+    height: 100vh;
+}
+
 @media (max-width: 600px) {
     .listings-grid {
         grid-template-columns: repeat(1, 1fr); /* 1 column on small screens */
@@ -807,6 +861,12 @@ function handleScroll() {
 <div class="content-container">
 <!-- Page Title -->
 <h2 class="page-title">Recommendation Feed</h2>
+<div class="view-toggle-container">
+    <button class="view-toggle-button" on:click={toggleViewMode}>
+        {showMapView ? "📜 Listings Only" : "🗺 Listings + Map"}
+    </button>
+</div>
+
 
 {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   {#if $listings.length > 0}
@@ -849,7 +909,7 @@ function handleScroll() {
 
   <button class="apply-filters" on:click={() => applyFilters()}>Apply Filters</button>
 </div>
-
+<div class="view-layout { $showMapView ? 'split-view' : '' }">
   <div class="listings-grid">
       {#each $listings as listing (listing.address)}
         <div class="listing-card">
@@ -870,9 +930,18 @@ function handleScroll() {
         </div>
       {/each}
     </div>
+
+    {#if $showMapView}
+      <div id="map-container-listings">
+          <div id="map-listings"></div>
+      </div>
+      {/if}
+  </div>
   {:else}
     <p>Listings Loading...</p>
   {/if}
+  {/if}
+  </div>
 
 
   <div class="compare-container">
