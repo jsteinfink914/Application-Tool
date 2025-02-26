@@ -859,92 +859,95 @@ function handleScroll() {
     <h1>Glide</h1>
 </div>
 <div class="content-container">
-<!-- Page Title -->
-<h2 class="page-title">Recommendation Feed</h2>
-<div class="view-toggle-container">
-    <button class="view-toggle-button" on:click={toggleViewMode}>
-        {showMapView ? "📜 Listings Only" : "🗺 Listings + Map"}
-    </button>
-</div>
+  <!-- Page Title -->
+  <h2 class="page-title">Recommendation Feed</h2>
+
+  <!-- View Toggle -->
+  <div class="view-toggle-container">
+      <button class="view-toggle-button" on:click={toggleViewMode}>
+          {showMapView ? "📜 Listings Only" : "🗺 Listings + Map"}
+      </button>
+  </div>
 
 
-{#if !$showComparePage}  <!-- ❌ Missing `$` -->
-  {#if $listings.length > 0}
-    <button class="filter-toggle" on:click={toggleFilterSidebar}>
-    {filterSidebarOpen ? "❌ Close Filters" : "🔍 Show Filters"}
-    </button>
+  {#if !$showComparePage}  <!-- ❌ Missing `$` -->
+    {#if $listings.length > 0}
+      <button class="filter-toggle" on:click={toggleFilterSidebar}>
+        {filterSidebarOpen ? "❌ Close Filters" : "🔍 Show Filters"}
+      </button>
 
-    <div class="filter-sidebar {filterSidebarOpen ? 'open' : ''}">
-      <h3>Filters</h3>
+      <div class="filter-sidebar {filterSidebarOpen ? 'open' : ''}">
+        <h3>Filters</h3>
 
-      <div class="filter-group">
-        <label>Min Price:</label>
-        <input type="number" bind:value={filters.min_price} placeholder="Min Price" />
-      </div>
-
-      <div class="filter-group">
-        <label>Max Price:</label>
-        <input type="number" bind:value={filters.max_price} placeholder="Max Price" />
-      </div>
-
-      <div class="filter-group">
-        <label>Min Beds:</label>
-        <input type="number" bind:value={filters.min_beds} placeholder="Min Beds" />
-      </div>
-
-      <div class="filter-group">
-        <label>Max Beds:</label>
-        <input type="number" bind:value={filters.max_beds} placeholder="Max Beds" />
-      </div>
-
-      <div class="filter-group">
-        <label>Min Sq Ft:</label>
-        <input type="number" bind:value={filters.min_sqft} placeholder="Min Sq Ft" />
-      </div>
-
-      <div class="filter-group">
-        <label>Max Sq Ft:</label>
-        <input type="number" bind:value={filters.max_sqft} placeholder="Max Sq Ft" />
-      </div>
-
-      <button class="apply-filters" on:click={() => applyFilters()}>Apply Filters</button>
-    </div>
-    <div class="view-layout { $showMapView ? 'split-view' : '' }">
-      <div class="listings-grid">
-          {#each $listings as listing (listing.address)}
-            <div class="listing-card">
-              <div class="listing-image">
-                <img src={listing.photo || "https://via.placeholder.com/300"} alt="Listing Image" />
-                <button class="favorite-button" on:click={() => toggleFavorite(listing)}>
-                  {#if $favorites.some(fav => fav.address === listing.address)} ❤️ {:else} ♡ {/if}
-                </button>
-              </div>
-              <div class="listing-info">
-                <h3 class="listing-price">${listing.price.toLocaleString()}</h3>
-                <p class="listing-details">{listing.beds} Beds • {listing.baths} Baths • {listing.sqft} sqft</p>
-                <p class="listing-address">{listing.address}</p>
-              </div>
-              <button class="quick-apply-button" on:click={() => handleQuickApply(listing)}>
-            Quick Apply
-            </button>
-            </div>
-          {/each}
+        <div class="filter-group">
+          <label>Min Price:</label>
+          <input type="number" bind:value={filters.min_price} placeholder="Min Price" />
         </div>
 
-      {#if $showMapView}
-        <div id="map-container-listings">
-            <div id="map-listings"></div>
+        <div class="filter-group">
+          <label>Max Price:</label>
+          <input type="number" bind:value={filters.max_price} placeholder="Max Price" />
         </div>
-      {/if}
-    </div>
-    <div class="compare-container">
-      {#if $favorites && $favorites.length >= 3}
-        <button class="compare-button" on:click={handleCompare}>Compare</button>
-      {/if}
-    </div>
-  {:else}
-      <p>Listings Loading...</p>
-  {/if}
+
+        <div class="filter-group">
+          <label>Min Beds:</label>
+          <input type="number" bind:value={filters.min_beds} placeholder="Min Beds" />
+        </div>
+
+        <div class="filter-group">
+          <label>Max Beds:</label>
+          <input type="number" bind:value={filters.max_beds} placeholder="Max Beds" />
+        </div>
+
+        <div class="filter-group">
+          <label>Min Sq Ft:</label>
+          <input type="number" bind:value={filters.min_sqft} placeholder="Min Sq Ft" />
+        </div>
+
+        <div class="filter-group">
+          <label>Max Sq Ft:</label>
+          <input type="number" bind:value={filters.max_sqft} placeholder="Max Sq Ft" />
+        </div>
+
+        <button class="apply-filters" on:click={() => applyFilters()}>Apply Filters</button>
+      </div>
+      <div class="view-layout { $showMapView ? 'split-view' : '' }">
+        <div class="listings-grid">
+            {#each $listings as listing (listing.address)}
+              <div class="listing-card">
+                <div class="listing-image">
+                  <img src={listing.photo || "https://via.placeholder.com/300"} alt="Listing Image" />
+                  <button class="favorite-button" on:click={() => toggleFavorite(listing)}>
+                    {#if $favorites.some(fav => fav.address === listing.address)} ❤️ {:else} ♡ {/if}
+                  </button>
+                </div>
+                <div class="listing-info">
+                  <h3 class="listing-price">${listing.price.toLocaleString()}</h3>
+                  <p class="listing-details">{listing.beds} Beds • {listing.baths} Baths • {listing.sqft} sqft</p>
+                  <p class="listing-address">{listing.address}</p>
+                </div>
+                <button class="quick-apply-button" on:click={() => handleQuickApply(listing)}>
+              Quick Apply
+              </button>
+              </div>
+            {/each}
+          </div>
+
+        {#if $showMapView}
+          <div id="map-container-listings">
+              <div id="map-listings"></div>
+          </div>
+        {/if}
+      </div>
+      <div class="compare-container">
+        {#if $favorites && $favorites.length >= 3}
+          <button class="compare-button" on:click={handleCompare}>Compare</button>
+        {/if}
+      </div>
+    {:else}
+        <p>Listings Loading...</p>
+    {/if}
+  </div>
 
 {:else}
   <div id="container">
