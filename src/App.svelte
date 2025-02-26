@@ -858,7 +858,6 @@ function handleScroll() {
 <div class="glide-banner">
     <h1>Glide</h1>
 </div>
-<div class="content-container">
   <!-- Page Title -->
   <h2 class="page-title">Recommendation Feed</h2>
 
