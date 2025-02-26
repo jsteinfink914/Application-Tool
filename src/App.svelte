@@ -871,6 +871,7 @@ function handleScroll() {
 
 
   {#if !$showComparePage}  <!-- ❌ Missing `$` -->
+  <div class="content-container">
     {#if $listings.length > 0}
       <button class="filter-toggle" on:click={toggleFilterSidebar}>
         {filterSidebarOpen ? "❌ Close Filters" : "🔍 Show Filters"}
@@ -947,6 +948,7 @@ function handleScroll() {
     {:else}
         <p>Listings Loading...</p>
     {/if}
+  </div>
 {:else}
   <div id="container">
     <button class="sidebar-toggle" class:open={sidebarOpen} on:click={toggleSidebar}>
