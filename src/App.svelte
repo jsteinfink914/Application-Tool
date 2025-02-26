@@ -179,7 +179,11 @@ function toggleViewMode() {
     }
     console.log(mapContainer);
     console.log("✅ #map container FOUND, initializing map...");
-
+     // 🔥 DESTROY EXISTING MAP IF SWITCHING PAGES
+    if (map) {
+        console.warn("🔄 Removing existing Google Map instance...");
+        map = null;  // Force reinitialization
+    }
     if (!map) {
          map = new google.maps.Map(mapContainer, {
         center: { lat: 40.7128, lng: -74.0060 }, // Default to NYC
