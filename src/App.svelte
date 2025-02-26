@@ -62,12 +62,18 @@ function toggleFilterSidebar() {
     filterSidebarOpen = !filterSidebarOpen;
 }
 function toggleViewMode() {
-    showMapView.update(value => !value);
-    // Ensure the map initializes only when it's first shown
-  if (showMapView && !map) {
-    setTimeout(() => initializeMap($listings), 500); // Small delay to let UI update
-  }
+    showMapView.update(value => {
+        const newValue = !value; // Toggle the value
+
+        // Ensure the map initializes only when switching to map view
+        if (newValue) {
+            setTimeout(() => initializeMap($listings), 500); // Small delay to let UI update
+        }
+
+        return newValue;
+    });
 }
+
 
 
   let sidebarOpen = false;
@@ -144,6 +150,7 @@ function toggleViewMode() {
   };
 
   function initializeMap(listingsData) {
+    await tick();
     const mode = get(showMode);
     const mapContainer = document.getElementById('map');
      listingsData.forEach(listing => {
@@ -587,6 +594,10 @@ function handleScroll() {
 
 
   #map {
+    width: 100%;
+    height: 100%;
+  }
+  #map-listings {
     width: 100%;
     height: 100%;
   }
