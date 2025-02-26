@@ -169,6 +169,9 @@ function toggleViewMode() {
         console.log(`   🏋️ Nearest Gym:`, listing.nearestGym);
     });
 
+  console.log(getComputedStyle(mapContainer));
+
+
     if (!mapContainer) {
         console.warn("🚨 #map container missing! Retrying in 500ms...");
         setTimeout(() => initializeMap(listingsData, false), 500);
