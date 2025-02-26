@@ -774,7 +774,8 @@ function handleScroll() {
     display: flex;
     font-size: 2rem;
     font-weight: bold;
-    text-align: left; /* ✅ Left align the text */
+    align-items: center; /* ✅ Centers text vertically */
+    justify-content: flex-start; /* ✅ Aligns text to the left */
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     font-family: 'Arial', sans-serif;
     z-index: 1002; /* Ensures it's always above other elements */
@@ -858,19 +859,19 @@ function handleScroll() {
 <div class="glide-banner">
     <h1>Glide</h1>
 </div>
-  <!-- Page Title -->
-  <h2 class="page-title">Recommendation Feed</h2>
 
   <!-- View Toggle -->
   <div class="view-toggle-container">
       <button class="view-toggle-button" on:click={toggleViewMode}>
-          {showMapView ? "📜 Listings Only" : "🗺 Listings + Map"}
+          {$showMapView ? "📜 Listings Only" : "🗺 Listings + Map"}
       </button>
   </div>
 
 
   {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   <div class="content-container">
+  <!-- Page Title -->
+  <h2 class="page-title">Recommendation Feed</h2>
     {#if $listings.length > 0}
       <button class="filter-toggle" on:click={toggleFilterSidebar}>
         {filterSidebarOpen ? "❌ Close Filters" : "🔍 Show Filters"}
