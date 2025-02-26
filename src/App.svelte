@@ -71,7 +71,7 @@ function toggleViewMode() {
                 const mapContainer = document.getElementById('map-listings');
                 if (mapContainer) {
                     console.log("✅ Listings Map found, initializing...");
-                    initializeMap($listings);
+                    initializeMap($listings,false);
                 } else {
                     console.warn("🚨 Listings Map container still missing!");
                 }
@@ -94,7 +94,7 @@ function toggleViewMode() {
     showMode.update(mode => (mode === "onClick" ? "showAll" : "onClick"));
     clearGymAndGroceryMarkers(); 
     clearRoutes();
-    initializeMap(get(compareListings)); // ✅ Re-render map with new mode
+    initializeMap(get(compareListings),true); // ✅ Re-render map with new mode
   }
 
   // **Predefined Colors for Unique Listings**
@@ -153,14 +153,16 @@ function toggleViewMode() {
     compareListings.set(getCompareData());
     if ($showComparePage) {
       clearRoutes(); // ✅ Ensures old routes disappear
-      initializeMap(get(compareListings));
+      initializeMap(get(compareListings), true);
     }
   };
 
-  async function initializeMap(listingsData) {
+  async function initializeMap(listingsData, isComparePage = false) {
     await tick();
     const mode = get(showMode);
-     let mapContainer = document.getElementById('map-listings') || document.getElementById('map');
+     let mapContainer = isComparePage
+        ? document.getElementById('map')
+        : document.getElementById('map-listings');
      listingsData.forEach(listing => {
         console.log(`🔍 Checking listing: ${listing.address}`);
         console.log(`   🛒 Nearest Grocery:`, listing.nearestGrocery);
@@ -169,7 +171,7 @@ function toggleViewMode() {
 
     if (!mapContainer) {
         console.warn("🚨 #map container missing! Retrying in 500ms...");
-        setTimeout(() => initializeMap(listingsData), 500);
+        setTimeout(() => initializeMap(listingsData, false), 500);
         return;
     }
     console.log("✅ #map container FOUND, initializing map...");
@@ -194,7 +196,7 @@ function toggleViewMode() {
 
     listingsData.forEach((listing,index) => {
         if (listing.lat && listing.lon) {
-            const color = getRandomColor(index);
+            const color = isComparePage ? getRandomColor(index) : "blue"; 
             console.log(`📌 Adding marker for ${listing.address}`);
              const listingMarker = new google.maps.Marker({
                     position: { lat: listing.lat, lng: listing.lon },
@@ -425,9 +427,9 @@ function addGymAndGroceryMarkers(listing,color,drawRoutes) {
             const mapContainer = document.getElementById('map');
             if (!mapContainer) {
                 console.warn("🚨 #map container still missing! Retrying in 500ms...");
-                setTimeout(() => initializeMap(data), 500);
+                setTimeout(() => initializeMap(data, true), 500);
             } else {
-                initializeMap(data);
+                initializeMap(data, true);
             }
         }, 300); // ✅ Small delay to ensure rendering
     }
@@ -447,7 +449,7 @@ function handleScroll() {
         console.log("✅ Listings loaded, checking if map should initialize...");
         if ($showComparePage && l.some(item => item.lat && item.lon)) { 
           console.log("✅ Initializing Leaflet map with:", l);
-          initializeMap(l);
+          initializeMap(l,true);
         } else {
           console.warn("⚠️ Map not initialized - missing lat/lon or compare page not active.");
         }
