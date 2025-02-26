@@ -937,18 +937,14 @@ function handleScroll() {
         </div>
       {/if}
     </div>
+    <div class="compare-container">
+      {#if $favorites && $favorites.length >= 3}
+        <button class="compare-button" on:click={handleCompare}>Compare</button>
+      {/if}
+    </div>
   {:else}
       <p>Listings Loading...</p>
   {/if}
-{/if}
-
-
-
-  <div class="compare-container">
-    {#if $favorites && $favorites.length >= 3}
-        <button class="compare-button" on:click={handleCompare}>Compare</button>
-    {/if}
-</div>
 
 {:else}
   <div id="container">
