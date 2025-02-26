@@ -63,11 +63,19 @@ function toggleFilterSidebar() {
 }
 function toggleViewMode() {
     showMapView.update(value => {
-        const newValue = !value; // Toggle the value
+        const newValue = !value;
 
-        // Ensure the map initializes only when switching to map view
+        // Only initialize map when switching to map view
         if (newValue) {
-            setTimeout(() => initializeMap($listings), 500); // Small delay to let UI update
+            setTimeout(() => {
+                const mapContainer = document.getElementById('map-listings');
+                if (mapContainer) {
+                    console.log("✅ Listings Map found, initializing...");
+                    initializeMap($listings);
+                } else {
+                    console.warn("🚨 Listings Map container still missing!");
+                }
+            }, 500);
         }
 
         return newValue;
@@ -152,7 +160,7 @@ function toggleViewMode() {
   async function initializeMap(listingsData) {
     await tick();
     const mode = get(showMode);
-    const mapContainer = document.getElementById('map');
+     let mapContainer = document.getElementById('map-listings') || document.getElementById('map');
      listingsData.forEach(listing => {
         console.log(`🔍 Checking listing: ${listing.address}`);
         console.log(`   🛒 Nearest Grocery:`, listing.nearestGrocery);
