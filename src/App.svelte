@@ -947,7 +947,7 @@ function handleScroll() {
     {:else}
         <p>Listings Loading...</p>
     {/if}
-
+  </div>
 {:else}
   <div id="container">
     <button class="sidebar-toggle" class:open={sidebarOpen} on:click={toggleSidebar}>
