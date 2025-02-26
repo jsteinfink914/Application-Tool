@@ -520,7 +520,7 @@ function handleScroll() {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 2 wide */
     gap: 15px; /* Space between tiles */
     width: 100%;
-    max-width: 900px; /* Keeps layout clean */
+    max-width: 90%; /* Keeps layout clean */
     margin: auto;
     padding: 10px;
 }
