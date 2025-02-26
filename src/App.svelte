@@ -947,7 +947,6 @@ function handleScroll() {
     {:else}
         <p>Listings Loading...</p>
     {/if}
-  </div>
 
 {:else}
   <div id="container">
