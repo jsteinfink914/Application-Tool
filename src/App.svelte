@@ -149,7 +149,7 @@ function toggleViewMode() {
     }
   };
 
-  function initializeMap(listingsData) {
+  async function initializeMap(listingsData) {
     await tick();
     const mode = get(showMode);
     const mapContainer = document.getElementById('map');
