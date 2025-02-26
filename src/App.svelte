@@ -189,6 +189,10 @@ function toggleViewMode() {
         });
 
     }
+    else {
+    console.log("🔄 Resizing map...");
+    google.maps.event.trigger(map, "resize"); // ✅ Fix hidden map bug
+}
     console.log("🟢 Listings to add markers for:", listingsData);
     markers.forEach(marker => marker.setMap(null));
     markers = [];
@@ -607,6 +611,7 @@ function handleScroll() {
   #map {
     width: 100%;
     height: 100%;
+    display:block;
   }
   #map-listings {
     width: 100%;
