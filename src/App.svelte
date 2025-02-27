@@ -18,8 +18,7 @@
   updateUserPreferences,
   findNearestPlace
 } from './store.js';
- import MovingServices from "./components/MovingServices.svelte";
-
+  import { goto } from '$app/navigation';
 let filters = writable({
     min_price: "",
     max_price: "",
@@ -1100,7 +1099,9 @@ async function applyFilters() {
 </style>
 <div class="glide-banner">
    <div class="logo">glide</div>
-   <a href="/moving-services" class="nav-button">🚛 Moving Services</a>
+   <button on:click={() => goto('/moving-services')} class="nav-button">
+  🚛 Moving Services
+</button>
 
 </div>
 
