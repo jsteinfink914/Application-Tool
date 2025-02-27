@@ -519,6 +519,7 @@ async function applyFilters() {
     const filterValues = get(filters); // Get the latest filter values
     const allData = get(allListings); // Get the full dataset
     const selectedPOIs = get(userPreferences).poiTypes || []; // Get selected POIs
+    console.log(`✅ POI Listings: ${selectedPOIs} results.`);
 
     const filteredListings = allData.filter(listing => {
         return (
