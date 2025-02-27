@@ -1091,7 +1091,6 @@ async function applyFilters() {
 .nav-button {
     background-color: #007bff;
     color: white;
-    padding: 10px 15px;
     border-radius: 5px;
     text-decoration: none;
     font-weight: bold;
@@ -1121,10 +1120,10 @@ async function applyFilters() {
 
 
 </div>
-<a href="#/moving-services" class="nav-button">🚛 Moving Services</a>
 
 {#if $currentRoute !== "/moving-services"}
 {#if $currentRoute !== "/building-dashboard"}
+<a href="#/moving-services" class="nav-button">🚛 Moving Services</a>
   {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   <div class="content-container">
   <!-- Page Title -->
