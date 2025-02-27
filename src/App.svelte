@@ -15,7 +15,8 @@
   userPreferences, 
   toggleFavorite, 
   getCompareData, 
-  updateUserPreferences 
+  updateUserPreferences,
+  findNearestPlace
 } from './store.js';
 
 
