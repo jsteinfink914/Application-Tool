@@ -131,8 +131,14 @@ async function findNearestPlace(listing, type, keyword) {
 
 export async function updateUserPreferences(preferences) {
   console.log("updateUserPreferences called with:", preferences);
-  userPreferences.set(preferences);
+   // Set default empty values if missing
+   const updatedPreferences = {
+    grocery: preferences.grocery || '',
+    gym: preferences.gym || '',
+    poiTypes: preferences.poiTypes || []
+};
 
+userPreferences.set(updatedPreferences);
   if (!preferences.grocery || !preferences.gym) {
       console.warn("⚠️ Grocery store or gym preference is missing.");
       return;

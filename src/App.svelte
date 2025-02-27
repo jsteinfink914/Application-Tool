@@ -455,17 +455,19 @@ function handleScroll() {
 
 function togglePOI(poi) {
     userPreferences.update(prefs => {
-        const poiTypes = prefs.poiTypes ? [...prefs.poiTypes] : []; // Ensure it's an array
+        const poiTypes = Array.isArray(prefs.poiTypes) ? [...prefs.poiTypes] : []; // Ensure array
+
         return {
             ...prefs,
             poiTypes: poiTypes.includes(poi)
-                ? poiTypes.filter(item => item !== poi)
-                : [...poiTypes, poi]
+                ? poiTypes.filter(item => item !== poi) // Remove if already selected
+                : [...poiTypes, poi] // Add if not selected
         };
     });
 
     updatePreferences();
 }
+
 
 function applyFilters() {
     listings.update(currentListings => {
