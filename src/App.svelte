@@ -1016,8 +1016,8 @@ async function applyFilters() {
     font-family: 'Editorial New', serif;
 }
 .toggle-switch {
-    position: absolute;
-    top: 60px;
+    position: relative;
+    top: auto;
     left: 50%;
     transform: translateX(-50%);
     background: white;
