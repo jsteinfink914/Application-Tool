@@ -1119,8 +1119,9 @@ async function applyFilters() {
 
 
 </div>
+<div>
 <a href="#/moving-services" class="nav-button">🚛 Moving Services</a>
-
+</div>
 {#if $currentRoute !== "/moving-services"}
   {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   <div class="content-container">
