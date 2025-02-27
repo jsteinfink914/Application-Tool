@@ -259,11 +259,10 @@ function toggleViewMode() {
                     closeAllRouteInfoWindows();
                     addGymAndGroceryMarkers(listing, color, false);
                 }
-                if (!isComparePage) {
+               
                     addPOIMarkers(listing);
                     console.log(`📌 Adding marker for POI's`);
 
-                 }
         }
               });
   }
