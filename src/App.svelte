@@ -455,14 +455,34 @@ function handleScroll() {
 
 function togglePOI(poi) {
     userPreferences.update(prefs => {
-        const poiTypes = prefs.poiTypes.includes(poi)
-            ? prefs.poiTypes.filter(item => item !== poi) // Remove if already selected
-            : [...prefs.poiTypes, poi]; // Add if not selected
-        return { ...prefs, poiTypes };
+        const poiTypes = prefs.poiTypes ? [...prefs.poiTypes] : []; // Ensure it's an array
+        return {
+            ...prefs,
+            poiTypes: poiTypes.includes(poi)
+                ? poiTypes.filter(item => item !== poi)
+                : [...poiTypes, poi]
+        };
     });
 
-    updatePreferences(); // Apply new POI filters to listings & map
+    updatePreferences();
 }
+
+function applyFilters() {
+    listings.update(currentListings => {
+        const filters = get(userPreferences);
+        return currentListings.filter(listing => {
+            return (
+                (!filters.min_price || listing.price >= filters.min_price) &&
+                (!filters.max_price || listing.price <= filters.max_price) &&
+                (!filters.min_beds || listing.beds >= filters.min_beds) &&
+                (!filters.max_beds || listing.beds <= filters.max_beds) &&
+                (!filters.min_sqft || listing.sqft >= filters.min_sqft) &&
+                (!filters.max_sqft || listing.sqft <= filters.max_sqft)
+            );
+        });
+    });
+}
+
 
 
   onMount(() => {
