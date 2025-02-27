@@ -6,7 +6,7 @@
   import { onMount, tick } from 'svelte';
   import { writable, get } from 'svelte/store'; 
   import { Router, Route } from "svelte-spa-router";
-  import MovingServices from "./pages/MovingServices.svelte";
+  import MovingServices from "./routes/MovingServices.svelte";
 
   // ✅ 2. Store Imports Next (No Duplicates)
   import { 
@@ -600,9 +600,7 @@ async function applyFilters() {
   });
 
 </script>
-<nav>
-  <Link to="/moving-services">🚛 Moving Services</Link>
-</nav>
+
 
 <!-- Router -->
 <Router>
