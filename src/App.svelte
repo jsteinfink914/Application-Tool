@@ -5,7 +5,7 @@
     // ✅ 1. External Libraries First
   import { onMount, tick } from 'svelte';
   import { writable, get } from 'svelte/store'; 
-  import { Router } from "svelte-spa-router";
+  import Router from "svelte-spa-router";
   import MovingServices from "./routes/MovingServices.svelte";
 
   // ✅ 2. Store Imports Next (No Duplicates)
