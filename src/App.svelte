@@ -798,22 +798,13 @@ function handleScroll() {
 }
 /* Green Banner Styling */
 .glide-banner {
-    position: fixed;
+      position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 60px;
-    background: linear-gradient(90deg, #28a745, #32cd32); /* Smooth green gradient */
-    color: white;
-    display: flex;
-    font-size: 2rem;
-    font-weight: bold;
-    align-items: center; /* ✅ Centers text vertically */
-    justify-content: flex-start; /* ✅ Aligns text to the left */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    font-family: 'Arial', sans-serif;
-    z-index: 1002; /* Ensures it's always above other elements */
-    transition: all 0.3s ease-in-out;
+    height: 50px;
+    background: #EDE6DD;
+    z-index: 1000;
 }
 
 /* Smooth Hover Effect */
@@ -877,6 +868,86 @@ function handleScroll() {
     max-width: 50%;
     height: 100vh;
 }
+.logo {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    font-family: 'Editorial New', serif;
+}
+.toggle-switch {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    color: black;
+    padding: 6px;
+    border-radius: 30px;
+    display: flex;
+    width: 180px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1200;
+}
+
+.toggle-option {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+    font-weight: 600;
+}
+
+.toggle-option.selected {
+    background: #0d4727;
+    color: white;
+}
+
+.floating-chat {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    z-index: 1300;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: width 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
+    overflow: hidden;
+}
+
+.floating-chat:hover {
+    width: 300px;
+    height: 60px;
+    border-radius: 30px;
+    justify-content: flex-start;
+    padding-left: 15px;
+}
+
+.chat-icon {
+    font-size: 24px;
+    color: #333;
+}
+
+.chat-content {
+    display: none;
+}
+
+.floating-chat:hover .chat-content {
+    display: block;
+    width: 100%;
+}
 
 @media (max-width: 600px) {
     .listings-grid {
@@ -891,7 +962,7 @@ function handleScroll() {
 
 </style>
 <div class="glide-banner">
-    <h1>Glide</h1>
+   <div class="logo">glide</div>
 </div>
 
 
@@ -901,11 +972,11 @@ function handleScroll() {
   <!-- Page Title -->
   <h2 class="page-title">Recommendation Feed</h2>
   <!-- View Toggle -->
-  <div class="view-toggle-container">
-      <button class="view-toggle-button" on:click={toggleViewMode}>
-          {$showMapView ? "📜 Listings Only" : "🗺 Listings + Map"}
-      </button>
-  </div>
+  <div class="toggle-switch">
+    <div class="toggle-option selected" on:click={toggleViewMode}>
+        {$showMapView ? "Map" : "Listings"}
+    </div>
+</div>
     {#if $listings.length > 0}
       <button class="filter-toggle" on:click={toggleFilterSidebar}>
         {filterSidebarOpen ? "❌ Close Filters" : "🔍 Show Filters"}
@@ -983,6 +1054,15 @@ function handleScroll() {
         <p>Listings Loading...</p>
     {/if}
   </div>
+  <div class="floating-chat">
+    <div class="chat-icon">💬</div>
+    <div class="chat-content">
+        <div class="chat-display">Chat messages will appear here...</div>
+        <div class="chat-input-container">
+            <input type="text" class="chat-input" placeholder="Type a message...">
+        </div>
+    </div>
+</div>
 {:else}
   <div id="container">
     <button class="sidebar-toggle" class:open={sidebarOpen} on:click={toggleSidebar}>
