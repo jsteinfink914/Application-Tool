@@ -18,7 +18,7 @@
   updateUserPreferences,
   findNearestPlace
 } from './store.js';
-
+ import MovingServices from "./components/MovingServices.svelte";
 
 let filters = writable({
     min_price: "",
@@ -1071,6 +1071,20 @@ async function applyFilters() {
     display: block;
     width: 100%;
 }
+.nav-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    margin: 10px;
+  }
+
+  .nav-button:hover {
+    background-color: #0056b3;
+  }
 
 @media (max-width: 600px) {
     .listings-grid {
@@ -1086,6 +1100,8 @@ async function applyFilters() {
 </style>
 <div class="glide-banner">
    <div class="logo">glide</div>
+   <a href="/moving-services" class="nav-button">🚛 Moving Services</a>
+
 </div>
 
 
