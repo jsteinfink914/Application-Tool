@@ -96,7 +96,7 @@ export function getCompareData() {
 /**
  * Search for nearest place using Google Places API
  */
-async function findNearestPlace(listing, type, keyword) {
+export async function findNearestPlace(listing, type, keyword) {
   try {
       const url = `/api/places?lat=${listing.lat}&lon=${listing.lon}&type=${type}&keyword=${encodeURIComponent(keyword)}&t=${Date.now()}`;
       console.log("Fetching from:", url);
