@@ -16,28 +16,7 @@ def store_listings_in_csv():
         ("NYC002", "456 5th Ave", 4500, 3, 2, 1200, 40.7532, -73.9822, "https://photos.zillowstatic.com/fp/7b0de2b62c70d551ea735525e8016be7-se_extra_large_1500_800.webp"),
         ("NYC003", "789 Park Ave", 5500, 4, 3, 2000, 40.7711, -73.9644, "https://photos.zillowstatic.com/fp/db550ee89a24eeafcea63dbcd86ffc65-se_large_800_400.webp"),
         ("NYC004", "101 Wall S", 3800, 2, 1, 900, 40.7074, -74.0113, "https://photos.zillowstatic.com/fp/ef9d84397cb3347ca65ca7941dfc7f93-se_large_800_400.webp"),
-        ("NYC005", "202 West End Ave", 6000, 3, 2.5, 1800, 40.7776, -73.9904, "https://photos.zillowstatic.com/fp/4b2e871d5e0b0e7ef07965e3c6a54840-se_large_800_400.webp"),
-        ("NYC006", "12 East 86th St", 3200, 1, 1, 750, 40.7794, -73.9574, "https://www.equityapartments.com/new-york-city/upper-east-side/12-east-86th-st-apartments"),
-    ("NYC007", "200 East 39th St", 4500, 2, 2, 1100, 40.7480, -73.9761, "https://www.equityapartments.com/new-york-city/midtown-east/200-east-39th-st-apartments"),
-    ("NYC008", "777 6th Ave", 5000, 2, 2, 1150, 40.7440, -73.9920, "https://www.equityapartments.com/new-york-city/chelsea/777-6th-avenue-apartments"),
-    ("NYC009", "101 West End Ave", 6000, 3, 2.5, 1500, 40.7740, -73.9900, "https://www.equityapartments.com/new-york-city/upper-west-side/101-west-end-apartments"),
-    ("NYC010", "505 West 37th St", 4800, 2, 2, 1200, 40.7560, -73.9960, "https://www.equityapartments.com/new-york-city/midtown-west/505-west-37th-street-apartments"),
-    ("NYC011", "10 Hanover Square", 5200, 2, 2, 1300, 40.7040, -74.0090, "https://www.equityapartments.com/new-york-city/financial-district/10-hanover-square-apartments"),
-    ("NYC012", "180 Montague St", 4000, 1, 1, 800, 40.6940, -73.9920, "https://www.equityapartments.com/new-york-city/brooklyn-heights/180-montague-apartments"),
-    ("NYC013", "34 Berry St", 3700, 1, 1, 850, 40.7190, -73.9610, "https://www.equityapartments.com/new-york-city/williamsburg/34-berry-apartments"),
-    ("NYC014", "The Sagamore, 189 West 89th St", 4100, 1, 1, 900, 40.7880, -73.9740, "https://www.equityapartments.com/new-york-city/upper-west-side/the-sagamore-apartments"),
-    ("NYC015", "The Westminster, 180 West 20th St", 4700, 2, 2, 1100, 40.7420, -73.9960, "https://www.equityapartments.com/new-york-city/chelsea/the-westminster-apartments"),
-    ("NYC016", "The Tate, 535 West 23rd St", 4900, 2, 2, 1150, 40.7480, -74.0060, "https://www.equityapartments.com/new-york-city/chelsea/the-tate-apartments"),
-    ("NYC017", "The Olivia, 315 West 33rd St", 4600, 2, 2, 1050, 40.7530, -73.9960, "https://www.equityapartments.com/new-york-city/midtown-west/the-olivia-apartments"),
-    ("NYC018", "The Larstrand, 277 West 77th St", 5300, 2, 2, 1200, 40.7830, -73.9800, "https://www.equityapartments.com/new-york-city/upper-west-side/the-larstrand-apartments"),
-    ("NYC019", "The Pearl, 400 East 66th St", 5500, 3, 2.5, 1400, 40.7650, -73.9550, "https://www.equityapartments.com/new-york-city/upper-east-side/the-pearl-apartments"),
-    ("NYC020", "The Monterey, 175 East 96th St", 4300, 1, 1, 950, 40.7850, -73.9500, "https://www.equityapartments.com/new-york-city/upper-east-side/the-monterey-apartments"),
-    ("NYC021", "The Biltmore, 271 West 47th St", 4800, 2, 2, 1100, 40.7590, -73.9870, "https://www.equityapartments.com/new-york-city/midtown-west/the-biltmore-apartments"),
-    ("NYC022", "The Capitol, 776 6th Ave", 5000, 2, 2, 1150, 40.7440, -73.9920, "https://www.equityapartments.com/new-york-city/chelsea/the-capitol-apartments"),
-    ("NYC023", "The Vanguard Chelsea, 77 West 24th St", 5200, 2, 2, 1200, 40.7440, -73.9920, "https://www.equityapartments.com/new-york-city/chelsea/the-vanguard-chelsea-apartments"),
-    ("NYC024", "The Verdesian, 211 North End Ave", 5400, 2, 2, 1250, 40.7150, -74.0150, "https://www.equityapartments.com/new-york-city/battery-park-city/the-verdesian-apartments"),
-    ("NYC025", "The Solaire, 20 River Terrace", 5600, 3, 2.5, 1500, 40.7150, -74.0150, "https://www.equityapartments.com/new-york-city/battery-park-city/the-solaire-apartments"),
-    ("NYC026", "The Vanguard, 77 West 24th St", 4800, 2, 2, 1100, 40.7440, -73.9920, "https://www.equityapartments.com/new-york-city/chelsea/the-vanguard-apartments")
+        ("NYC005", "202 West End Ave", 6000, 3, 2.5, 1800, 40.7776, -73.9904, "https://photos.zillowstatic.com/fp/4b2e871d5e0b0e7ef07965e3c6a54840-se_large_800_400.webp")
     ]
     os.makedirs(DATA_FOLDER, exist_ok=True)
     # Define the CSV headers
