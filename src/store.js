@@ -2,7 +2,7 @@ import { writable, get } from 'svelte/store';
 import Papa from 'papaparse';
 
 
-
+export const allListings = writable([]); // Holds the full dataset
 export const listings = writable([]);
 export const favorites = writable([]);
 export const selectedAttributes = writable(['price', 'sqft', 'beds', 'baths', 'photo']);

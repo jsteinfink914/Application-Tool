@@ -245,6 +245,9 @@ function toggleViewMode() {
                     closeAllRouteInfoWindows();
                     addGymAndGroceryMarkers(listing, color, false);
                 }
+                if (!isComparePage) {
+                    addPOIMarkers(listing);
+                 }
         }
               });
   }
@@ -258,6 +261,46 @@ function toggleViewMode() {
     return true;
   });
 }
+function addPOIMarkers(listing) {
+    if (!listing.nearestPOIs) return;
+
+    // 🔹 Define colors for different POI types
+    const poiColors = {
+        Cafes: "brown",
+        Parks: "green",
+        "Public Transport": "blue",
+        Schools: "purple",
+        Restaurants: "orange"
+    };
+
+    // 🔥 Loop through all selected POIs and add markers
+    Object.keys(listing.nearestPOIs).forEach(poiType => {
+        const poi = listing.nearestPOIs[poiType];
+        if (!poi || !poi.lat || !poi.lon) return; // Skip if missing coordinates
+
+        const poiMarker = new google.maps.Marker({
+            position: { lat: poi.lat, lng: poi.lon },
+            map,
+            title: `${poiType}: ${poi.name}`,
+            icon: `http://maps.google.com/mapfiles/ms/icons/${poiColors[poiType] || "gray"}-dot.png`,
+        });
+
+        markers.push(poiMarker);
+
+        // 🔹 Add info window to show POI details
+        const infoWindow = new google.maps.InfoWindow({
+            content: `<strong>${poiType}: ${poi.name}</strong><br>📍 Distance: ${poi.distance}`
+        });
+
+        poiMarker.addListener("click", () => {
+            infoWindow.open(map, poiMarker);
+        });
+
+        console.log(`📍 Added POI marker: ${poiType} (${poi.name})`);
+    });
+}
+
+
 
 // ✅ Close all currently open InfoWindows
 function closeAllInfoWindows() {
@@ -470,20 +513,33 @@ function togglePOI(poi) {
 
 
 function applyFilters() {
-    listings.update(currentListings => {
-        const filters = get(userPreferences);
-        return currentListings.filter(listing => {
-            return (
-                (!filters.min_price || listing.price >= filters.min_price) &&
-                (!filters.max_price || listing.price <= filters.max_price) &&
-                (!filters.min_beds || listing.beds >= filters.min_beds) &&
-                (!filters.max_beds || listing.beds <= filters.max_beds) &&
-                (!filters.min_sqft || listing.sqft >= filters.min_sqft) &&
-                (!filters.max_sqft || listing.sqft <= filters.max_sqft)
-            );
-        });
+    const filterValues = get(filters); // Get the latest filter values
+    const allData = get(allListings); // Get the full dataset
+
+    const filteredListings = allData.filter(listing => {
+        return (
+            (!filterValues.min_price || listing.price >= filterValues.min_price) &&
+            (!filterValues.max_price || listing.price <= filterValues.max_price) &&
+            (!filterValues.min_beds || listing.beds >= filterValues.min_beds) &&
+            (!filterValues.max_beds || listing.beds <= filterValues.max_beds) &&
+            (!filterValues.min_baths || listing.baths >= filterValues.min_baths) &&
+            (!filterValues.max_baths || listing.baths <= filterValues.max_baths) &&
+            (!filterValues.min_sqft || listing.sqft >= filterValues.min_sqft) &&
+            (!filterValues.max_sqft || listing.sqft <= filterValues.max_sqft)
+        );
     });
+
+    console.log(`✅ Filtered Listings: ${filteredListings.length} results.`);
+
+    listings.set(filteredListings); // Update the filtered results
+
+    // 🔥 Reload the Map after filtering
+    setTimeout(() => {
+        initializeMap(filteredListings, false); // Reinitialize with filtered data
+    }, 200);
 }
+
+
 
 
 
@@ -1020,32 +1076,32 @@ function applyFilters() {
 
         <div class="filter-group">
           <label>Min Price:</label>
-          <input type="number" bind:value={filters.min_price} placeholder="Min Price" />
+          <input type="number" bind:value={$filters.min_price} placeholder="Min Price" />
         </div>
 
         <div class="filter-group">
           <label>Max Price:</label>
-          <input type="number" bind:value={filters.max_price} placeholder="Max Price" />
+          <input type="number" bind:value={$filters.max_price} placeholder="Max Price" />
         </div>
 
         <div class="filter-group">
           <label>Min Beds:</label>
-          <input type="number" bind:value={filters.min_beds} placeholder="Min Beds" />
+          <input type="number" bind:value={$filters.min_beds} placeholder="Min Beds" />
         </div>
 
         <div class="filter-group">
           <label>Max Beds:</label>
-          <input type="number" bind:value={filters.max_beds} placeholder="Max Beds" />
+          <input type="number" bind:value={$filters.max_beds} placeholder="Max Beds" />
         </div>
 
         <div class="filter-group">
           <label>Min Sq Ft:</label>
-          <input type="number" bind:value={filters.min_sqft} placeholder="Min Sq Ft" />
+          <input type="number" bind:value={$filters.min_sqft} placeholder="Min Sq Ft" />
         </div>
 
         <div class="filter-group">
           <label>Max Sq Ft:</label>
-          <input type="number" bind:value={filters.max_sqft} placeholder="Max Sq Ft" />
+          <input type="number" bind:value={$filters.max_sqft} placeholder="Max Sq Ft" />
         </div>
         <div class="filter-group">
         {#each ["Cafes", "Parks", "Public Transport", "Schools", "Restaurants"] as poi}
@@ -1058,7 +1114,8 @@ function applyFilters() {
           {/each}
       </div>
 
-        <button class="apply-filters" on:click={() => applyFilters()}>Apply Filters</button>
+        <button class="apply-filters" on:click={applyFilters}>Apply Filters</button>
+
       </div>
       <div class="view-layout { $showMapView ? 'split-view' : '' }">
         <div class="listings-grid">
