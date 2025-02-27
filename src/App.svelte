@@ -605,7 +605,6 @@ async function applyFilters() {
 <!-- Router -->
 <<main>
   <Router routes={{
-    "/": Home,
     "/moving-services": MovingServices
   }} />
 </main>
