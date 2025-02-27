@@ -1124,6 +1124,7 @@ async function applyFilters() {
 <a href="#/moving-services" class="nav-button">🚛 Moving Services</a>
 
 {#if $currentRoute !== "/moving-services"}
+{#if $currentRoute !== "/building-dashboard"}
   {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   <div class="content-container">
   <!-- Page Title -->
@@ -1312,3 +1313,4 @@ async function applyFilters() {
   </div>
 {/if}
 {/if}
+{/if?}

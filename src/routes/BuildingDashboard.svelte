@@ -198,7 +198,6 @@
   <div class="menu-button">☰</div>
 
   <!-- Dashboard Title -->
-  <h2 class="dashboard-title">glide</h2>
 
   <!-- Property Name -->
   <h2 class="property-title">The Magellan</h2>
