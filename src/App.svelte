@@ -1094,7 +1094,7 @@ async function applyFilters() {
     text-decoration: none;
     font-weight: bold;
     display: inline-block;
-    margin: 10px;
+    margin-top: 60px;
   }
 
   .nav-button:hover {
