@@ -5,6 +5,7 @@
     // ✅ 1. External Libraries First
   import { onMount, tick } from 'svelte';
   import { writable, get } from 'svelte/store'; 
+  import { Router, Route, Link } from "svelte-spa-router";
 
   // ✅ 2. Store Imports Next (No Duplicates)
   import { 
@@ -18,7 +19,7 @@
   updateUserPreferences,
   findNearestPlace
 } from './store.js';
-
+import MovingService from "./routes/MovingService.svelte";
 
 
 
@@ -598,7 +599,14 @@ async function applyFilters() {
   });
 
 </script>
+<nav>
+  <Link to="/moving-services">🚛 Moving Services</Link>
+</nav>
 
+<!-- Router -->
+<Router>
+  <Route path="/moving-services" component={MovingService} />
+</Router>
 
 
 <style>
@@ -1102,7 +1110,7 @@ async function applyFilters() {
 </style>
 <div class="glide-banner">
    <div class="logo">glide</div>
-   <a href="/routes/MovingServices.svelte" class="nav-button">🚛 Moving Services</a>
+    <Link to="/moving-services">🚛 Moving Services</Link>
 
 
 </div>

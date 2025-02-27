@@ -9,5 +9,6 @@ export default defineConfig({
   publicDir: 'public', // Keep static assets in public/
   server: {
     open: true, // Auto-open in browser
+    historyApiFallback: true, // Allows refresh without 404 errors
   }
 });
