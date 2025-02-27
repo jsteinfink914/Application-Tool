@@ -513,7 +513,7 @@ function togglePOI(poi) {
 }
 
 
-function applyFilters() {
+async function applyFilters() {
     const filterValues = get(filters); // Get the latest filter values
     const allData = get(allListings); // Get the full dataset
     const selectedPOIs = get(userPreferences).poiTypes || []; // Get selected POIs
@@ -538,9 +538,10 @@ function applyFilters() {
 
         for (let listing of filteredListings) {
             listing.nearestPOIs = {};
-            for (let poiType of selectedPOIs) {
+             // 🔥 Use `await Promise.all()` for better performance
+            await Promise.all(selectedPOIs.map(async (poiType) => {
                 listing.nearestPOIs[poiType] = await findNearestPlace(listing, poiType, poiType);
-            }
+            }));
         }
     }
 
