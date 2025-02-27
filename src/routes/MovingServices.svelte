@@ -1,5 +1,4 @@
 <script>
-import { FiMenu, FiTruck } from "svelte-icons/fi/index.js";
 
 
   let services = [
@@ -16,8 +15,8 @@ import { FiMenu, FiTruck } from "svelte-icons/fi/index.js";
   <!-- Menu Button -->
   <div class="menu-button">
     <button class="circle-button">
-      <FiMenu class="icon" />
-    </button>
+  📋 <!-- Menu emoji -->
+</button>
   </div>
 
   <!-- Glide Logo -->
@@ -34,8 +33,8 @@ import { FiMenu, FiTruck } from "svelte-icons/fi/index.js";
         <h3 class="service-name">{service.name}</h3>
         <p class="service-price">{service.price}</p>
         <button class="book-button">
-          Book Now <FiTruck class="ml-2" />
-        </button>
+  Book Now 🚛 <!-- Truck emoji -->
+</button>
       </div>
     {/each}
   </div>
