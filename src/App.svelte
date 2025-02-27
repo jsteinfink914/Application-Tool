@@ -5,7 +5,7 @@
     // ✅ 1. External Libraries First
   import { onMount, tick } from 'svelte';
   import { writable, get } from 'svelte/store'; 
-  import { Router, Route } from "svelte-spa-router";
+  import { Router } from "svelte-spa-router";
   import MovingServices from "./routes/MovingServices.svelte";
 
   // ✅ 2. Store Imports Next (No Duplicates)
@@ -603,9 +603,9 @@ async function applyFilters() {
 
 
 <!-- Router -->
-<Router>
-  <Route path="/moving-services" component={MovingServices} />
-</Router>
+<Router routes={{
+  "/moving-services": MovingServices
+}} />
 
 <style>
   @import 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
