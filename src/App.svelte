@@ -149,14 +149,26 @@ function toggleViewMode() {
 
 
   const updatePreferences = async () => {
-    await updateUserPreferences({ grocery: groceryStore, gym: gym });
-    await tick(); // Wait for listings to update
+    console.log("🔄 Updating user preferences...");
+    
+    const prefs = get(userPreferences);
+    await updateUserPreferences({ 
+        grocery: groceryStore, 
+        gym: gym, 
+        poiTypes: prefs.poiTypes // ✅ Include POIs in update
+    });
+
+    await tick(); // ✅ Wait for Svelte reactivity updates
     compareListings.set(getCompareData());
+
     if ($showComparePage) {
-      clearRoutes(); // ✅ Ensures old routes disappear
-      initializeMap(get(compareListings), true);
+        clearRoutes();
+        initializeMap(get(compareListings), true);
+    } else {
+        initializeMap(get(listings), false); // ✅ Ensure POIs refresh in normal view
     }
-  };
+};
+
 
   async function initializeMap(listingsData, isComparePage = false) {
     await tick();
@@ -499,19 +511,20 @@ function handleScroll() {
   }
 }
 
-function togglePOI(poi) {
+async function togglePOI(poi) {
     userPreferences.update(prefs => {
-        const poiTypes = Array.isArray(prefs.poiTypes) ? [...prefs.poiTypes] : []; // Ensure array
-
-        return {
-            ...prefs,
-            poiTypes: poiTypes.includes(poi)
-                ? poiTypes.filter(item => item !== poi) // Remove if already selected
-                : [...poiTypes, poi] // Add if not selected
-        };
+        const poiTypes = new Set(prefs.poiTypes || []); // Ensure it's a Set
+        if (poiTypes.has(poi)) {
+            poiTypes.delete(poi); // Remove if already selected
+        } else {
+            poiTypes.add(poi); // Add if not selected
+        }
+        return { ...prefs, poiTypes: Array.from(poiTypes) };
     });
 
-    updatePreferences();
+    await tick(); // ✅ Wait for Svelte to update userPreferences
+    console.log("📍 Updated POIs:", get(userPreferences).poiTypes);
+    updatePreferences(); // ✅ Now ensures correct POIs are used
 }
 
 
