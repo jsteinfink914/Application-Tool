@@ -6,7 +6,12 @@ import Papa from 'papaparse';
 export const listings = writable([]);
 export const favorites = writable([]);
 export const selectedAttributes = writable(['price', 'sqft', 'beds', 'baths', 'photo']);
-export const userPreferences = writable({ grocery: '', gym: '' });
+export const userPreferences = writable({
+  grocery: '',
+  gym: '',
+  poiTypes: [] // Array to store selected Points of Interest
+});
+
 
 async function fetchListingsFromCSV() {
   const url = '/nyc_listings.csv'; // Ensure this path is correct
@@ -163,6 +168,16 @@ export async function updateUserPreferences(preferences) {
               listing.nearestGym = null;
               console.warn(`No nearest gym found for ${listing.address}`);
           }
+          if (preferences.poiTypes && preferences.poiTypes.length > 0) {
+            listing.nearestPOIs = {};
+            for (const poiType of preferences.poiTypes) {
+                const nearestPOI = await findNearestPlace(listing, poiType.toLowerCase(), poiType);
+                if (nearestPOI) {
+                    listing.nearestPOIs[poiType] = { ...nearestPOI };
+                }
+            }
+        }
+
           return listing;
       })
   );

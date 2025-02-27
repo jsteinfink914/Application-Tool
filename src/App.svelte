@@ -453,6 +453,18 @@ function handleScroll() {
   }
 }
 
+function togglePOI(poi) {
+    userPreferences.update(prefs => {
+        const poiTypes = prefs.poiTypes.includes(poi)
+            ? prefs.poiTypes.filter(item => item !== poi) // Remove if already selected
+            : [...prefs.poiTypes, poi]; // Add if not selected
+        return { ...prefs, poiTypes };
+    });
+
+    updatePreferences(); // Apply new POI filters to listings & map
+}
+
+
   onMount(() => {
     window.addEventListener("scroll", handleScroll);
   loadGoogleMapsScript(() =>{
@@ -970,7 +982,6 @@ function handleScroll() {
   {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   <div class="content-container">
   <!-- Page Title -->
-  <h2 class="page-title">Recommendation Feed</h2>
   <!-- View Toggle -->
   <div class="toggle-switch">
     <div class="toggle-option selected" on:click={toggleViewMode}>
@@ -1014,6 +1025,16 @@ function handleScroll() {
           <label>Max Sq Ft:</label>
           <input type="number" bind:value={filters.max_sqft} placeholder="Max Sq Ft" />
         </div>
+        <div class="filter-group">
+        {#each ["Cafes", "Parks", "Public Transport", "Schools", "Restaurants"] as poi}
+              <label>
+                  <input type="checkbox"
+                        on:change={() => togglePOI(poi)}
+                        checked={$userPreferences.poiTypes.includes(poi)} />
+                  {poi}
+              </label>
+          {/each}
+      </div>
 
         <button class="apply-filters" on:click={() => applyFilters()}>Apply Filters</button>
       </div>
@@ -1105,8 +1126,11 @@ function handleScroll() {
             {#if $selectedAttributesLocal.sqft} <th>Sq Ft</th> {/if}
             {#if $selectedAttributesLocal.beds} <th>Beds</th> {/if}
             {#if $selectedAttributesLocal.baths} <th>Baths</th> {/if}
-            <th>Nearest Grocery Store</th>
-            <th>Nearest Gym</th>
+            <th>Nearest Favorite Grocery Store</th>
+            <th>Nearest Favorite Gym</th>
+            {#each $userPreferences.poiTypes as poiType}
+            <th>Nearest {poiType}</th>
+        {/each}
           </tr>
         </thead>
         <tbody>
@@ -1119,6 +1143,9 @@ function handleScroll() {
               {#if $selectedAttributesLocal.baths} <td>{listing.baths || 'N/A'}</td> {/if}
               <td>{listing.nearestGrocery?.name} ({listing.nearestGrocery?.distance})</td>
               <td>{listing.nearestGym?.name} ({listing.nearestGym?.distance})</td>
+              {#each $userPreferences.poiTypes as poiType}
+                <td>{listing.nearestPOIs?.[poiType]?.name || 'N/A'} ({listing.nearestPOIs?.[poiType]?.distance || ''})</td>
+            {/each}
             </tr>
           {/each}
         </tbody>
