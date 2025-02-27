@@ -248,6 +248,8 @@ function toggleViewMode() {
                 }
                 if (!isComparePage) {
                     addPOIMarkers(listing);
+                    console.log(`📌 Adding marker for POI's`);
+
                  }
         }
               });
