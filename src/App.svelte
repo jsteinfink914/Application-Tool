@@ -7,6 +7,7 @@
   import { writable, get } from 'svelte/store'; 
   import Router from "svelte-spa-router";
   import MovingServices from "./routes/MovingServices.svelte";
+  import BuildingDashboard from "./routes/BuildingDashboard.svelte";
 
   // ✅ 2. Store Imports Next (No Duplicates)
   import { 
@@ -610,7 +611,8 @@ async function applyFilters() {
 <!-- Router -->
 <main>
   <Router routes={{
-    "/moving-services": MovingServices
+    "/moving-services": MovingServices,
+    "/building-dashboard": BuildingDashboard
   }} />
 </main>
 
