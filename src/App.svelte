@@ -603,9 +603,12 @@ async function applyFilters() {
 
 
 <!-- Router -->
-<Router routes={{
-  "/moving-services": MovingServices
-}} />
+<<main>
+  <Router routes={{
+    "/": Home,
+    "/moving-services": MovingServices
+  }} />
+</main>
 
 <style>
   @import 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
