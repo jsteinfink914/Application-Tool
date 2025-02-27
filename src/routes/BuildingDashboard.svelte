@@ -62,6 +62,7 @@
     cursor: pointer;
     font-size: 1.5rem;
     color: white;
+    z-index:1002;
   }
 
   .menu-button:hover {
