@@ -20,6 +20,7 @@ async function fetchListingsFromCSV() {
       const response = await fetch(url);
       const text = await response.text();
       const data = parseCSV(text);
+      allListings.set(data);
       listings.set(data);
       console.log("✅ Listings loaded from CSV:", data);
   } catch (error) {
