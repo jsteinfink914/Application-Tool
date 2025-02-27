@@ -1,5 +1,6 @@
 <script>
-  import { FiMenu, FiTruck } from "svelte-icons/fi";
+import { FiMenu, FiTruck } from "svelte-icons/fi/index.js";
+
 
   let services = [
     { id: 1, name: "Cupcake Moving Co.", price: "$500", rating: "4.8" },
