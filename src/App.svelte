@@ -5,7 +5,8 @@
     // ✅ 1. External Libraries First
   import { onMount, tick } from 'svelte';
   import { writable, get } from 'svelte/store'; 
-  import { Router, Route, Link } from "svelte-spa-router";
+  import { Router, Route } from "svelte-spa-router";
+  import MovingServices from "./pages/MovingServices.svelte";
 
   // ✅ 2. Store Imports Next (No Duplicates)
   import { 
@@ -19,7 +20,7 @@
   updateUserPreferences,
   findNearestPlace
 } from './store.js';
-import MovingService from "./routes/MovingServices.svelte";
+
 
 
 
@@ -605,9 +606,8 @@ async function applyFilters() {
 
 <!-- Router -->
 <Router>
-  <Route path="/moving-services" component={MovingService} />
+  <Route path="/moving-services" component={MovingServices} />
 </Router>
-
 
 <style>
   @import 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
@@ -1110,7 +1110,8 @@ async function applyFilters() {
 </style>
 <div class="glide-banner">
    <div class="logo">glide</div>
-    <Link to="/moving-services">🚛 Moving Services</Link>
+<a href="#/moving-services" class="nav-button">🚛 Moving Services</a>
+
 
 
 </div>
