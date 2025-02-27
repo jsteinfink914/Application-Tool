@@ -1,6 +1,7 @@
 <script>
-  import { FiMenu, FiAlertCircle, FiMessageSquare, FiCheckCircle } from "svelte-icons/fi";
+  import { writable } from "svelte/store";
 
+  // Units Data
   const units = [
     { id: 1, name: "Unit 101", status: "Current on Rent", maintenance: false, message: true },
     { id: 2, name: "Unit 202", status: "Late on Rent", maintenance: true, message: true },
@@ -9,6 +10,28 @@
     { id: 5, name: "Unit 505", status: "Current on Rent", maintenance: true, message: true },
     { id: 6, name: "Unit 606", status: "Current on Rent", maintenance: false, message: true },
   ];
+
+  // State for Search and Filters
+  let searchQuery = writable("");
+  let filterStatus = writable(""); // "Current on Rent" or "Late on Rent"
+  let filterMaintenance = writable(""); // "Needs Maintenance" or "No Maintenance"
+
+  // Computed: Filtered Units Based on Search & Filters
+  $: filteredUnits = units.filter(unit => {
+    return (
+      unit.name.toLowerCase().includes($searchQuery.toLowerCase()) &&
+      (!$filterStatus || unit.status === $filterStatus) &&
+      (!$filterMaintenance || (unit.maintenance ? "Needs Maintenance" : "No Maintenance") === $filterMaintenance)
+    );
+  });
+
+  function toggleStatusFilter(status) {
+    filterStatus.set($filterStatus === status ? "" : status);
+  }
+
+  function toggleMaintenanceFilter(type) {
+    filterMaintenance.set($filterMaintenance === type ? "" : type);
+  }
 </script>
 
 <style>
@@ -37,6 +60,8 @@
     transition: background 0.3s;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     cursor: pointer;
+    font-size: 1.5rem;
+    color: white;
   }
 
   .menu-button:hover {
@@ -57,6 +82,39 @@
     font-weight: bold;
     color: black;
     margin-bottom: 2rem;
+  }
+
+  .search-bar {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .filter-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .filter-button {
+    padding: 8px 15px;
+    border: 2px solid black;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: white;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  .filter-button.active {
+    background: black;
+    color: white;
   }
 
   .unit-grid {
@@ -117,6 +175,7 @@
     justify-content: center;
     transition: background 0.3s;
     width: 100%;
+    cursor: pointer;
   }
 
   .message-button:hover {
@@ -136,9 +195,7 @@
 
 <div class="dashboard-container">
   <!-- Menu Button -->
-  <div class="menu-button">
-    <FiMenu size={24} color="white" />
-  </div>
+  <div class="menu-button">☰</div>
 
   <!-- Dashboard Title -->
   <h2 class="dashboard-title">glide</h2>
@@ -146,31 +203,53 @@
   <!-- Property Name -->
   <h2 class="property-title">The Magellan</h2>
 
+  <!-- 🔎 Search Bar -->
+  <input 
+    class="search-bar" 
+    type="text" 
+    placeholder="Find a unit..." 
+    bind:value={$searchQuery} 
+  />
+
+  <!-- 🎛️ Filter Buttons -->
+  <div class="filter-buttons">
+    <button 
+      class="filter-button { $filterStatus === 'Current on Rent' ? 'active' : '' }" 
+      on:click={() => toggleStatusFilter("Current on Rent")}
+    >
+      ✅ Current on Rent
+    </button>
+    <button 
+      class="filter-button { $filterStatus === 'Late on Rent' ? 'active' : '' }" 
+      on:click={() => toggleStatusFilter("Late on Rent")}
+    >
+      ⚠️ Late on Rent
+    </button>
+    <button 
+      class="filter-button { $filterMaintenance === 'Needs Maintenance' ? 'active' : '' }" 
+      on:click={() => toggleMaintenanceFilter("Needs Maintenance")}
+    >
+      🛠 Needs Maintenance
+    </button>
+    <button 
+      class="filter-button { $filterMaintenance === 'No Maintenance' ? 'active' : '' }" 
+      on:click={() => toggleMaintenanceFilter("No Maintenance")}
+    >
+      ✅ No Maintenance
+    </button>
+  </div>
+
   <!-- Units Grid -->
   <div class="unit-grid">
-    {#each units as unit}
+    {#each filteredUnits as unit}
       <div class="unit-card">
         <h3 class="text-2xl font-semibold text-black mb-2">{unit.name}</h3>
-
-        <div class="status">
-          {#if unit.status === "Current on Rent"}
-            <FiCheckCircle class="icon text-green-600" size={20} />
-          {:else}
-            <FiAlertCircle class="icon text-red-600" size={20} />
-          {/if}
-          {unit.status}
-        </div>
-
+        <div class="status">{unit.status}</div>
         {#if unit.maintenance}
-          <div class="maintenance">
-            <FiAlertCircle class="icon" size={20} /> Maintenance Request
-          </div>
+          <div class="maintenance">🛠 Maintenance Request</div>
         {/if}
-
         {#if unit.message}
-          <button class="message-button">
-            Message Renter <FiMessageSquare class="ml-2" size={20} />
-          </button>
+          <button class="message-button">📩 Message Renter</button>
         {/if}
       </div>
     {/each}
