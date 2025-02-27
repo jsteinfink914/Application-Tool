@@ -19,7 +19,7 @@
   updateUserPreferences,
   findNearestPlace
 } from './store.js';
-import MovingService from "./routes/MovingService.svelte";
+import MovingService from "./routes/MovingServices.svelte";
 
 
 
