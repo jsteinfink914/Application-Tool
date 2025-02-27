@@ -516,6 +516,7 @@ function togglePOI(poi) {
 function applyFilters() {
     const filterValues = get(filters); // Get the latest filter values
     const allData = get(allListings); // Get the full dataset
+    const selectedPOIs = get(userPreferences).poiTypes || []; // Get selected POIs
 
     const filteredListings = allData.filter(listing => {
         return (
@@ -531,8 +532,20 @@ function applyFilters() {
     });
 
     console.log(`✅ Filtered Listings: ${filteredListings.length} results.`);
+    // 🔹 Step 2: Fetch POI Data Only If Needed
+    if (selectedPOIs.length > 0) {
+        console.log(`🔍 Fetching POIs for: ${selectedPOIs}`);
+
+        for (let listing of filteredListings) {
+            listing.nearestPOIs = {};
+            for (let poiType of selectedPOIs) {
+                listing.nearestPOIs[poiType] = await findNearestPlace(listing, poiType, poiType);
+            }
+        }
+    }
 
     listings.set(filteredListings); // Update the filtered results
+
 
     // 🔥 Reload the Map after filtering
     setTimeout(() => {
