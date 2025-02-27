@@ -21,7 +21,12 @@
   findNearestPlace
 } from './store.js';
 
-
+ const currentRoute = writable(window.location.hash.replace("#", "") || "/");
+  
+  // Listen for hash changes
+  window.addEventListener("hashchange", () => {
+    currentRoute.set(window.location.hash.replace("#", "") || "/");
+  });
 
 
 let filters = writable({
@@ -1117,7 +1122,7 @@ async function applyFilters() {
 </div>
 
 
-
+{#if $currentRoute !== "/moving-services"}
   {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   <div class="content-container">
   <!-- Page Title -->
@@ -1304,4 +1309,5 @@ async function applyFilters() {
       </div>
     {/if}
   </div>
+{/if}
 {/if}
