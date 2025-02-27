@@ -183,15 +183,44 @@
     background: #08321d;
   }
 
-  @media (max-width: 600px) {
+ /* 📱 Mobile Adjustments */
+@media (max-width: 600px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+
     .property-title {
-      font-size: 2rem;
+        font-size: 2.2rem;
     }
 
     .dashboard-title {
-      font-size: 1.5rem;
+        font-size: 1.5rem;
     }
-  }
+
+    .filter-buttons {
+        gap: 5px;
+    }
+
+    .filter-button {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
+
+    .search-bar {
+        max-width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .unit-grid {
+        grid-template-columns: 1fr; /* 📌 Make it single column on small screens */
+    }
+
+    .menu-button {
+        width: 2.8rem;
+        height: 2.8rem;
+        font-size: 1.2rem;
+    }
+}
 </style>
 
 <div class="dashboard-container">
