@@ -1115,12 +1115,11 @@ async function applyFilters() {
 </style>
 <div class="glide-banner">
    <div class="logo">glide</div>
-<a href="#/moving-services" class="nav-button">🚛 Moving Services</a>
 
 
 
 </div>
-
+<a href="#/moving-services" class="nav-button">🚛 Moving Services</a>
 
 {#if $currentRoute !== "/moving-services"}
   {#if !$showComparePage}  <!-- ❌ Missing `$` -->

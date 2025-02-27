@@ -13,14 +13,8 @@
 
 <div class="moving-container">
   <!-- Menu Button -->
-  <div class="menu-button">
-    <button class="circle-button">
-  📋 <!-- Menu emoji -->
-</button>
-  </div>
 
   <!-- Glide Logo -->
-  <h2 class="logo">glide</h2>
 
   <!-- Page Title -->
   <h2 class="page-title">Moving Services</h2>
