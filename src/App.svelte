@@ -20,6 +20,8 @@
 } from './store.js';
 
 
+
+
 let filters = writable({
     min_price: "",
     max_price: "",
@@ -1100,7 +1102,7 @@ async function applyFilters() {
 </style>
 <div class="glide-banner">
    <div class="logo">glide</div>
-   <a href="/moving-services" class="nav-button">🚛 Moving Services</a>
+   <a href="/routes/MovingServices.svelte" class="nav-button">🚛 Moving Services</a>
 
 
 </div>
