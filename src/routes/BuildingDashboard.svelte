@@ -282,14 +282,12 @@
   <div class="menu-button" on:click={toggleMenu}>☰</div>
 
   <!-- 🔽 Dropdown Menu (Now properly inside menu-container) -->
-  <div class="dropdown-wrapper">
     {#if $showMenu}
       <div class="dropdown-menu show">
         <a href="#/leasing-dashboard" class="dropdown-item">📊 Leasing Dashboard</a>
       </div>
     {/if}
   </div>
-</div>
 
   <!-- Property Name -->
   <h2 class="property-title">The Magellan</h2>

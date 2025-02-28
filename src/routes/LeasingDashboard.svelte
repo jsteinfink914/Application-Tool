@@ -106,6 +106,9 @@
     font-family: 'Playfair Display', serif;
     background-color: #FBF7F0;
     overflow-x: hidden;
+    margin: 0; /* ✅ Remove default body margin */
+    padding: 0;
+    width: 100%; /* ✅ Ensures no extra width beyond the viewport */
   }
 
   .page-container {
@@ -115,7 +118,9 @@
     min-height: 100vh;
     padding: 3rem 2rem;
     background: #EDE6DD;
-    width: 100vw;
+    width: 100%; /* ✅ Avoids 100vw scrollbar issue */
+    max-width: 1200px; /* ✅ Keeps content centered properly */
+    margin: 0 auto; /* ✅ Ensures no left-side white space */
   }
 
   .header {
@@ -183,8 +188,9 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
-    max-width: 1000px;
-    margin: 0 auto;
+    max-width: 1000px; /* ✅ Restricts width */
+    margin: 0 auto; /* ✅ Centers properly */
+    width: 100%;
   }
 
   .unit-card {
