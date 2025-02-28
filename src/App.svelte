@@ -1112,6 +1112,7 @@ async function applyFilters() {
 </style>
 <div class="glide-banner">
    <div class="logo">glide</div>
+{#if !($currentRoute.startsWith("/building-dashboard") || $currentRoute.startsWith("/moving-services") || $currentRoute.startsWith("/payment")|| $currentRoute.startsWith("/renter-portal"))}
 
 
 

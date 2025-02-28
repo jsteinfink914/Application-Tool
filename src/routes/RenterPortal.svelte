@@ -160,8 +160,6 @@
     <div class="dropdown-item">📜 Transaction History</div>
   </div>
 
-  <!-- 📌 Portal Title -->
-  <h2 class="portal-title">glide</h2>
 
   <!-- 🏢 Property Name -->
   <h2 class="property-title">The Magellan</h2>
@@ -172,7 +170,9 @@
       📜 Lease Agreement
     </button>
     <button class="portal-button">
-      💳 Payment & Billing
+        <a href="/payment" class="text-blue-500 hover:underline">
+   💳 Payment & Billing
+        </a>
     </button>
     <button class="portal-button">
       🛠 Maintenance Requests
