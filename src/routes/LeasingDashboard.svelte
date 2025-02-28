@@ -32,7 +32,7 @@
     selectedAction.update(curr => (curr === action ? "All" : action));
   }
 
-  // 🔹 Grouped and Filtered Units
+  // 🔹 Keep the grouped structure while filtering dynamically
   const groupedUnits = derived(selectedAction, $selectedAction => {
     const filtered = $selectedAction === "All" ? units : units.filter(unit => unit.action === $selectedAction);
 
@@ -55,7 +55,7 @@
     <h2 class="building-title">The Magellan</h2>
   </header>
 
-  <!-- 📌 Menu Button (Moved Out of Header) -->
+  <!-- 📌 Menu Button (Now Fixed in Top-Right) -->
   <div class="menu-container">
     <button class="menu-button" on:click={toggleDropdown}>☰</button>
 
@@ -141,7 +141,7 @@
     font-weight: bold;
   }
 
-  /* 🎛️ Menu Button */
+  /* 🎛️ Menu Button (Fixed in Top-Right) */
   .menu-container {
     position: fixed;
     top: 1rem;
