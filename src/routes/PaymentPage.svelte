@@ -18,7 +18,7 @@
 
 <div class="page-container">
   
-  <!-- 📌 Menu Button -->
+  <!-- 📌 Menu Button (TOP RIGHT) -->
   <div class="menu-wrapper">
     <button class="menu-button" on:click={toggleDropdown}>
       ☰
@@ -32,6 +32,7 @@
   </div>
 
   <!-- 🏠 App Title -->
+  <h2 class="app-title">glide</h2>
   
   <div class="form-container">
     
@@ -85,6 +86,7 @@
     justify-content: center;
     min-height: 100vh;
     padding: 1.5rem;
+    background-color: #FBF7F0; /* Ensuring exact match */
   }
 
   .app-title {
@@ -159,11 +161,11 @@
     background-color: #062c2d;
   }
 
-  /* 📌 Menu Button */
+  /* 📌 Menu Button (TOP RIGHT) */
   .menu-wrapper {
     position: absolute;
-    top: 1rem;
-    left: 1rem;
+    top: 2rem; /* Lowering it slightly */
+    right: 1rem; /* Moving it to the right */
   }
 
   .menu-button {
@@ -189,7 +191,7 @@
   .dropdown-menu {
     position: absolute;
     top: 3.5rem;
-    left: 0;
+    right: 0; /* Adjusted to keep it aligned */
     width: 180px;
     background: white;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
