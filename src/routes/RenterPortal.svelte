@@ -10,10 +10,6 @@
   }
 </script>
 
-<main>
-  <Router {routes} />
-</main>
-
 <style>
   .portal-container {
     display: flex;
