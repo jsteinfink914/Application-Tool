@@ -1092,6 +1092,8 @@ body {
   }
   .moving{
     background-color: #FBF7F0;
+    padding: 5px 0; /* Reduce vertical padding */
+    margin: 0 auto; /* Reduce any additional spacing */
   }
 
 @media (max-width: 600px) {
