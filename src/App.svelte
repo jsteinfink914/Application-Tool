@@ -975,13 +975,18 @@ async function applyFilters() {
 .view-layout.split-view {
     flex-direction: row;
     gap: 15px;
+     display: flex;
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Prevents body scrolling */
 }
 
 /* When in split view, make listings smaller */
 .view-layout.split-view .listings-grid {
     flex: 1;
-    max-width: 50%; /* Listings take up half the space */
-    overflow-y: auto;
+    max-width: 50%;
+    height: calc(100vh - 100px); /* Adjust based on header size */
+    overflow-y: auto; /* Enables vertical scrolling */
+    padding: 10px;
 }
 #map-container-listings {
     flex: 1;
@@ -1067,6 +1072,9 @@ async function applyFilters() {
 .floating-chat:hover .chat-content {
     display: block;
     width: 100%;
+}
+body {
+    overflow: hidden; /* Prevents full-page scrolling */
 }
 .nav-button {
     background-color: #007bff;
