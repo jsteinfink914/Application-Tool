@@ -1,0 +1,16 @@
+id,address,price,beds,baths,sqft,latitude,longitude,photo
+NYC001,123 Broadway,3200,2,1,850,40.7128,-74.006,https://photos.zillowstatic.com/fp/fe9077ca9128a59d096dd1b4ccd19b8e-se_extra_large_1500_800.webp
+NYC002,456 5th Ave,4500,3,2,1200,40.7532,-73.9822,https://photos.zillowstatic.com/fp/7b0de2b62c70d551ea735525e8016be7-se_extra_large_1500_800.webp
+NYC003,789 Park Ave,5500,4,3,2000,40.7711,-73.9644,https://photos.zillowstatic.com/fp/db550ee89a24eeafcea63dbcd86ffc65-se_large_800_400.webp
+NYC004,101 Wall S,3800,2,1,900,40.7074,-74.0113,https://photos.zillowstatic.com/fp/ef9d84397cb3347ca65ca7941dfc7f93-se_large_800_400.webp
+NYC005,202 West End Ave,6000,3,2.5,1800,40.7776,-73.9904,https://photos.zillowstatic.com/fp/4b2e871d5e0b0e7ef07965e3c6a54840-se_large_800_400.webp
+NYC006,300 Central Park West,7200,4,3,2500,40.7851,-73.9695,https://photos.zillowstatic.com/fp/547d538087426f934b22419ac3532d89-se_large_800_400.webp
+NYC007,15 Hudson Yards,8900,3,2.5,1900,40.7527,-74.0013,https://photos.zillowstatic.com/fp/9aa2183cf42eea603679a2618625963b-se_large_800_400.webp
+NYC008,88 Greenwich St,4200,2,1.5,1000,40.707,-74.0167,https://photos.zillowstatic.com/fp/c4bc9cc01fce29e4220f64e3cb4d8a3e-se_large_800_400.webp
+NYC009,252 East 57th St,7800,3,2,1600,40.7595,-73.9648,https://photos.zillowstatic.com/fp/101a59bd6075f4b5be7f1c387439d75b-se_large_800_400.webp
+NYC010,520 West 28th St,10500,4,4,2800,40.7487,-74.0048,https://photos.zillowstatic.com/fp/18df7d9c23aff2012dce22e34b8231fe-se_large_800_400.webp
+NYC011,10 West End Ave,6700,3,2,1700,40.7744,-73.9921,https://photos.zillowstatic.com/fp/a6a0671937e25e0f2e8f2b718544aa61-se_extra_large_1500_800.webp
+NYC012,200 East 59th St,4300,1,1,750,40.7616,-73.9652,https://photos.zillowstatic.com/fp/4330739bde9b4907b913f22be9329c46-se_large_800_400.webp
+NYC013,111 Murray St,7200,3,1.5,1300,40.7146,-74.0129,https://photos.zillowstatic.com/fp/15974145a7831767ab906d7272915428-se_large_800_400.webp
+NYC014,432 Park Ave,12500,5,4,3200,40.7615,-73.9718,https://photos.zillowstatic.com/fp/d189ea833b21589be5a39a463422831e-se_large_800_400.webp
+NYC015,80 Riverside Blvd,7100,3,2.5,1850,40.7782,-73.9889,https://photos.zillowstatic.com/fp/4b97ec8cc2337541ef21ae116710dc8f-se_large_800_400.webp
