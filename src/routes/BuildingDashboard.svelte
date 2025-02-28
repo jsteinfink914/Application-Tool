@@ -108,19 +108,19 @@
     margin-bottom: 20px;
   }
 
-  .filter-button {
-    padding: 8px 15px;
-    border: 2px solid black;
-    border-radius: 6px;
+.filter-button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 20px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    background: white;
+    background: #e5e5e5;
     transition: background 0.3s, color 0.3s;
   }
 
   .filter-button.active {
-    background: black;
+    background: #0a3d3f;
     color: white;
   }
 
