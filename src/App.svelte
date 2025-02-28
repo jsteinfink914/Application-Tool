@@ -943,6 +943,7 @@ async function applyFilters() {
 
 .content-container {
     padding-top: 40px; /* Pushes content below the banner */
+    background-color: #FBF7F0;
 }
 
 .view-toggle-container {
