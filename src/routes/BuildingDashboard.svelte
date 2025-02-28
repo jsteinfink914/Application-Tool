@@ -264,10 +264,11 @@
   <div class="menu-button" on:click={toggleMenu}>☰</div>
 
   <!-- 🔽 Dropdown Menu -->
-  <div class="dropdown-menu { $showMenu ? 'show' : '' }">
-    <a href="#/leasing-dashboard" class="dropdown-item">📊 Leasing Dashboard</a>
-  </div>
-  <!-- Dashboard Title -->
+  {#if $showMenu}
+    <div class="dropdown-menu">
+      <a href="#/leasing-dashboard" class="dropdown-item">📊 Leasing Dashboard</a>
+    </div>
+  {/if}
 
   <!-- Property Name -->
   <h2 class="property-title">The Magellan</h2>

@@ -1,13 +1,14 @@
 <script>
+  import { writable } from "svelte/store";
   import { fade } from "svelte/transition";
 
-  let showDropdown = false;
-  let filter = "All";
+  // Dropdown for menu button
+  let showDropdown = writable(false);
 
-  function toggleDropdown() {
-    showDropdown = !showDropdown;
-  }
+  // Action filter
+  let filter = writable("All");
 
+  // List of units with actions
   const units = [
     { id: 23, name: "Unit 1212", action: "Collect Deposit" },
     { id: 24, name: "Unit 1313", action: "Completed" },
@@ -31,21 +32,22 @@
     { id: 6, name: "Unit 606", action: "Post to Market" }
   ];
 
-  function filteredUnits() {
-    if (filter === "All") return units;
-    return units.filter(unit => unit.action.includes(filter));
+  // Computed: Filtered Units Based on Selected Filter
+  $: filteredUnits = $filter === "All" ? units : units.filter(unit => unit.action === $filter);
+
+  function toggleDropdown() {
+    showDropdown.update(state => !state);
   }
 </script>
 
+<!-- 🏢 Page Container -->
 <div class="page-container">
   
-  <!-- 📌 Menu Button (TOP RIGHT) -->
+  <!-- 📌 Menu Button -->
   <div class="menu-wrapper">
-    <button class="menu-button" on:click={toggleDropdown}>
-      ☰
-    </button>
+    <button class="menu-button" on:click={toggleDropdown}>☰</button>
 
-    {#if showDropdown}
+    {#if $showDropdown}
       <div class="dropdown-menu" transition:fade>
         <button class="dropdown-item">Transaction History</button>
       </div>
@@ -53,13 +55,12 @@
   </div>
 
   <!-- 🏠 App Title -->
-  <h2 class="app-title">glide</h2>
   <h2 class="building-title">The Magellan</h2>
 
-  <!-- Filter Dropdown -->
+  <!-- 🎛️ Filter Dropdown -->
   <div class="filter-container">
     <label for="filter" class="filter-label">Filter Actions:</label>
-    <select id="filter" bind:value={filter} class="filter-dropdown">
+    <select id="filter" bind:value={$filter} class="filter-dropdown">
       <option value="All">All</option>
       <option value="Approve Application">Approve Application</option>
       <option value="Send Lease">Send Lease</option>
@@ -70,9 +71,9 @@
     </select>
   </div>
 
-  <!-- Grid Display -->
+  <!-- 🏢 Unit Grid Display -->
   <div class="unit-grid">
-    {#each filteredUnits() as unit}
+    {#each filteredUnits as unit}
       <div class="unit-card">
         <div class="unit-info">
           <h3 class="unit-name">{unit.name}</h3>
@@ -85,16 +86,14 @@
   </div>
 </div>
 
+<!-- 🌎 Styles -->
 <style>
-  /* 🌎 Global Styles */
-  @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap");
-
   body {
     font-family: 'Playfair Display', serif;
     background-color: #FBF7F0;
   }
 
-  /* 📌 Main Page Layout */
+  /* 📌 Page Layout */
   .page-container {
     display: flex;
     flex-direction: column;
@@ -105,22 +104,13 @@
     background-color: #FBF7F0;
   }
 
-  .app-title {
-    position: absolute;
-    top: 1.5rem;
-    left: 1rem;
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: black;
-  }
-
   .building-title {
     font-size: 4rem;
     font-weight: bold;
     margin-bottom: 2rem;
   }
 
-  /* 🔘 Filter Container */
+  /* 🔘 Filter Dropdown */
   .filter-container {
     margin-bottom: 2rem;
   }
@@ -132,7 +122,7 @@
   }
 
   .filter-dropdown {
-    width: 200px;
+    width: 220px;
     padding: 0.8rem;
     border: 2px solid black;
     border-radius: 6px;
@@ -199,7 +189,7 @@
     background-color: #062c2d;
   }
 
-  /* 📌 Menu Button (TOP RIGHT) */
+  /* 📌 Menu Button */
   .menu-wrapper {
     position: absolute;
     top: 1rem;
@@ -212,6 +202,7 @@
     width: 3rem;
     height: 3rem;
     display: flex;
+    margin-top:60px;
     align-items: center;
     justify-content: center;
     transition: background 0.3s;
@@ -225,4 +216,35 @@
     background: #333;
   }
 
+  /* 🔽 Dropdown Menu */
+  .dropdown-menu {
+    position: absolute;
+    top: 4rem;
+    right: 0;
+    width: 180px;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    display: none;
+    flex-direction: column;
+    z-index: 1003;
+  }
+
+  .dropdown-menu.show {
+    display: flex;
+  }
+
+  .dropdown-item {
+    padding: 12px;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .dropdown-item:hover {
+    background: #f1f1f1;
+  }
 </style>
