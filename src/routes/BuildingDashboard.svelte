@@ -222,9 +222,19 @@
     }
 
     .menu-button {
-        width: 2.8rem;
-        height: 2.8rem;
-        font-size: 1.2rem;
+        background: black;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: white;
+    z-index: 1002;
+    margin-top:40px;
     }
     .menu-container {
   position: relative; /* Ensures dropdown is positioned relative to this */

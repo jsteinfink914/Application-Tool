@@ -926,7 +926,7 @@ async function applyFilters() {
 }
 /* Green Banner Styling */
 .glide-banner {
-      position: absolute;
+      position: fixed;
     top: 0;
     left: 0;
     width: 100%;

@@ -122,6 +122,7 @@
     justify-content: center;
     min-height: 100vh;
     padding: 2rem;
+    background: #EDE6DD;
   }
 
   /* 📌 Fixed Header */
@@ -138,6 +139,7 @@
     left: 0;
     right: 0;
     z-index: 1000;
+    margin-bottom:5%;
   }
 
   .building-title {

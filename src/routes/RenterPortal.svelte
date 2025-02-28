@@ -25,9 +25,6 @@
 
   /* Menu Button */
   .menu-button {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
     background: black;
     border-radius: 50%;
     width: 3rem;
@@ -36,11 +33,11 @@
     align-items: center;
     justify-content: center;
     transition: background 0.3s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     font-size: 1.5rem;
     color: white;
     z-index: 1002;
+    margin-top:40px;
   }
 
   .menu-button:hover {
@@ -187,7 +184,7 @@
       📜 Lease Agreement
     </button>
     <button class="portal-button">
-        <a href="#/payment-page" class="text-blue-500 hover:underline">
+        <a href="#/payment-page">
    💳 Payment & Billing
         </a>
     </button>
