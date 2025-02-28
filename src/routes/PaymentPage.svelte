@@ -155,6 +155,13 @@
   .pay-now:hover {
     background-color: #062c2d;
   }
+   .amount-display {
+    font-size: 3.5rem;
+    font-weight: bold;
+    text-align: center;
+    display: block;
+    color: black;
+  }
 
   /* 📌 Menu Button (TOP RIGHT) */
   .menu-wrapper {
