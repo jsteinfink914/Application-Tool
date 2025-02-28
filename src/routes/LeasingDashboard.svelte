@@ -202,7 +202,6 @@
     width: 3rem;
     height: 3rem;
     display: flex;
-    margin-top:60px;
     align-items: center;
     justify-content: center;
     transition: background 0.3s;
