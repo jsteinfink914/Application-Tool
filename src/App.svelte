@@ -1090,6 +1090,9 @@ body {
   .nav-button:hover {
     background-color: #0056b3;
   }
+  .moving{
+    background-color: #FBF7F0;
+  }
 
 @media (max-width: 600px) {
     .listings-grid {
@@ -1109,8 +1112,9 @@ body {
 {#if !($currentRoute.startsWith("/building-dashboard") || $currentRoute.startsWith("/leasing-dashboard") || $currentRoute.startsWith("/moving-services") || $currentRoute.startsWith("/payment-page")|| $currentRoute.startsWith("/renter-portal"))}
 
 
-
+<div class="moving">
 <a href="#/moving-services" class="nav-button">🚛 Moving Services</a>
+</div>
   {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   <div class="content-container">
   <!-- Page Title -->
