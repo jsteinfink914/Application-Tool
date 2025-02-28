@@ -1,9 +1,9 @@
 <script>
-  import { writable } from "svelte/store";
+  import { writable, derived } from "svelte/store";
   import { fade } from "svelte/transition";
 
   let showDropdown = writable(false);
-  let filterAction = writable("All");
+  let selectedAction = writable("All");
 
   const units = [
     { id: 23, name: "Unit 1212", action: "Collect Deposit" },
@@ -28,18 +28,17 @@
     { id: 6, name: "Unit 606", action: "Post to Market" }
   ];
 
-  // Group units into subsets for better organization
-  const groupedUnits = {
-    "Leasing Actions": units.filter(unit => ["Approve Application", "Send Lease", "View Documents", "Collect Deposit"].includes(unit.action)),
-    "Marketing & Listings": units.filter(unit => ["Update Listing", "Adjust Pricing", "Boost Visibility", "Promote Listing", "Assign to Agent", "Schedule Showings"].includes(unit.action)),
-    "Renewals & Market Prep": units.filter(unit => ["Send Renewal", "Prepare for Market", "Post to Market"].includes(unit.action)),
-  };
-
-  let selectedAction = writable("All");
-
+  // Function to toggle the filter
   function toggleActionFilter(action) {
-    selectedAction.set($selectedAction === action ? "All" : action);
+    selectedAction.update(curr => (curr === action ? "All" : action));
   }
+
+  // Dynamically filtered units based on selected action
+  const filteredUnits = derived(selectedAction, $selectedAction => {
+    if ($selectedAction === "All") return units;
+
+    return units.filter(unit => unit.action === $selectedAction);
+  });
 
   function toggleDropdown() {
     showDropdown.update(state => !state);
@@ -53,7 +52,9 @@
     <!-- 🔹 Centered Title -->
     <h2 class="building-title">The Magellan</h2>
 
-    <!-- 📌 Menu Container to prevent shifting -->
+  </header>
+
+    <!-- 📌 Menu Container -->
     <div class="menu-container">
       <button class="menu-button" on:click={toggleDropdown}>☰</button>
 
@@ -63,11 +64,11 @@
         </div>
       {/if}
     </div>
-  </header>
+  
 
   <!-- 🎛️ Filter Buttons -->
   <div class="filter-buttons">
-    {#each ["Approve Application", "Send Lease", "Send Renewal", "Promote Listing", "Collect Deposit", "View Documents"] as action}
+    {#each ["All", "Approve Application", "Send Lease", "Send Renewal", "Promote Listing", "Collect Deposit", "View Documents"] as action}
       <button 
         class="filter-button { $selectedAction === action ? 'active' : '' }" 
         on:click={() => toggleActionFilter(action)}
@@ -77,23 +78,18 @@
     {/each}
   </div>
 
-  <!-- 📌 Grouped Unit Display -->
+  <!-- 📌 Filtered Unit Display -->
   <div class="grouped-sections">
-    {#each Object.entries(groupedUnits) as [category, unitList]}
-      <div class="section">
-        <h3 class="section-title">{category}</h3>
-        <div class="unit-grid">
-          {#each unitList as unit}
-            <div class="unit-card">
-              <h4 class="unit-name">{unit.name}</h4>
-              <button class="action-button">
-                {unit.action} →
-              </button>
-            </div>
-          {/each}
+    {#if $filteredUnits.length === 0}
+      <p>No units match this filter.</p>
+    {:else}
+      {#each $filteredUnits as unit}
+        <div class="unit-card">
+          <h4 class="unit-name">{unit.name}</h4>
+          <button class="action-button">{unit.action} →</button>
         </div>
-      </div>
-    {/each}
+      {/each}
+    {/if}
   </div>
 </div>
 
@@ -104,33 +100,30 @@
     background-color: #FBF7F0;
   }
 
-  /* 📌 Page Layout */
   .page-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: start;
     min-height: 100vh;
     padding: 3rem 2rem;
     background: #EDE6DD;
   }
 
-  /* 📌 Fixed Header */
-   .header {
+  .header {
     width: 100%;
-    max-width: 600px; /* Centers the title better */
+    max-width: 600px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
     background: white;
     border-bottom: 2px solid black;
-    position: fixed;
-    top: 50px; /* Adjusted to sit below the Glide banner */
+    position: absolute;
+    top: 50px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
-    border-radius: 8px; /* Adds subtle rounding */
+    border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 
@@ -140,7 +133,6 @@
     margin-top: 1rem;
   }
 
-  /* 🎛️ Filter Buttons */
   .filter-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -166,36 +158,15 @@
     color: white;
   }
 
-  /* 📌 Group Sections */
   .grouped-sections {
     width: 100%;
     max-width: 1200px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
   }
 
-  .section {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  }
-
-  .section-title {
-    font-size: 1.6rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid black;
-    padding-bottom: 5px;
-  }
-
-  /* 🔲 Unit Grid */
-  .unit-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-
-  /* 🏠 Unit Card */
   .unit-card {
     background: white;
     padding: 1rem;
@@ -206,6 +177,7 @@
     align-items: center;
     border: 1px solid black;
     transition: box-shadow 0.3s;
+    width: 220px;
   }
 
   .unit-card:hover {
@@ -218,7 +190,6 @@
     text-align: center;
   }
 
-  /* 🔘 Action Button */
   .action-button {
     background-color: #0a3d3f;
     color: white;
@@ -234,9 +205,10 @@
   .action-button:hover {
     background-color: #062c2d;
   }
+
   .menu-container {
-    position: relative; /* Keeps dropdown anchored */
-    display: flex; /* Prevents movement */
+    position: relative;
+    display: flex;
   }
 
   .menu-button {
@@ -256,26 +228,4 @@
   .menu-button:hover {
     background: #333;
   }
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-   @media (max-width: 600px) {
-    .header {
-      max-width: 90%;
-      padding: 0.8rem;
-    }
-
-    .building-title {
-      font-size: 1.5rem;
-    }
-
-    .menu-button {
-      width: 2rem;
-      height: 2rem;
-      font-size: 1rem;
-    }
-  }
-
 </style>

@@ -25,20 +25,23 @@
 
   /* Menu Button */
   .menu-button {
-    background: black;
-    border-radius: 50%;
-    width: 3rem;
-    height: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s;
-    cursor: pointer;
-    font-size: 1.5rem;
-    color: white;
-    z-index: 1002;
-    margin-top:40px;
-  }
+  position: absolute; /* Make it position relative to .portal-container */
+  top: 3rem; /* Adjust vertical position */
+  right: 3rem; /* Adjust horizontal position */
+  background: black;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: white;
+  z-index: 1002;
+}
+
 
   .menu-button:hover {
     background: #333;
