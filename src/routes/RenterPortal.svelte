@@ -1,5 +1,7 @@
 <script>
   import { writable } from "svelte/store";
+  import Router from "svelte-spa-router";
+  import routes from "../routes.js";
 
   // Dropdown state for the menu button
   let showDropdown = writable(false);
@@ -9,6 +11,10 @@
     showDropdown.update(state => !state);
   }
 </script>
+
+<main>
+  <Router {routes} />
+</main>
 
 <style>
   .portal-container {
@@ -170,7 +176,7 @@
       📜 Lease Agreement
     </button>
     <button class="portal-button">
-        <a href="/payment" class="text-blue-500 hover:underline">
+        <a href="#/payment" class="text-blue-500 hover:underline">
    💳 Payment & Billing
         </a>
     </button>
