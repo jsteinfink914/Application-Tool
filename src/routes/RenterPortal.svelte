@@ -170,7 +170,7 @@
       📜 Lease Agreement
     </button>
     <button class="portal-button">
-        <a href="#/payment" class="text-blue-500 hover:underline">
+        <a href="#/payment-page" class="text-blue-500 hover:underline">
    💳 Payment & Billing
         </a>
     </button>
