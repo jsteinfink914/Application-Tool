@@ -626,15 +626,7 @@ async function applyFilters() {
     width: 100%;
     height: 500px;
   }
-  .table-container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 20px auto;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-  }
+  
   .listing-container {
     display: flex;
     flex-wrap: wrap;
@@ -948,14 +940,7 @@ async function applyFilters() {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Page Title Styling */
-.page-title {
-    margin-top: 20px; /* Adds space below the banner */
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #333;
-}
+
 
 .content-container {
     padding-top: 40px; /* Pushes content below the banner */
