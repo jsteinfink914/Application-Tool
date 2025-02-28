@@ -277,9 +277,9 @@
 </style>
 
 <div class="dashboard-container">
-   <div class="menu-container">
-  <!-- ☰ Menu Button -->
-  <div class="menu-button" on:click={toggleMenu}>☰</div>
+  <div class="menu-container">
+    <!-- ☰ Menu Button -->
+    <div class="menu-button" on:click={toggleMenu}>☰</div>
 
   <!-- 🔽 Dropdown Menu (Now properly inside menu-container) -->
     {#if $showMenu}

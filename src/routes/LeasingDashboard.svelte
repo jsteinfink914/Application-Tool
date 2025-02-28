@@ -110,6 +110,13 @@
     padding: 0;
     width: 100%; /* ✅ Ensures no extra width beyond the viewport */
   }
+  .grouped-sections {
+    width: 100%; /* ✅ Ensures no extra width */
+    max-width: 1000px; /* ✅ Prevents horizontal scrolling */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
   .page-container {
     display: flex;
@@ -120,6 +127,11 @@
     background: #EDE6DD;
     width: 100%; /* ✅ Avoids 100vw scrollbar issue */
     margin: 0 auto; /* ✅ Ensures no left-side white space */
+  }
+  * {
+    box-sizing: border-box; /* Ensures padding/margin don't extend past width */
+    margin: 0;
+    padding: 0;
   }
 
   .header {
@@ -187,7 +199,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
-    max-width: 1000px; /* ✅ Restricts width */
+    max-width: 100%; /* ✅ Restricts width */
     margin: 0 auto; /* ✅ Centers properly */
     width: 100%;
   }
