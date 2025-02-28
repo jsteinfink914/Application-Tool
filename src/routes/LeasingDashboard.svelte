@@ -124,7 +124,7 @@
     align-items: center;
     min-height: 100vh;
     padding: 4rem 2rem; /* ✅ Increased padding */
-    background: #EDE6DD;
+    background: #FBF7F0;
     width: 100%;
     max-width: 100%;
     margin: 0 auto;
@@ -143,7 +143,7 @@
 
   .menu-container {
     position: fixed;
-    top: 1rem;
+    top: 3rem;
     right: 1rem;
     z-index: 1002;
   }
