@@ -119,7 +119,6 @@
     padding: 3rem 2rem;
     background: #EDE6DD;
     width: 100%; /* ✅ Avoids 100vw scrollbar issue */
-    max-width: 1200px; /* ✅ Keeps content centered properly */
     margin: 0 auto; /* ✅ Ensures no left-side white space */
   }
 

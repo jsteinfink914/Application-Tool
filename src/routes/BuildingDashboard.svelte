@@ -239,12 +239,12 @@
     .menu-container {
   position: relative; /* Ensures dropdown is positioned relative to this */
   display: inline-block; /* Prevents full-width stretching */
-  top:110%;
+  z-index:1002;
 }
 
 .dropdown-menu {
   position: absolute;
-  top: 110%; /* Makes it appear directly below */
+  top: 100%; /* Makes it appear directly below */
   right: 0; /* Aligns it with the right side of the menu button */
   width: 200px;
   background: white;
