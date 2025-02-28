@@ -105,6 +105,7 @@
   body {
     font-family: 'Playfair Display', serif;
     background-color: #FBF7F0;
+    overflow-x: hidden; /* ✅ Fixes unwanted white space on the right */
   }
 
   .page-container {
@@ -114,6 +115,7 @@
     min-height: 100vh;
     padding: 3rem 2rem;
     background: #EDE6DD;
+    width: 100vw; /* ✅ Ensures full width background coverage */
   }
 
   .header {
@@ -176,13 +178,15 @@
     color: white;
   }
 
-  /* 📌 Horizontal Row for Grouped Units */
+  /* ✅ Limits max columns and fixes right spacing issue */
   .unit-row {
     display: flex;
     gap: 1.2rem;
+    max-width: 100%;
     overflow-x: auto;
     padding-bottom: 10px;
     scrollbar-width: thin;
+    justify-content: center;
   }
 
   .unit-card {
@@ -191,13 +195,8 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     text-align: center;
-    min-width: 250px;
-  }
-
-  .unit-name {
-    font-size: 1.3rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
+    min-width: 280px;
+    max-width: 300px;
   }
 
   .action-button {
