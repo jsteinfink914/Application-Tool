@@ -1,7 +1,5 @@
 <script>
   import { writable } from "svelte/store";
-  import Router from "svelte-spa-router";
-  import routes from "../../routes.js";
 
   // Dropdown state for the menu button
   let showDropdown = writable(false);
