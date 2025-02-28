@@ -32,6 +32,10 @@
   function toggleMaintenanceFilter(type) {
     filterMaintenance.set($filterMaintenance === type ? "" : type);
   }
+
+  function toggleMenu() {
+    showMenu.update(state => !state);
+  }
 </script>
 
 <style>
@@ -220,13 +224,47 @@
         height: 2.8rem;
         font-size: 1.2rem;
     }
+    .dropdown-menu {
+    position: absolute;
+    top: 4.5rem;
+    right: 1.5rem;
+    width: 200px;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    display: none;
+    flex-direction: column;
+    z-index: 1003;
+  }
+
+  .dropdown-menu.show {
+    display: flex;
+  }
+
+  .dropdown-item {
+    padding: 12px;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .dropdown-item:hover {
+    background: #f1f1f1;
+  }
+
 }
 </style>
 
 <div class="dashboard-container">
-  <!-- Menu Button -->
-  <div class="menu-button">☰</div>
+   <!-- ☰ Menu Button -->
+  <div class="menu-button" on:click={toggleMenu}>☰</div>
 
+  <!-- 🔽 Dropdown Menu -->
+  <div class="dropdown-menu { $showMenu ? 'show' : '' }">
+    <a href="#/leasing-dashboard" class="dropdown-item">📊 Leasing Dashboard</a>
+  </div>
   <!-- Dashboard Title -->
 
   <!-- Property Name -->
