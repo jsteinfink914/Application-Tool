@@ -32,7 +32,7 @@
     selectedAction.update(curr => (curr === action ? "All" : action));
   }
 
-  // 🔹 Keep the grouped structure while filtering dynamically
+  // 🔹 Maintain grouped structure while applying filter dynamically
   const groupedUnits = derived(selectedAction, $selectedAction => {
     const filtered = $selectedAction === "All" ? units : units.filter(unit => unit.action === $selectedAction);
 
@@ -50,21 +50,22 @@
 
 <!-- 🌎 Page Container -->
 <div class="page-container">
-  <!-- 📌 Fixed Header (Title Only) -->
+  <!-- 📌 Fixed Header with Menu Button -->
   <header class="header">
+    <!-- 🔹 Centered Title -->
     <h2 class="building-title">The Magellan</h2>
+
+    <!-- 📌 Menu Container to prevent shifting -->
+    <div class="menu-container">
+      <button class="menu-button" on:click={toggleDropdown}>☰</button>
+
+      {#if $showDropdown}
+        <div class="dropdown-menu" transition:fade>
+          <button class="dropdown-item">Transaction History</button>
+        </div>
+      {/if}
+    </div>
   </header>
-
-  <!-- 📌 Menu Button (Now Fixed in Top-Right) -->
-  <div class="menu-container">
-    <button class="menu-button" on:click={toggleDropdown}>☰</button>
-
-    {#if $showDropdown}
-      <div class="dropdown-menu" transition:fade>
-        <button class="dropdown-item">Transaction History</button>
-      </div>
-    {/if}
-  </div>
 
   <!-- 🎛️ Filter Buttons -->
   <div class="filter-buttons">
@@ -113,6 +114,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: start;
     min-height: 100vh;
     padding: 3rem 2rem;
     background: #EDE6DD;
@@ -122,7 +124,7 @@
     width: 100%;
     max-width: 600px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     padding: 1rem;
     background: white;
@@ -141,12 +143,9 @@
     font-weight: bold;
   }
 
-  /* 🎛️ Menu Button (Fixed in Top-Right) */
   .menu-container {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    z-index: 1002;
+    position: relative;
+    display: flex;
   }
 
   .menu-button {
@@ -167,17 +166,6 @@
     background: #333;
   }
 
-  .dropdown-menu {
-    position: absolute;
-    top: 3.5rem;
-    right: 0;
-    background: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 6px;
-    display: flex;
-    flex-direction: column;
-  }
-
   .filter-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -190,6 +178,33 @@
   .filter-button.active {
     background: black;
     color: white;
+  }
+
+  .grouped-sections {
+    width: 100%;
+    max-width: 1200px;
+  }
+
+  .section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid black;
+    padding-bottom: 5px;
+  }
+
+  .unit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
   }
 
   .no-results {
