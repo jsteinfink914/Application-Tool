@@ -226,22 +226,28 @@
         height: 2.8rem;
         font-size: 1.2rem;
     }
-    .dropdown-menu {
-    position: absolute;
-    top: 4.5rem;
-    right: 1.5rem;
-    width: 200px;
-    background: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    display: none;
-    flex-direction: column;
-    z-index: 1003;
-  }
+    .menu-container {
+  position: relative; /* Ensures dropdown is positioned relative to this */
+  display: inline-block; /* Prevents full-width stretching */
+}
 
-  .dropdown-menu.show {
-    display: flex;
-  }
+.dropdown-menu {
+  position: absolute;
+  top: 110%; /* Makes it appear directly below */
+  right: 0; /* Aligns it with the right side of the menu button */
+  width: 200px;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  display: none;
+  flex-direction: column;
+  z-index: 1003;
+}
+
+.dropdown-menu.show {
+  display: flex;
+
+}
 
   .dropdown-item {
     padding: 12px;
@@ -260,16 +266,17 @@
 </style>
 
 <div class="dashboard-container">
-   <!-- ☰ Menu Button -->
+   <div class="menu-container">
+  <!-- ☰ Menu Button -->
   <div class="menu-button" on:click={toggleMenu}>☰</div>
 
   <!-- 🔽 Dropdown Menu -->
   {#if $showMenu}
-    <div class="dropdown-menu">
+    <div class="dropdown-menu show">
       <a href="#/leasing-dashboard" class="dropdown-item">📊 Leasing Dashboard</a>
     </div>
   {/if}
-
+</div>
   <!-- Property Name -->
   <h2 class="property-title">The Magellan</h2>
 

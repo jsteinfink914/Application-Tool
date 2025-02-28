@@ -28,7 +28,7 @@
 
     {#if showDropdown}
       <div class="dropdown-menu" transition:fade>
-        <button class="dropdown-item">Transaction History</button>
+        <button class="dropdown-item">📜 Transaction History</button>
       </div>
     {/if}
   </div>
@@ -39,6 +39,7 @@
     
     <!-- 💰 Amount Input -->
      <div class="amount-box">
+      <h3>Rent Amount</h3>
       <span class="amount-display">${chargeAmount.toLocaleString("en-US")}</span>
     </div>
     
