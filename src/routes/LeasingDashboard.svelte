@@ -199,7 +199,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
-    max-width: 100%; /* ✅ Restricts width */
+    max-width: 1000px; /* ✅ Restricts width */
     margin: 0 auto; /* ✅ Centers properly */
     width: 100%;
   }
