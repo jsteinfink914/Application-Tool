@@ -14,7 +14,7 @@ export const userPreferences = writable({
 
 
 async function fetchListingsFromCSV() {
-  const url = '/nyc_listings.csv'; // Ensure this path is correct
+  const url = '/backend/nyc_listings.csv'; // Ensure this path is correct
 
   try {
       const response = await fetch(url);
