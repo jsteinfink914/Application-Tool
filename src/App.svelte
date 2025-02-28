@@ -942,7 +942,7 @@ async function applyFilters() {
 
 
 .content-container {
-    padding-top: 40px; /* Pushes content below the banner */
+    padding-top: 10px; /* Pushes content below the banner */
     background-color: #FBF7F0;
 }
 
