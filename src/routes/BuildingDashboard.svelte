@@ -15,6 +15,8 @@
   let searchQuery = writable("");
   let filterStatus = writable(""); // "Current on Rent" or "Late on Rent"
   let filterMaintenance = writable(""); // "Needs Maintenance" or "No Maintenance"
+   // Dropdown state
+  let showMenu = writable(false);
 
   // Computed: Filtered Units Based on Search & Filters
   $: filteredUnits = units.filter(unit => {
