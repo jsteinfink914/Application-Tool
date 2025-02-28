@@ -76,13 +76,13 @@
     {/each}
   </div>
 
-  <!-- 📌 Horizontal Grouped Unit Display -->
+  <!-- 📌 Pre-grouped Horizontal Unit Display -->
   <div class="grouped-sections">
     {#each Object.entries($groupedUnits) as [category, unitList]}
       {#if unitList.length > 0}
         <div class="section">
           <h3 class="section-title">{category}</h3>
-          <div class="unit-row">
+          <div class="unit-grid">
             {#each unitList as unit}
               <div class="unit-card">
                 <h4 class="unit-name">{unit.name}</h4>
@@ -105,7 +105,7 @@
   body {
     font-family: 'Playfair Display', serif;
     background-color: #FBF7F0;
-    overflow-x: hidden; /* ✅ Fixes unwanted white space on the right */
+    overflow-x: hidden;
   }
 
   .page-container {
@@ -115,7 +115,7 @@
     min-height: 100vh;
     padding: 3rem 2rem;
     background: #EDE6DD;
-    width: 100vw; /* ✅ Ensures full width background coverage */
+    width: 100vw;
   }
 
   .header {
@@ -178,15 +178,13 @@
     color: white;
   }
 
-  /* ✅ Limits max columns and fixes right spacing issue */
-  .unit-row {
-    display: flex;
-    gap: 1.2rem;
-    max-width: 100%;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    scrollbar-width: thin;
-    justify-content: center;
+  /* ✅ Balanced Grid for Pre-Grouped Units */
+  .unit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    max-width: 1000px;
+    margin: 0 auto;
   }
 
   .unit-card {
@@ -195,8 +193,6 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     text-align: center;
-    min-width: 280px;
-    max-width: 300px;
   }
 
   .action-button {
