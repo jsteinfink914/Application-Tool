@@ -6,8 +6,7 @@
   import { onMount, tick } from 'svelte';
   import { writable, get } from 'svelte/store'; 
   import Router from "svelte-spa-router";
-  import MovingServices from "./routes/MovingServices.svelte";
-  import BuildingDashboard from "./routes/BuildingDashboard.svelte";
+  import routes from "./routes.js";
 
   // ✅ 2. Store Imports Next (No Duplicates)
   import { 
@@ -610,10 +609,7 @@ async function applyFilters() {
 
 <!-- Router -->
 <main>
-  <Router routes={{
-    "/moving-services": MovingServices,
-    "/building-dashboard": BuildingDashboard
-  }} />
+  <Router {routes} />
 </main>
 
 <style>
@@ -1120,9 +1116,6 @@ async function applyFilters() {
 
 
 </div>
-
-{#if $currentRoute !== "/moving-services"}
-{#if $currentRoute !== "/building-dashboard"}
 <a href="#/moving-services" class="nav-button">🚛 Moving Services</a>
   {#if !$showComparePage}  <!-- ❌ Missing `$` -->
   <div class="content-container">
@@ -1310,6 +1303,4 @@ async function applyFilters() {
       </div>
     {/if}
   </div>
-{/if}
-{/if}
 {/if}
