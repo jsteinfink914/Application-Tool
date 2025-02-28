@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from "svelte";
+  import { fade } from "svelte/transition";
 
   let amount = "";
   let recipient = "The Magellan (Landlord)";
@@ -16,55 +16,199 @@
   }
 </script>
 
-<div class="flex flex-col items-center justify-center min-h-screen bg-[#FBF7F0] px-6" style="font-family: 'Editorial New, serif'">
+<div class="page-container">
   
   <!-- 📌 Menu Button -->
-  <div class="absolute top-4 left-4">
-    <div class="relative group">
-      <button class="w-12 h-12 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-all duration-300" on:click={toggleDropdown}>
-        ☰
-      </button>
+  <div class="menu-wrapper">
+    <button class="menu-button" on:click={toggleDropdown}>
+      ☰
+    </button>
 
-      {#if showDropdown}
-        <div class="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-lg">
-          <button class="block w-full text-left px-4 py-2 hover:bg-gray-100">Transaction History</button>
-        </div>
-      {/if}
-    </div>
+    {#if showDropdown}
+      <div class="dropdown-menu" transition:fade>
+        <button class="dropdown-item">Transaction History</button>
+      </div>
+    {/if}
   </div>
 
+  <!-- 🏠 App Title -->
   
-  <div class="w-full max-w-md bg-transparent p-6 rounded-lg">
+  <div class="form-container">
     
     <!-- 💰 Amount Input -->
-    <div class="text-6xl font-bold text-center mb-6 flex items-center justify-center">
+    <div class="amount-box">
       <input 
         type="text" inputMode="decimal" pattern="[0-9]*" 
         placeholder="0.00" 
         bind:value={amount} 
         on:input={handleAmountChange}
-        class="bg-transparent text-center text-6xl font-bold text-black focus:outline-none w-auto"
+        class="amount-input"
       />
     </div>
     
     <!-- 📌 Recipient Selection -->
-    <label class="block text-lg font-bold text-black mb-2">Pay To</label>
-    <select bind:value={recipient} class="w-full p-4 border rounded-lg mb-4 focus:ring-2 focus:ring-green-900 focus:outline-none bg-gray-100 hover:bg-gray-200 transition-all duration-300 text-lg font-semibold text-black shadow-md">
+    <label class="label">Pay To</label>
+    <select bind:value={recipient} class="dropdown">
       <option value="The Magellan (Landlord)">The Magellan (Landlord)</option>
       <option value="Cupcake Moving">Cupcake Moving</option>
     </select>
     
     <!-- 💳 Payment Method Selection -->
-    <label class="block text-lg font-bold text-black mb-2">Payment Method</label>
-    <select bind:value={paymentMethod} class="w-full p-4 border rounded-lg mb-4 focus:ring-2 focus:ring-green-900 focus:outline-none bg-gray-100 hover:bg-gray-200 transition-all duration-300 text-lg font-semibold text-black shadow-md">
+    <label class="label">Payment Method</label>
+    <select bind:value={paymentMethod} class="dropdown">
       <option value="ACH Transfer">ACH Transfer</option>
       <option value="Bilt Card">Bilt Card</option>
       <option value="Zelle">Zelle</option>
     </select>
     
     <!-- 🟢 Pay Now Button -->
-    <button class="w-full bg-green-950 text-white py-3 rounded-lg hover:bg-green-900 transition-all duration-300">
+    <button class="pay-now">
       Pay Now
     </button>
   </div>
 </div>
+
+<style>
+  /* 🌎 Global Styles */
+  @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap");
+
+  body {
+    font-family: 'Playfair Display', serif;
+    background-color: #FBF7F0;
+  }
+
+  /* 📌 Main Page Layout */
+  .page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
+
+  .app-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+
+  /* 🔘 Form Container */
+  .form-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* 💰 Amount Input */
+  .amount-box {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .amount-input {
+    width: 100%;
+    font-size: 3.5rem;
+    text-align: center;
+    border: none;
+    outline: none;
+    background: transparent;
+  }
+
+  /* 📌 Labels & Dropdowns */
+  .label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: black;
+  }
+
+  .dropdown {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid black;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #F9F9F9;
+    transition: background 0.3s;
+  }
+
+  .dropdown:hover {
+    background: #EAEAEA;
+  }
+
+  /* 🟢 Pay Now Button */
+  .pay-now {
+    width: 100%;
+    background-color: #0a3d3f;
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .pay-now:hover {
+    background-color: #062c2d;
+  }
+
+  /* 📌 Menu Button */
+  .menu-wrapper {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+  }
+
+  .menu-button {
+    background: black;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: white;
+    z-index: 1002;
+  }
+
+  .menu-button:hover {
+    background: #333;
+  }
+
+  /* 🔽 Dropdown */
+  .dropdown-menu {
+    position: absolute;
+    top: 3.5rem;
+    left: 0;
+    width: 180px;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dropdown-item {
+    padding: 10px;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .dropdown-item:hover {
+    background: #f1f1f1;
+  }
+
+</style>
