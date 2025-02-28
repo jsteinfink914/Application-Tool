@@ -32,7 +32,6 @@
     selectedAction.update(curr => (curr === action ? "All" : action));
   }
 
-  // 🔹 Maintain grouped structure while applying filter dynamically
   const groupedUnits = derived(selectedAction, $selectedAction => {
     const filtered = $selectedAction === "All" ? units : units.filter(unit => unit.action === $selectedAction);
 
@@ -50,22 +49,20 @@
 
 <!-- 🌎 Page Container -->
 <div class="page-container">
-  <!-- 📌 Fixed Header with Menu Button -->
+  <!-- 📌 Header (No longer fixed) -->
   <header class="header">
-    <!-- 🔹 Centered Title -->
     <h2 class="building-title">The Magellan</h2>
-
-    <!-- 📌 Menu Container to prevent shifting -->
-    <div class="menu-container">
-      <button class="menu-button" on:click={toggleDropdown}>☰</button>
-
-      {#if $showDropdown}
-        <div class="dropdown-menu" transition:fade>
-          <button class="dropdown-item">Transaction History</button>
-        </div>
-      {/if}
-    </div>
   </header>
+
+  <!-- 📌 Menu Button (Top-Right) -->
+  <div class="menu-container">
+    <button class="menu-button" on:click={toggleDropdown}>☰</button>
+    {#if $showDropdown}
+      <div class="dropdown-menu" transition:fade>
+        <button class="dropdown-item">Transaction History</button>
+      </div>
+    {/if}
+  </div>
 
   <!-- 🎛️ Filter Buttons -->
   <div class="filter-buttons">
@@ -114,38 +111,27 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: start;
     min-height: 100vh;
     padding: 3rem 2rem;
     background: #EDE6DD;
   }
 
   .header {
-    width: 100%;
-    max-width: 600px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background: white;
-    border-bottom: 2px solid black;
-    position: fixed;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 1.5rem;
   }
 
   .building-title {
-    font-size: 2.5rem;
+    font-size: 3rem;
     font-weight: bold;
+    color: #0a3d3f;
   }
 
   .menu-container {
-    position: relative;
-    display: flex;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1002;
   }
 
   .menu-button {
@@ -169,42 +155,61 @@
   .filter-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 6rem;
+    gap: 12px;
     margin-bottom: 2rem;
     justify-content: center;
   }
 
+  .filter-button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #e5e5e5;
+    transition: background 0.3s, color 0.3s;
+  }
+
   .filter-button.active {
-    background: black;
+    background: #0a3d3f;
     color: white;
-  }
-
-  .grouped-sections {
-    width: 100%;
-    max-width: 1200px;
-  }
-
-  .section {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  }
-
-  .section-title {
-    font-size: 1.6rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid black;
-    padding-bottom: 5px;
   }
 
   .unit-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .unit-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: center;
+  }
+
+  .unit-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .action-button {
+    background-color: #0a3d3f;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    border: none;
+  }
+
+  .action-button:hover {
+    background-color: #062c2d;
   }
 
   .no-results {
