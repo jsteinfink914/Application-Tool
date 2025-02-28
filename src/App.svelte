@@ -645,7 +645,7 @@ async function applyFilters() {
   .listings-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 2 wide */
-    gap: 20px; /* Space between tiles */
+    gap: 25px; /* Space between tiles */
     width: 100%;
     max-width: 90%; /* Keeps layout clean */
     margin: auto;
@@ -987,7 +987,7 @@ async function applyFilters() {
     max-width: 50%;
     height: calc(100vh - 100px); /* Adjust based on header size */
     overflow-y: auto; /* Enables vertical scrolling */
-    padding: 10px;
+    padding: 15px;
 }
 #map-container-listings {
     flex: 1;
