@@ -102,20 +102,20 @@
 
 <!-- 🖌 Styles -->
 <style>
+  /* ✅ Global Reset */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
   body {
     font-family: 'Playfair Display', serif;
     background-color: #FBF7F0;
-    overflow-x: hidden;
-    margin: 0; /* ✅ Remove default body margin */
+    overflow-x: hidden; /* ✅ Prevents horizontal scrolling */
+    margin: 0;
     padding: 0;
-    width: 100%; /* ✅ Ensures no extra width beyond the viewport */
-  }
-  .grouped-sections {
-    width: 100%; /* ✅ Ensures no extra width */
-    max-width: 1000px; /* ✅ Prevents horizontal scrolling */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    width: 100%;
   }
 
   .page-container {
@@ -123,20 +123,16 @@
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    padding: 3rem 2rem;
+    padding: 4rem 2rem; /* ✅ Increased padding */
     background: #EDE6DD;
-    width: 100%; /* ✅ Avoids 100vw scrollbar issue */
-    margin: 0 auto; /* ✅ Ensures no left-side white space */
-  }
-  * {
-    box-sizing: border-box; /* Ensures padding/margin don't extend past width */
-    margin: 0;
-    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
   }
 
   .header {
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem; /* ✅ Increased spacing below title */
   }
 
   .building-title {
@@ -173,13 +169,13 @@
   .filter-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 2rem;
+    gap: 15px; /* ✅ More spacing between filter buttons */
+    margin-bottom: 2.5rem;
     justify-content: center;
   }
 
   .filter-button {
-    padding: 10px 18px;
+    padding: 12px 20px;
     border: none;
     border-radius: 20px;
     font-size: 1rem;
@@ -194,28 +190,71 @@
     color: white;
   }
 
-  /* ✅ Balanced Grid for Pre-Grouped Units */
+  /* ✅ Ensures Proper Layout Without Extra White Space */
+  .grouped-sections {
+    width: 100%;
+    max-width: 1100px; /* ✅ Slightly wider to fit naturally */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 3rem; /* ✅ Extra space between sections */
+  }
+
+  .section {
+    width: 100%;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 2.5rem; /* ✅ More spacing between sections */
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem; /* ✅ More spacing below section titles */
+    text-align: center;
+    color: #0a3d3f;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+  }
+
+  /* ✅ Improved Grid Layout */
   .unit-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    max-width: 1000px; /* ✅ Restricts width */
-    margin: 0 auto; /* ✅ Centers properly */
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* ✅ Slightly larger units */
+    gap: 1.5rem; /* ✅ More spacing between unit cards */
+    max-width: 100%;
     width: 100%;
+    margin: 0 auto;
   }
 
   .unit-card {
     background: white;
-    padding: 1.5rem;
+    padding: 1.75rem; /* ✅ Slightly more padding */
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     text-align: center;
+    border: 1px solid #ddd;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .unit-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .unit-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1rem;
   }
 
   .action-button {
     background-color: #0a3d3f;
     color: white;
-    padding: 10px 15px;
+    padding: 12px 18px; /* ✅ More comfortable button size */
     border-radius: 8px;
     font-size: 1rem;
     font-weight: bold;
