@@ -1305,3 +1305,4 @@ async function applyFilters() {
     {/if}
   </div>
 {/if}
+{/if}
