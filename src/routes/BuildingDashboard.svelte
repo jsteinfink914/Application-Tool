@@ -239,6 +239,7 @@
     .menu-container {
   position: relative; /* Ensures dropdown is positioned relative to this */
   display: inline-block; /* Prevents full-width stretching */
+  top:110%;
 }
 
 .dropdown-menu {
@@ -280,13 +281,16 @@
   <!-- ☰ Menu Button -->
   <div class="menu-button" on:click={toggleMenu}>☰</div>
 
-  <!-- 🔽 Dropdown Menu -->
-  {#if $showMenu}
-    <div class="dropdown-menu show">
-      <a href="#/leasing-dashboard" class="dropdown-item">📊 Leasing Dashboard</a>
-    </div>
-  {/if}
+  <!-- 🔽 Dropdown Menu (Now properly inside menu-container) -->
+  <div class="dropdown-wrapper">
+    {#if $showMenu}
+      <div class="dropdown-menu show">
+        <a href="#/leasing-dashboard" class="dropdown-item">📊 Leasing Dashboard</a>
+      </div>
+    {/if}
+  </div>
 </div>
+
   <!-- Property Name -->
   <h2 class="property-title">The Magellan</h2>
 

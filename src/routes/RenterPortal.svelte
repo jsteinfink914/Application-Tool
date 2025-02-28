@@ -148,15 +148,15 @@
     }
 
     .portal-button a {
-  text-decoration: none; /* Removes underline */
-  color: black; /* Ensures it matches the button's text color */
-  font-weight: inherit; /* Keeps the same styling */
-  display: flex; /* Makes sure it aligns correctly inside the button */
+  text-decoration: none !important; /* ✅ Forces removal of underline */
+  color: inherit !important; /* ✅ Ensures it matches the button text color */
+  font-weight: inherit;
+  display: flex;
   align-items: center;
+  justify-content: center; /* ✅ Centers text inside button */
   width: 100%;
   height: 100%;
 }
-
 .portal-button a:hover {
   color: black; /* Prevents color change on hover */
   text-decoration: none; /* Ensures no underline appears */
