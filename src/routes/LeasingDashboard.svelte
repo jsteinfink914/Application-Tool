@@ -28,16 +28,19 @@
     { id: 6, name: "Unit 606", action: "Post to Market" }
   ];
 
-  // Function to toggle the filter
   function toggleActionFilter(action) {
     selectedAction.update(curr => (curr === action ? "All" : action));
   }
 
-  // Dynamically filtered units based on selected action
-  const filteredUnits = derived(selectedAction, $selectedAction => {
-    if ($selectedAction === "All") return units;
+  // 🔹 Grouped and Filtered Units
+  const groupedUnits = derived(selectedAction, $selectedAction => {
+    const filtered = $selectedAction === "All" ? units : units.filter(unit => unit.action === $selectedAction);
 
-    return units.filter(unit => unit.action === $selectedAction);
+    return {
+      "Leasing Actions": filtered.filter(unit => ["Approve Application", "Send Lease", "View Documents", "Collect Deposit"].includes(unit.action)),
+      "Marketing & Listings": filtered.filter(unit => ["Update Listing", "Adjust Pricing", "Boost Visibility", "Promote Listing", "Assign to Agent", "Schedule Showings"].includes(unit.action)),
+      "Renewals & Market Prep": filtered.filter(unit => ["Send Renewal", "Prepare for Market", "Post to Market"].includes(unit.action)),
+    };
   });
 
   function toggleDropdown() {
@@ -47,24 +50,21 @@
 
 <!-- 🌎 Page Container -->
 <div class="page-container">
-  <!-- 📌 Fixed Header with Menu Button -->
+  <!-- 📌 Fixed Header (Title Only) -->
   <header class="header">
-    <!-- 🔹 Centered Title -->
     <h2 class="building-title">The Magellan</h2>
-
   </header>
 
-    <!-- 📌 Menu Container -->
-    <div class="menu-container">
-      <button class="menu-button" on:click={toggleDropdown}>☰</button>
+  <!-- 📌 Menu Button (Moved Out of Header) -->
+  <div class="menu-container">
+    <button class="menu-button" on:click={toggleDropdown}>☰</button>
 
-      {#if $showDropdown}
-        <div class="dropdown-menu" transition:fade>
-          <button class="dropdown-item">Transaction History</button>
-        </div>
-      {/if}
-    </div>
-  
+    {#if $showDropdown}
+      <div class="dropdown-menu" transition:fade>
+        <button class="dropdown-item">Transaction History</button>
+      </div>
+    {/if}
+  </div>
 
   <!-- 🎛️ Filter Buttons -->
   <div class="filter-buttons">
@@ -78,17 +78,26 @@
     {/each}
   </div>
 
-  <!-- 📌 Filtered Unit Display -->
+  <!-- 📌 Grouped Unit Display -->
   <div class="grouped-sections">
-    {#if $filteredUnits.length === 0}
-      <p>No units match this filter.</p>
-    {:else}
-      {#each $filteredUnits as unit}
-        <div class="unit-card">
-          <h4 class="unit-name">{unit.name}</h4>
-          <button class="action-button">{unit.action} →</button>
+    {#each Object.entries($groupedUnits) as [category, unitList]}
+      {#if unitList.length > 0}
+        <div class="section">
+          <h3 class="section-title">{category}</h3>
+          <div class="unit-grid">
+            {#each unitList as unit}
+              <div class="unit-card">
+                <h4 class="unit-name">{unit.name}</h4>
+                <button class="action-button">{unit.action} →</button>
+              </div>
+            {/each}
+          </div>
         </div>
-      {/each}
+      {/if}
+    {/each}
+
+    {#if Object.values($groupedUnits).every(group => group.length === 0)}
+      <p class="no-results">No units match this filter.</p>
     {/if}
   </div>
 </div>
@@ -113,12 +122,12 @@
     width: 100%;
     max-width: 600px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 1rem;
     background: white;
     border-bottom: 2px solid black;
-    position: absolute;
+    position: fixed;
     top: 50px;
     left: 50%;
     transform: translateX(-50%);
@@ -130,85 +139,14 @@
   .building-title {
     font-size: 2.5rem;
     font-weight: bold;
-    margin-top: 1rem;
   }
 
-  .filter-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 6rem;
-    margin-bottom: 2rem;
-    justify-content: center;
-  }
-
-  .filter-button {
-    padding: 8px 15px;
-    border: 2px solid black;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: white;
-    transition: background 0.3s, color 0.3s;
-  }
-
-  .filter-button.active {
-    background: black;
-    color: white;
-  }
-
-  .grouped-sections {
-    width: 100%;
-    max-width: 1200px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-  }
-
-  .unit-card {
-    background: white;
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 1px solid black;
-    transition: box-shadow 0.3s;
-    width: 220px;
-  }
-
-  .unit-card:hover {
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
-  }
-
-  .unit-name {
-    font-size: 1.3rem;
-    font-weight: bold;
-    text-align: center;
-  }
-
-  .action-button {
-    background-color: #0a3d3f;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s;
-    border: none;
-  }
-
-  .action-button:hover {
-    background-color: #062c2d;
-  }
-
+  /* 🎛️ Menu Button */
   .menu-container {
-    position: relative;
-    display: flex;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1002;
   }
 
   .menu-button {
@@ -227,5 +165,37 @@
 
   .menu-button:hover {
     background: #333;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 3.5rem;
+    right: 0;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+  }
+
+  .filter-button.active {
+    background: black;
+    color: white;
+  }
+
+  .no-results {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 2rem;
   }
 </style>
