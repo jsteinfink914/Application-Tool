@@ -32,7 +32,6 @@
   </div>
 
   <!-- 🏠 App Title -->
-  <h2 class="app-title">glide</h2>
   
   <div class="form-container">
     
@@ -181,6 +180,7 @@
     font-size: 1.5rem;
     color: white;
     z-index: 1002;
+    margin-top:40px;
   }
 
   .menu-button:hover {
