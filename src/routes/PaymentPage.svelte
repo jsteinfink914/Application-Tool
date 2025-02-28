@@ -21,6 +21,10 @@
   <!-- 📌 Menu Button -->
   <div class="absolute top-4 left-4">
     <div class="relative group">
+      <button class="w-12 h-12 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-all duration-300" on:click={toggleDropdown}>
+        ☰
+      </button>
+
       {#if showDropdown}
         <div class="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-lg">
           <button class="block w-full text-left px-4 py-2 hover:bg-gray-100">Transaction History</button>
