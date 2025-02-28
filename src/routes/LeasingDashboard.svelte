@@ -76,13 +76,13 @@
     {/each}
   </div>
 
-  <!-- 📌 Grouped Unit Display -->
+  <!-- 📌 Horizontal Grouped Unit Display -->
   <div class="grouped-sections">
     {#each Object.entries($groupedUnits) as [category, unitList]}
       {#if unitList.length > 0}
         <div class="section">
           <h3 class="section-title">{category}</h3>
-          <div class="unit-grid">
+          <div class="unit-row">
             {#each unitList as unit}
               <div class="unit-card">
                 <h4 class="unit-name">{unit.name}</h4>
@@ -176,10 +176,13 @@
     color: white;
   }
 
-  .unit-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  /* 📌 Horizontal Row for Grouped Units */
+  .unit-row {
+    display: flex;
     gap: 1.2rem;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
   }
 
   .unit-card {
@@ -188,6 +191,7 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     text-align: center;
+    min-width: 250px;
   }
 
   .unit-name {
@@ -210,12 +214,5 @@
 
   .action-button:hover {
     background-color: #062c2d;
-  }
-
-  .no-results {
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-top: 2rem;
   }
 </style>
