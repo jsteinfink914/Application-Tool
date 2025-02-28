@@ -306,7 +306,7 @@ function addPOIMarkers(listing) {
             title: `${poiType}: ${poi.name}`,
             icon: {
                 url: poiIcons[poiType] || "https://img.icons8.com/ios-filled/48/marker.png", // Default icon
-                scaledSize: new google.maps.Size(10, 10)
+                scaledSize: new google.maps.Size(20, 20)
             }
         });
 
