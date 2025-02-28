@@ -7,7 +7,7 @@ const routes = {
   "/building-dashboard": BuildingDashboard,
   "/renter-portal": RenterPortal,
   "/moving-services": MovingServices,
-  "/renter-portal": RenterPortal,
+  "/renter-portal": RenterPortal
 };
 
 export default routes;
