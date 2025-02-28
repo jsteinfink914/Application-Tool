@@ -5,6 +5,8 @@
   let recipient = "The Magellan (Landlord)";
   let paymentMethod = "ACH Transfer";
   let showDropdown = false;
+  
+  const chargeAmount = 5000; // Set predefined charge
 
   function handleAmountChange(event) {
     let rawValue = event.target.value.replace(/,/g, "");
@@ -36,14 +38,8 @@
   <div class="form-container">
     
     <!-- 💰 Amount Input -->
-    <div class="amount-box">
-      <input 
-        type="text" inputMode="decimal" pattern="[0-9]*" 
-        placeholder="0.00" 
-        bind:value={amount} 
-        on:input={handleAmountChange}
-        class="amount-input"
-      />
+     <div class="amount-box">
+      <span class="amount-display">${chargeAmount.toLocaleString("en-US")}</span>
     </div>
     
     <!-- 📌 Recipient Selection -->
