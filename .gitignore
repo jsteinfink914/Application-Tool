@@ -1,0 +1,5 @@
+.env
+/node_modules
+backend/__pycache__
+backend/rental_listings
+rental_listings
